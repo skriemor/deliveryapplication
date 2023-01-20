@@ -20,7 +20,7 @@ public class Vendor implements Serializable {
     @Column(name = "tax_id", nullable = false)
     private String taxId;
 
-    @Column(name = "tax_number", nullable = false)
+    @Column(name = "tax_number")
     private String taxNumber;
 
     @Column(name = "vendor_name", nullable = false)
@@ -45,7 +45,7 @@ public class Vendor implements Serializable {
     @Column(name = "account_number", nullable = false)
     private String accountNumber;
 
-    @Column(name = "account_manage", nullable = false)
+    @Column(name = "account_manager", nullable = false)
     private String accountManager;
 
     @Column(name = "city", nullable = false)
@@ -54,7 +54,7 @@ public class Vendor implements Serializable {
     @Column(name = "postal_code", nullable = false)
     private String postalCode;
 
-    @Column(name = "address", nullable = false)
+    @Column(name = "address")
     private String address;
 
     @Column(name = "qualification", nullable = false)
@@ -63,40 +63,40 @@ public class Vendor implements Serializable {
     @Column(name = "country_code", nullable = false)
     private String countryCode;
 
-    @Column(name = "taj", nullable = false)
+    @Column(name = "taj")
     private String taj;
 
-    @Column(name = "activity", nullable = false)
+    @Column(name = "activity")
     private String activity;
 
-    @Column(name = "representative", nullable = false)
+    @Column(name = "representative")
     private String representative;
 
-    @Column(name = "file_number", nullable = false)
+    @Column(name = "file_number")
     private String fileNumber;
 
-    @Column(name = "felir", nullable = false)
+    @Column(name = "felir")
     private String felir;
 
-    @Column(name = "registry_number", nullable = false)
+    @Column(name = "registry_number")
     private String registryNumber;
 
     @Column(name = "pensioner", nullable = false)
     private Boolean pensioner;
 
     @Column(name = "szja", nullable = false)
-    private String szja;
+    private Boolean szja;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         Vendor vendor = (Vendor) o;
-        return taxId != null && Objects.equals(taxId, vendor.taxId);
+        return Objects.equals(taxId, vendor.taxId) && Objects.equals(taxNumber, vendor.taxNumber) && Objects.equals(vendorName, vendor.vendorName) && Objects.equals(birthName, vendor.birthName) && Objects.equals(gender, vendor.gender) && Objects.equals(nameOfMother, vendor.nameOfMother) && Objects.equals(birthPlace, vendor.birthPlace) && Objects.equals(birthDate, vendor.birthDate) && Objects.equals(accountNumber, vendor.accountNumber) && Objects.equals(accountManager, vendor.accountManager) && Objects.equals(city, vendor.city) && Objects.equals(postalCode, vendor.postalCode) && Objects.equals(address, vendor.address) && Objects.equals(qualification, vendor.qualification) && Objects.equals(countryCode, vendor.countryCode) && Objects.equals(taj, vendor.taj) && Objects.equals(activity, vendor.activity) && Objects.equals(representative, vendor.representative) && Objects.equals(fileNumber, vendor.fileNumber) && Objects.equals(felir, vendor.felir) && Objects.equals(registryNumber, vendor.registryNumber) && Objects.equals(pensioner, vendor.pensioner) && Objects.equals(szja, vendor.szja);
     }
 
     @Override
     public int hashCode() {
-        return getClass().hashCode();
+        return Objects.hash(taxId, taxNumber, vendorName, birthName, gender, nameOfMother, birthPlace, birthDate, accountNumber, accountManager, city, postalCode, address, qualification, countryCode, taj, activity, representative, fileNumber, felir, registryNumber, pensioner, szja);
     }
 }

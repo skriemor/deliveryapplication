@@ -1,10 +1,11 @@
 package hu.torma.deliveryapplication.entity;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "delivery_letter")
-public class DeliveryLetter {
+public class DeliveryLetter implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)

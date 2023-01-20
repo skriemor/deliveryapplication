@@ -53,7 +53,7 @@ public class VendorDTO implements Serializable {
 
     private Boolean pensioner;
 
-    private String szja;
+    private Boolean szja;
 
     @Override
     public boolean equals(Object o) {
