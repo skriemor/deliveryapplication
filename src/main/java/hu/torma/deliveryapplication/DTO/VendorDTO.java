@@ -17,7 +17,7 @@ public class VendorDTO implements Serializable {
 
     private String birthName;
 
-    private Boolean gender;
+    private String gender;
 
     private String nameOfMother;
 
@@ -51,9 +51,9 @@ public class VendorDTO implements Serializable {
 
     private String registryNumber;
 
-    private Boolean pensioner;
+    private String pensioner;
 
-    private Boolean szja;
+    private String szja;
 
     @Override
     public boolean equals(Object o) {

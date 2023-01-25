@@ -30,7 +30,7 @@ public class Vendor implements Serializable {
     private String birthName;
 
     @Column(name = "gender", nullable = false)
-    private Boolean gender;
+    private String gender;
 
     @Column(name = "name_of_mother", nullable = false)
     private String nameOfMother;
@@ -42,10 +42,10 @@ public class Vendor implements Serializable {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date birthDate;
 
-    @Column(name = "account_number", nullable = false)
+    @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "account_manager", nullable = false)
+    @Column(name = "account_manager")
     private String accountManager;
 
     @Column(name = "city", nullable = false)
@@ -82,10 +82,10 @@ public class Vendor implements Serializable {
     private String registryNumber;
 
     @Column(name = "pensioner", nullable = false)
-    private Boolean pensioner;
+    private String pensioner;
 
     @Column(name = "szja", nullable = false)
-    private Boolean szja;
+    private String szja;
 
     @Override
     public boolean equals(Object o) {
