@@ -6,7 +6,9 @@ import java.util.List;
 
 public interface VendorService {
     List<VendorDTO> getAllVendors();
+
     VendorDTO getVendor(VendorDTO vendorDTO);
+
     VendorDTO saveVendor(VendorDTO vendorDTO);
 
     void deleteVendor(VendorDTO vendorDTO);

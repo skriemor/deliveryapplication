@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:form id="siteForm" style="overflow-y: scroll; margin: 80px auto;">
+    <style type="text/css">
+    </style>
+    <p:panel header="Telephely" id="sitePanel" >
+        <div class="card">
+
+            <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                         columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                         layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid "
+                         style="border:0px none; padding: 0px; width: 100%;">
+                <p:divider >
+                    <p:outputLabel for="idd" value="Telephely kódja: "/><br/>
+                    <p:inputText id="idd" value="#{siteController.dto.id}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                    <p:outputLabel for="name" value="Telephely megnevezése: "/><br/>
+                    <p:inputText id="name" value="#{siteController.dto.siteName}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                </p:divider>
+                <p:divider>
+                    <h:commandButton value="#{siteController.label}"
+                                     action="#{siteController.uiSaveSite}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="siteForm" render="siteList sitePanel" />
+                    </h:commandButton>
+
+                    <h:commandButton value="Új"
+                                     action="#{siteController.newSite}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="siteForm" render="siteList sitePanel" />
+                    </h:commandButton>
+                    <h:commandButton value="Töröl"
+                                     action="#{siteController.deleteSite}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="siteForm" render="siteList sitePanel" />
+                    </h:commandButton>
+                </p:divider>
+
+            </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:dataTable var="site" value="#{siteController.dtoList}" id="siteList"
+                 lazy="false" sortBy="#{siteController.sortBy}" sortMode="single"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                 selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                 selection="#{siteController.dto}" rowKey="#{site.id}">
+        <p:ajax event="rowSelect"  listener="#{siteController.editSite}" update="siteForm:sitePanel"/>
+        <p:column headerText="Kód" sortBy="#{site.id}" filterBy="#{site.id}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{site.id}" id="id"/>
+        </p:column>
+        <p:column headerText="Megnevezés" sortBy="#{site.siteName}" filterBy="#{site.siteName}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{site.siteName}"/>
+        </p:column>
+
+    </p:dataTable>
+</h:form>
+</html>
+
+
+
+

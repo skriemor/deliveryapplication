@@ -17,7 +17,7 @@
                      columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
                      layout="grid"
                      styleClass="ui-panelgrid-blank ui-fluid "
-                     style="border:0px none; padding: 0px; width: 100%">
+                     style="border:0px none; padding: 0px; width: 100%;">
             <p:divider >
                 <p:outputLabel for="name" value="Eladó neve: "/><br/>
                 <p:inputText id="name" value="#{vendorController.dto.vendorName}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
@@ -96,6 +96,11 @@
                                  style="width: 10em;height: 2.6em">
                     <f:ajax execute="vendorForm" render="vendorList vendorPanel" />
                 </h:commandButton>
+                <h:commandButton value="Töröl"
+                                 action="#{vendorController.deleteVendor}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="vendorForm" render="vendorList vendorPanel" />
+                </h:commandButton>
             </p:divider>
 
         </p:panelGrid>
@@ -105,58 +110,58 @@
     <p:dataTable var="vendor" value="#{vendorController.dtoList}" id="vendorList"
                  lazy="false" sortBy="#{vendorController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
-                   selectionMode="single"
+                   selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                     selection="#{vendorController.dto}" rowKey="#{vendor.taxId}">
         <p:ajax event="rowSelect"  listener="#{vendorController.editVendor}" update="vendorForm:vendorPanel"/>
 
-        <p:column headerText="Neve" sortBy="#{vendor.vendorName}" filterBy="#{vendor.vendorName}" filterMatchMode="contains" >
+        <p:column headerText="Neve" sortBy="#{vendor.vendorName}" filterBy="#{vendor.vendorName}" filterMatchMode="contains" width="11em">
             <h:outputText value="#{vendor.vendorName}"/>
         </p:column>
-        <p:column headerText="Ir.sz." sortBy="#{vendor.postalCode}" filterBy="#{vendor.postalCode}" filterMatchMode="contains" >
+        <p:column headerText="Ir.sz." sortBy="#{vendor.postalCode}" filterBy="#{vendor.postalCode}" filterMatchMode="contains"  width="4em">
             <h:outputText value="#{vendor.postalCode}"/>
         </p:column>
-        <p:column headerText="Helység" sortBy="#{vendor.city}" filterBy="#{vendor.city}" filterMatchMode="contains" >
+        <p:column headerText="Helység" sortBy="#{vendor.city}" filterBy="#{vendor.city}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{vendor.city}"/>
         </p:column>
-        <p:column headerText="Min." sortBy="#{vendor.qualification}" filterBy="#{vendor.qualification}" filterMatchMode="contains" >
+        <p:column headerText="Min." sortBy="#{vendor.qualification}" filterBy="#{vendor.qualification}" filterMatchMode="contains"  width="3em">
             <h:outputText value="#{vendor.qualification.charAt(0)}"/>
         </p:column>
-        <p:column headerText="Adóazonosító" sortBy="#{vendor.taxId}" filterBy="#{vendor.taxId}" filterMatchMode="contains" >
+        <p:column headerText="Adóazonosító" sortBy="#{vendor.taxId}" filterBy="#{vendor.taxId}" filterMatchMode="contains"  width="5.5em">
             <h:outputText value="#{vendor.taxId}" id="taxId"/>
         </p:column>
-        <p:column headerText="Adószám" sortBy="#{vendor.taxNumber}" filterBy="#{vendor.taxNumber}" filterMatchMode="contains" >
+        <p:column headerText="Adószám" sortBy="#{vendor.taxNumber}" filterBy="#{vendor.taxNumber}" filterMatchMode="contains" width="6em" >
             <h:outputText value="#{vendor.taxNumber}"/>
         </p:column>
-        <p:column headerText="TAJ" sortBy="#{vendor.taj}" filterBy="#{vendor.taj}" filterMatchMode="contains" >
+        <p:column headerText="TAJ" sortBy="#{vendor.taj}" filterBy="#{vendor.taj}" filterMatchMode="contains" width="6em" >
             <h:outputText value="#{vendor.taj}"/>
         </p:column>
-        <p:column headerText="Ősterm." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}" filterMatchMode="contains" >
+        <p:column headerText="Ősterm." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}" filterMatchMode="contains"  width="6em">
             <h:outputText value="#{vendor.activity}"/>
         </p:column>
-        <p:column headerText="Csal.gazd." sortBy="#{vendor.representative}" filterBy="#{vendor.representative}" filterMatchMode="contains" >
+        <p:column headerText="Csal.gazd." sortBy="#{vendor.representative}" filterBy="#{vendor.representative}" filterMatchMode="contains" width="6.5em">
             <h:outputText value="#{vendor.representative}"/>
         </p:column>
-        <p:column headerText="Reg.okm." sortBy="#{vendor.registryNumber}" filterBy="#{vendor.registryNumber}" filterMatchMode="contains" >
+        <p:column headerText="Reg.okm." sortBy="#{vendor.registryNumber}" filterBy="#{vendor.registryNumber}" filterMatchMode="contains" width="5em">
             <h:outputText value="#{vendor.registryNumber}"/>
         </p:column>
-        <p:column headerText="Szül.hely" sortBy="#{vendor.birthPlace}" filterBy="#{vendor.birthPlace}" filterMatchMode="contains" >
+        <p:column headerText="Szül.hely" sortBy="#{vendor.birthPlace}" filterBy="#{vendor.birthPlace}" filterMatchMode="contains" width="5em">
             <h:outputText value="#{vendor.birthPlace}"/>
         </p:column>
-        <p:column headerText="Szül.idő" sortBy="#{vendor.birthDate}" filterBy="#{vendor.birthDate}" filterMatchMode="contains" >
+        <p:column headerText="Szül.idő" sortBy="#{vendor.birthDate}" filterBy="#{vendor.birthDate}" filterMatchMode="contains" width="4.5em" >
             <h:outputText value="#{vendor.birthDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Nem" sortBy="#{vendor.gender}" filterBy="#{vendor.gender}" filterMatchMode="contains" >
-            <h:outputText value="#{vendor.gender}"/>
+        <p:column headerText="Nem" sortBy="#{vendor.gender}" filterBy="#{vendor.gender}" filterMatchMode="contains" width="3em">
+            <h:outputText value="#{vendor.gender.charAt(0)}"/>
         </p:column>
-        <p:column headerText="Orsz." sortBy="#{vendor.countryCode}" filterBy="#{vendor.countryCode}" filterMatchMode="contains" >
+        <p:column headerText="Orsz." sortBy="#{vendor.countryCode}" filterBy="#{vendor.countryCode}" filterMatchMode="contains" width="3em">
             <h:outputText value="#{vendor.countryCode}"/>
         </p:column>
-        <p:column headerText="Nyugd." sortBy="#{vendor.pensioner}" filterBy="#{vendor.pensioner}" filterMatchMode="contains" >
+        <p:column headerText="Nyugd." sortBy="#{vendor.pensioner}" filterBy="#{vendor.pensioner}" filterMatchMode="contains" width="3em" >
             <h:outputText value="#{vendor.pensioner}"/>
         </p:column>
-        <p:column headerText="Bankszámla szám" sortBy="#{vendor.accountNumber}" filterBy="#{vendor.accountNumber}" filterMatchMode="contains" >
+        <p:column headerText="Bankszámla szám" sortBy="#{vendor.accountNumber}" filterBy="#{vendor.accountNumber}" filterMatchMode="contains"  width="13.5em">
             <h:outputText value="#{vendor.accountNumber}"/>
         </p:column>
 

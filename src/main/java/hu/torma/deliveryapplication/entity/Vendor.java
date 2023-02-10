@@ -15,7 +15,7 @@ import java.util.Objects;
 @Entity
 @Data
 @Table(name = "vendor")
-public class Vendor implements Serializable {
+public class Vendor {
     @Id
     @Column(name = "tax_id", nullable = false)
     private String taxId;

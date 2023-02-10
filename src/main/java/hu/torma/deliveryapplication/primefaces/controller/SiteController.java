@@ -1,7 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
+import hu.torma.deliveryapplication.DTO.SiteDTO;
 import hu.torma.deliveryapplication.DTO.VendorDTO;
-import hu.torma.deliveryapplication.service.VendorService;
+import hu.torma.deliveryapplication.service.SiteService;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -12,44 +13,40 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @SessionScope
-@Controller("vendorController")
-public class VendorController implements Serializable {
-
+@Controller("siteController")
+public class SiteController implements Serializable {
     private List<SortMeta> sortBy;
     @Autowired
-    VendorService vService;
+    SiteService service;
 
     private String label;
-    private VendorDTO dto;
-    private List<VendorDTO> dtoList;
-    private String dateRange;
+    private SiteDTO dto;
+    private List<SiteDTO> dtoList;
 
     @PostConstruct
     public void init() {
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder()
-                .field("taxId")
+                .field("id")
                 .order(SortOrder.ASCENDING)
                 .build());
-        dateRange = (LocalDate.now().getYear() - 120) + ":" + (LocalDate.now().getYear() - 14);
     }
 
     @PostConstruct
-    public void getAllVendors() {
-        this.dtoList = vService.getAllVendors();
+    public void getAllSites() {
+        this.dtoList = service.getAllSites();
         this.setLabel("Hozzáadás");
     }
 
-    public void setDto(VendorDTO dto) {
+    public void setDto(SiteDTO dto) {
         this.dto = dto;
     }
 
-    public void setDtoList(List<VendorDTO> dtoList) {
+    public void setDtoList(List<SiteDTO> dtoList) {
         this.dtoList = dtoList;
     }
 
@@ -57,27 +54,27 @@ public class VendorController implements Serializable {
         this.sortBy = sortBy;
     }
 
-    public void uiSaveVendor() {
-        vService.saveVendor(this.dto);
-        getAllVendors();
-        this.setDto(new VendorDTO());
+    public void uiSaveSite() {
+        service.saveSite(this.dto);
+        getAllSites();
+        this.setDto(new SiteDTO());
     }
 
-    public void deleteVendor() {
+    public void deleteSite() {
         if (this.dto != null) {
-            vService.deleteVendor(this.dto);
+            service.deleteSite(this.dto);
         }
-        this.getAllVendors();
-        this.dto = new VendorDTO();
+        this.getAllSites();
+        this.dto = new SiteDTO();
     }
 
-    public void editVendor(SelectEvent<VendorDTO> _dto) {
+    public void editSite(SelectEvent<SiteDTO> _dto) {
         this.setLabel("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
     }
 
-    public void newVendor() {
-        this.dto = new VendorDTO();
+    public void newSite() {
+        this.dto = new SiteDTO();
         this.setLabel("Hozzáadás");
     }
 
@@ -85,9 +82,9 @@ public class VendorController implements Serializable {
         this.label = label;
     }
 
-    public VendorDTO getDto() {
+    public SiteDTO getDto() {
         if (this.dto == null) {
-            this.dto = new VendorDTO();
+            this.dto = new SiteDTO();
         }
         return this.dto;
     }
@@ -100,19 +97,11 @@ public class VendorController implements Serializable {
         return sortBy;
     }
 
-    public List<VendorDTO> getDtoList() {
+    public List<SiteDTO> getDtoList() {
         return dtoList;
     }
 
-    public VendorService getvService() {
-        return vService;
-    }
-
-    public void setDateRange(String dateRange) {
-        this.dateRange = dateRange;
-    }
-
-    public String getDateRange() {
-        return dateRange;
+    public SiteService getService() {
+        return service;
     }
 }

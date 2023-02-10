@@ -11,7 +11,7 @@ import java.io.Serializable;
 @Entity
 @Data
 @Table(name = "site")
-public class Site implements Serializable {
+public class Site {
     @Id
     @Column(name = "site_id", nullable = false)
     private Long id;
