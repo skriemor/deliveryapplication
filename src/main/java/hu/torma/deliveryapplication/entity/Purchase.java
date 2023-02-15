@@ -16,7 +16,7 @@ public class Purchase {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @OneToMany(mappedBy = "purchase")
+    @OneToMany(mappedBy = "purchase", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<PurchasedProduct> productList;
 
     @ManyToOne
@@ -25,10 +25,6 @@ public class Purchase {
 
     @Column(nullable = false, name = "payment_method")
     private String paymentMethod;
-
-    @Column(name = "payment_date", nullable = false)
-    @DateTimeFormat(pattern = "yyyy.MM.dd")
-    private Date paymentDate;
 
     @Column(name = "completion_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy.MM.dd")
@@ -39,8 +35,11 @@ public class Purchase {
     private Date ticketDate;
 
     @Column(name = "receipt_date", nullable = false)
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date receiptDate;
 
+    @Column(name = "receipt_number", nullable = false)
+    private String receiptNum;
     @ManyToOne
     @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
     private Site site;
@@ -48,7 +47,11 @@ public class Purchase {
     @Column(name = "notes")
     private String notes;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private Integer totalPrice;
+
+    @Column(name = "booking_date", nullable = true)
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
+    private Date bookedDate;
 
 }

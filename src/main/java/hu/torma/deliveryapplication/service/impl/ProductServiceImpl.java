@@ -44,4 +44,9 @@ public class ProductServiceImpl implements ProductService {
     public void deleteProduct(ProductDTO ProductDTO) {
         repo.deleteById(ProductDTO.getId());
     }
+
+    @Override
+    public ProductDTO getProductById(String s) {
+        return mapper.map(repo.findById(s), ProductDTO.class);
+    }
 }

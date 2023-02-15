@@ -44,4 +44,11 @@ public class VendorServiceImpl implements VendorService {
     public void deleteVendor(VendorDTO vendorDTO) {
         repo.deleteById(vendorDTO.getTaxId());
     }
+
+    @Override
+    public VendorDTO getVendorById(String s) {
+        return mapper.map(repo.findById(s), VendorDTO.class);
+    }
+
+
 }

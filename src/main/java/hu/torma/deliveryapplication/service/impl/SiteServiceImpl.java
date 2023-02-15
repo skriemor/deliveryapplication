@@ -44,4 +44,9 @@ public class SiteServiceImpl implements SiteService {
     public void deleteSite(SiteDTO SiteDTO) {
         repo.deleteById(SiteDTO.getId());
     }
+
+    @Override
+    public SiteDTO getSiteById(String s) {
+        return mapper.map(repo.findSiteBySiteName(s), SiteDTO.class);
+    }
 }

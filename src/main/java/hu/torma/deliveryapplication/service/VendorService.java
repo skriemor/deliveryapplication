@@ -12,4 +12,7 @@ public interface VendorService {
     VendorDTO saveVendor(VendorDTO vendorDTO);
 
     void deleteVendor(VendorDTO vendorDTO);
+
+    VendorDTO getVendorById(String s);
+
 }

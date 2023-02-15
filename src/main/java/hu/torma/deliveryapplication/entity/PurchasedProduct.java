@@ -31,7 +31,9 @@ public class PurchasedProduct {
     @Column(name = "total_price", nullable = false)
     private Integer totalPrice;
 
-
+    @ManyToOne
+    @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id")
+    private Product product;
     @ManyToOne
     @JoinColumn(name = "purchase_id")
     private Purchase purchase;

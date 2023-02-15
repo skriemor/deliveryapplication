@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
+    <style type="text/css">
+    </style>
+    <p:panel header="Vásárlások" id="purchasePanel" >
+        <div class="card">
+
+            <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                         columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                         layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid "
+                         style="border:0px none; padding: 0px; width: 100%;">
+                <p:divider >
+
+                    <p:outputLabel for="vendor" value="Felvásárló neve: "/><br/>
+                    <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}"  converter="#{vendorConverter}"  filter="true" filterMatchMode="contains">
+                        <f:selectItems value="#{vendorController.dtoList}" var="vendorvar" itemLabel="#{vendorvar.vendorName}(#{vendorvar.taxId})" itemValue="#{vendorvar}" />
+                    </p:selectOneMenu><br/>
+
+                    <p:outputLabel for="site" value="Telephely: "/><br/>
+                    <p:selectOneMenu id="site" value="#{purchaseController.dto.site}"  converter="#{siteConverter}"  filter="true" filterMatchMode="contains">
+                        <f:selectItems value="#{siteController.dtoList}" var="sitevar" itemLabel="#{sitevar.siteName}" itemValue="#{sitevar}"/>
+                    </p:selectOneMenu><br/>
+                    <p:outputLabel for="note" value="Megjegyzés:"/><br/>
+                    <p:inputText id="note" value="#{purchaseController.dto.notes}" required="false" /><br/>
+
+
+
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="completiondate" value="Teljesítés dátuma:"/><br/>
+                    <p:datePicker id="completiondate"  value="#{purchaseController.dto.completionDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+                    <p:outputLabel for="ticketdate" value="Felv.jegy dátuma:"/><br/>
+                    <p:datePicker id="ticketdate"  value="#{purchaseController.dto.ticketDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+                    <p:outputLabel for="paymentdate" value="Felv.jegy dátuma:"/><br/>
+                    <p:datePicker id="paymentdate"  value="#{purchaseController.dto.receiptDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="standard" value="Alap Bizonylat szám:"/><br/>
+                    <p:inputText id="standard" value="#{purchaseController.dto.receiptNum}" required="false" /><br/>
+                    <p:outputLabel for="method" value="Fizetési mód:"/><br/>
+                    <p:selectOneMenu id="method" value="#{purchaseController.dto.paymentMethod}" required="true" style="max-width: 120px" ><br/>
+                        <f:selectItem itemLabel="Készpénz" itemValue="Készpénz"/>
+                        <f:selectItem itemLabel="Átutalás" itemValue="Átutalás"/>
+                    </p:selectOneMenu><p/>
+                    <h:commandButton value="#{purchaseController.label}"
+                                     action="#{purchaseController.uiSavePurchase}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                    </h:commandButton>
+
+                    <h:commandButton value="Új"
+                                     action="#{purchaseController.newPurchase}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                    </h:commandButton>
+                    <h:commandButton value="Töröl"
+                                     action="#{purchaseController.deletePurchase}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                    </h:commandButton>
+                </p:divider>
+
+            </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:panel header="Termékek" id="productPanel" >
+        <div class="card">
+
+            <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                         columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                         layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid "
+                         style="border:0px none; padding: 0px; width: 100%;">
+                <p:divider >
+
+
+
+                </p:divider>
+                <p:divider>
+
+                </p:divider>
+                <p:divider>
+
+                    <h:commandButton value="Termék hozzáadása"
+                                     action="#{purchaseController.uiSaveProduct}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                    </h:commandButton>
+
+                    <h:commandButton value="Bementek ürítése"
+                                     action="#{purchaseController.newProduct}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                    </h:commandButton>
+                    <h:commandButton value="Termék törlése"
+                                     action="#{purchaseController.deleteProduct}"
+                                     style="width: 10em;height: 2.6em">
+                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                    </h:commandButton>
+                </p:divider>
+
+            </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:dataTable var="product" value="#{purchaseController.dto.productList}" id="productList"
+                 lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                 selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
+                 selection="#{purchaseController.productDTO}" rowKey="#{product.id}">
+        <p:ajax event="rowSelect"  listener="#{purchaseController.editProduct}" update="purchaseForm:productPanel"/>
+        <p:column headerText="Termék neve" filterBy="#{product.product.id}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{product.product.id}" id="did"/>
+        </p:column>
+        <p:column headerText="Mennyiség"  filterBy="#{product.quantity}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{product.quantity}"/>
+        </p:column>
+        <p:column headerText="Egységár"  filterBy="#{product.unitPrice}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{product.unitPrice}"/>
+        </p:column>
+
+    </p:dataTable>
+
+
+
+
+
+
+
+
+    <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList"
+                 lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                 selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                 selection="#{purchaseController.dto}" rowKey="#{purchase.id}">
+        <p:ajax event="rowSelect"  listener="#{purchaseController.editPurchase}" update="purchaseForm:purchasePanel"/>
+        <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.id}" id="id"/>
+        </p:column>
+        <p:column headerText="Eladó neve" sortBy="#{purchase.vendor.vendorName}" filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.vendor.vendorName}"/>
+        </p:column>
+        <p:column headerText="Helység" sortBy="#{purchase.vendor.city}" filterBy="#{purchase.vendor.city}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.vendor.city}"/>
+        </p:column>
+        <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}" filterBy="#{purchase.site.siteName}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.site.siteName}"/>
+        </p:column>
+        <p:column headerText="Telj. dátum" sortBy="#{purchase.completionDate}" filterBy="#{purchase.completionDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{purchase.completionDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Számla kelt" sortBy="#{purchase.ticketDate}" filterBy="#{purchase.ticketDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{purchase.ticketDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Fiz határidő" sortBy="#{purchase.receiptDate}" filterBy="#{purchase.receiptDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{purchase.receiptDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Fiz. mód" sortBy="#{purchase.paymentMethod}" filterBy="#{purchase.paymentMethod}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.paymentMethod}"/>
+        </p:column>
+        <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{purchase.totalPrice}"/>
+        </p:column>
+        <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}" filterBy="#{purchase.bookedDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{purchase.bookedDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+    </p:dataTable>
+</h:form>
+</html>
+
+
+
+

@@ -12,4 +12,6 @@ public interface SiteService {
     SiteDTO saveSite(SiteDTO SiteDTO);
 
     void deleteSite(SiteDTO SiteDTO);
+
+    SiteDTO getSiteById(String s);
 }

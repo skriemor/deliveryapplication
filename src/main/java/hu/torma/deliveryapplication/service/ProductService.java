@@ -13,4 +13,6 @@ public interface ProductService {
     ProductDTO saveProduct(ProductDTO ProductDTO);
 
     void deleteProduct(ProductDTO ProductDTO);
+
+    ProductDTO getProductById(String s);
 }
