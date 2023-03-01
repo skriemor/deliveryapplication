@@ -13,10 +13,11 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @Service
 public class PurchaseServiceImpl implements PurchaseService {
-
+    Logger logger = Logger.getLogger("PRODUCTLIST");
     @Autowired
     PurchaseRepository repo;
     ModelMapper mapper = new ModelMapper();
@@ -38,7 +39,12 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     @Transactional
     public PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO) {
-        return mapper.map(repo.save(mapper.map(PurchaseDTO, Purchase.class)), PurchaseDTO.class);
+        //for (var s : PurchaseDTO.getProductList()) logger.info(s.toString());
+        for (var v : PurchaseDTO.getProductList())
+            v.setPurchase(PurchaseDTO); //to make relations work by assigning purchase to each of purchased products' ends
+        var g = mapper.map(repo.save(mapper.map(PurchaseDTO, Purchase.class)), PurchaseDTO.class);
+        //for(var r: repo.findById(PurchaseDTO.getId()).get().getProductList()) logger.info(r.toString() + " was saved");
+        return g;
     }
 
     @Override

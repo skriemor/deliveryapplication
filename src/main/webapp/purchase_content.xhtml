@@ -54,18 +54,18 @@
                     <h:commandButton value="#{purchaseController.label}"
                                      action="#{purchaseController.uiSavePurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
                     </h:commandButton>
 
                     <h:commandButton value="Új"
                                      action="#{purchaseController.newPurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
                     </h:commandButton>
                     <h:commandButton value="Töröl"
                                      action="#{purchaseController.deletePurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel" />
+                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
                     </h:commandButton>
                 </p:divider>
 
@@ -83,7 +83,13 @@
                          style="border:0px none; padding: 0px; width: 100%;">
                 <p:divider >
 
-
+                    <p:selectOneMenu id="productName" value="#{purchaseController.productDTO.product}"  converter="#{productConverter}"  filter="true" filterMatchMode="contains">
+                        <f:selectItems value="#{productController.dtoList}" var="productVar" itemLabel="#{productVar.id}" itemValue="#{productVar}"/>
+                    </p:selectOneMenu><br/>
+                    <p:outputLabel for="quantity" value="Mennyiség:"/><br/>
+                    <p:inputText id="quantity" value="#{purchaseController.productDTO.quantity}" required="false" /><br/>
+                    <p:outputLabel for="unitPrice" value="Mennyiségenkénti ár:"/><br/>
+                    <p:inputText id="unitPrice" value="#{purchaseController.productDTO.unitPrice}" required="false" /><br/>
 
                 </p:divider>
                 <p:divider>
@@ -91,21 +97,21 @@
                 </p:divider>
                 <p:divider>
 
-                    <h:commandButton value="Termék hozzáadása"
+                    <h:commandButton value="#{purchaseController.label2}"
                                      action="#{purchaseController.uiSaveProduct}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
                     </h:commandButton>
 
                     <h:commandButton value="Bementek ürítése"
                                      action="#{purchaseController.newProduct}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
                     </h:commandButton>
                     <h:commandButton value="Termék törlése"
                                      action="#{purchaseController.deleteProduct}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="productList productPanel" />
+                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
                     </h:commandButton>
                 </p:divider>
 
@@ -142,7 +148,7 @@
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{purchaseController.dto}" rowKey="#{purchase.id}">
-        <p:ajax event="rowSelect"  listener="#{purchaseController.editPurchase}" update="purchaseForm:purchasePanel"/>
+        <p:ajax event="rowSelect"  listener="#{purchaseController.editPurchase}" update="purchaseForm:purchasePanel purchaseForm:productPanel purchaseForm:productList"/>
         <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{purchase.id}" id="id"/>
         </p:column>

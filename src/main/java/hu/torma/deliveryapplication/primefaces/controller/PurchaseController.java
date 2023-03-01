@@ -1,6 +1,5 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
-import hu.torma.deliveryapplication.DTO.ProductDTO;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.service.PurchaseService;
@@ -18,33 +17,42 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SessionScope
 @Controller("purchaseController")
 public class PurchaseController implements Serializable {
 
+    Logger logger = Logger.getLogger("BOOL");
     private List<SortMeta> sortBy;
 
 
     @Autowired
     PurchaseService service;
 
+
     private String label;
+
+    public String getLabel2() {
+        return label2;
+    }
+
+    public void setLabel2(String label2) {
+        this.label2 = label2;
+    }
+
+    private String label2;
     private PurchaseDTO dto;
     private List<PurchaseDTO> dtoList;
-
-    private List<PurchasedProductDTO> productList;
-
     private String dateRange;
-
 
 
     private PurchasedProductDTO productDTO;
 
 
-
     public PurchasedProductDTO getProductDTO() {
-        return productDTO;
+        if (this.productDTO == null) this.productDTO = new PurchasedProductDTO();
+        return this.productDTO;
     }
 
     public void setProductDTO(PurchasedProductDTO productDTO) {
@@ -66,6 +74,7 @@ public class PurchaseController implements Serializable {
     public void getAllPurchases() {
         this.dtoList = service.getAllPurchases();
         this.setLabel("Hozzáadás");
+        this.setLabel2("Termék hozzáadása");
     }
 
     public void setDto(PurchaseDTO dto) {
@@ -103,8 +112,10 @@ public class PurchaseController implements Serializable {
     }
 
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
-        BeanUtils.copyProperties(_dto.getObject(), this.getDto());
+        this.setLabel2("Módosítás");
+        BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
     }
+
     public void newPurchase() {
         this.dto = new PurchaseDTO();
         this.setLabel("Hozzáadás");
@@ -141,14 +152,7 @@ public class PurchaseController implements Serializable {
         this.service = service;
     }
 
-    public List<PurchasedProductDTO> getProductList() {
-        return productList;
-    }
 
-
-    public void setProductList(List<PurchasedProductDTO> productList) {
-        this.productList = productList;
-    }
     public String getDateRange() {
         return dateRange;
     }
@@ -157,4 +161,22 @@ public class PurchaseController implements Serializable {
         this.dateRange = dateRange;
     }
 
+    public void uiSaveProduct() {
+        if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
+        this.dto.getProductList().add(this.productDTO);
+        if (this.productDTO.getTotalPrice() == null) this.productDTO.setTotalPrice(1);
+        this.productDTO = new PurchasedProductDTO();
+        this.setLabel2("Termék hozzáadása");
+    }
+
+
+    public void newProduct() {
+        this.productDTO = new PurchasedProductDTO();
+        this.setLabel2("Termék hozzáadása");
+    }
+
+    public void deleteProduct() {
+        this.dto.getProductList().remove(this.productDTO);
+
+    }
 }

@@ -28,14 +28,14 @@ public class PurchasedProduct {
     @Column(name = "correction_ft")
     private Double corrFt;
 
-    @Column(name = "total_price", nullable = false)
+    @Column(name = "total_price")
     private Integer totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id")
     private Product product;
     @ManyToOne
-    @JoinColumn(name = "purchase_id")
+    @JoinColumn(name = "purchase_id", referencedColumnName = "id")
     private Purchase purchase;
 
 
