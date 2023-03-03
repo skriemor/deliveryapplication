@@ -32,7 +32,7 @@ public class PurchaseDTO implements Serializable {
 
     private String notes;
 
-    private Integer totalPrice;
+    private Double totalPrice;
 
     private Date bookedDate;
 

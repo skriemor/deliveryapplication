@@ -66,7 +66,11 @@
                                      action="#{purchaseController.deletePurchase}"
                                      style="width: 10em;height: 2.6em">
                         <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
-                    </h:commandButton>
+                    </h:commandButton><p/>
+                    <p:commandButton value="Letöltés excelként" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
+                                     icon="pi pi-arrow-down" styleClass="mr-2" actionListener="#{purchaseController.pdf()}">
+                        <p:fileDownload value="#{purchaseController.file}"/>
+                    </p:commandButton>
                 </p:divider>
 
             </p:panelGrid>
@@ -82,21 +86,42 @@
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0px none; padding: 0px; width: 100%;">
                 <p:divider >
-
+                    <p:outputLabel for="productName" value="Termék:"/><br/>
                     <p:selectOneMenu id="productName" value="#{purchaseController.productDTO.product}"  converter="#{productConverter}"  filter="true" filterMatchMode="contains">
+                        <p:ajax update="totalPricePerProduct" event="change"/>
                         <f:selectItems value="#{productController.dtoList}" var="productVar" itemLabel="#{productVar.id}" itemValue="#{productVar}"/>
                     </p:selectOneMenu><br/>
-                    <p:outputLabel for="quantity" value="Mennyiség:"/><br/>
-                    <p:inputText id="quantity" value="#{purchaseController.productDTO.quantity}" required="false" /><br/>
+                    <p:outputLabel for="quantity" value="Nettó mennyiség:"/><br/>
+                    <p:inputText id="quantity" value="#{purchaseController.productDTO.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="quantity2" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="quantity2" value="#{purchaseController.productDTO.quantity2}" required="false" /><br/>
                     <p:outputLabel for="unitPrice" value="Mennyiségenkénti ár:"/><br/>
-                    <p:inputText id="unitPrice" value="#{purchaseController.productDTO.unitPrice}" required="false" /><br/>
+                    <p:inputText id="unitPrice" value="#{purchaseController.productDTO.unitPrice}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct" />
+                    </p:inputText><br/>
 
                 </p:divider>
-                <p:divider>
 
+                <p:divider>
+                    <p:outputLabel for="corrPercent" value="Korrekció %:" /><br/>
+                    <p:inputText id="corrPercent" value="#{purchaseController.productDTO.corrPercent}" required="false">
+                        <p:ajax event="keyup" update="totalPricePerProduct" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corrPerUnit" value="Korrekció / egység:" /><br/>
+                    <p:inputText id="corrPerUnit" value="#{purchaseController.productDTO.corrPerUnit}" required="false">
+                        <p:ajax event="keyup" update="totalPricePerProduct" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corrFt" value="Korrekció HUF:" /><br/>
+                    <p:inputText id="corrFt" value="#{purchaseController.productDTO.corrFt}" required="false">
+                        <p:ajax event="keyup" update="totalPricePerProduct" />
+                    </p:inputText><br/>
                 </p:divider>
-                <p:divider>
 
+
+                <p:divider>
+                    <p:outputLabel id="totalPricePerProduct" value="Termékek részösszesített ára: #{purchaseController.perProdTotal} HUF" /><p/>
                     <h:commandButton value="#{purchaseController.label2}"
                                      action="#{purchaseController.uiSaveProduct}"
                                      style="width: 10em;height: 2.6em">

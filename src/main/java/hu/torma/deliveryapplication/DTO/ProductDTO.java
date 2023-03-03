@@ -14,7 +14,7 @@ public class ProductDTO implements Serializable {
 
     private UnitDTO secondUnit;
 
-    private Long price;
+    private Double price;
 
     private long compPercent;
 

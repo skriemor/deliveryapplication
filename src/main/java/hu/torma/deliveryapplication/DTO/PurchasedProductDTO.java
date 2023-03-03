@@ -15,13 +15,15 @@ public class PurchasedProductDTO implements Serializable {
 
     private Integer quantity;
 
+    private Integer quantity2;
+
     private Double corrPercent;
 
     private Double corrPerUnit;
 
     private Double corrFt;
 
-    private Integer totalPrice;
+    private Double totalPrice;
 
     private PurchaseDTO purchase;
 

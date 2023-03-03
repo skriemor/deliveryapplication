@@ -3,9 +3,11 @@ package hu.torma.deliveryapplication.primefaces.controller;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.service.PurchaseService;
+import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
+import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,13 +20,21 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @SessionScope
 @Controller("purchaseController")
 public class PurchaseController implements Serializable {
 
+    private StreamedContent file;
+
     Logger logger = Logger.getLogger("BOOL");
     private List<SortMeta> sortBy;
+
+    @Autowired
+    private PDFcreator pdFcreator;
+    private Boolean pdfdisabled;
+
 
 
     @Autowired
@@ -32,6 +42,30 @@ public class PurchaseController implements Serializable {
 
 
     private String label;
+
+    private Double perProdTotal;
+
+    public Double getPerProdTotal() {
+        Double temp = 0.0;
+        Double perUnit = 0.0;
+        int quant = 0;
+        try {
+            quant = productDTO.getQuantity();
+            perUnit = productDTO.getUnitPrice();
+            if (productDTO.getCorrPerUnit() != null) perUnit += productDTO.getCorrPerUnit();
+            temp = quant * perUnit * (productDTO.getProduct().getCompPercent() + 100) / 100;
+            if (productDTO.getCorrPercent() != null) temp *= (productDTO.getCorrPercent() + 100) / 100;
+            if (productDTO.getCorrFt() != null) temp += productDTO.getCorrFt();
+
+        } catch (Exception e) {
+
+        }
+        return (double) (Math.round(temp * 100) / 100);
+    }
+
+    public void setPerProdTotal(Double perProdTotal) {
+        this.perProdTotal = perProdTotal;
+    }
 
     public String getLabel2() {
         return label2;
@@ -61,6 +95,9 @@ public class PurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
+
+        pdfdisabled = true;
+        perProdTotal = 0.0;
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder()
                 .field("id")
@@ -89,13 +126,36 @@ public class PurchaseController implements Serializable {
         this.sortBy = sortBy;
     }
 
+    public void pdf() {
+       file = pdFcreator.createDownload(this.dto);
+        /*file = DefaultStreamedContent.builder()
+                .name("modified.xlsx")
+                .contentType("application/vnd.ms-excel")
+                .stream(() -> FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/demo/excel/modified.xlsx"))
+                .build();
+*/
+    }
+    public StreamedContent getFile() {
+        return file;
+    }
     public void uiSavePurchase() {
-        if (this.dto.getTotalPrice() == null) this.dto.setTotalPrice(0);
+        if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
+        calculateTotalPrice();
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
         service.savePurchase(this.dto);
         getAllPurchases();
         this.setDto(new PurchaseDTO());
+        this.pdfdisabled = true;
+    }
+
+    private void calculateTotalPrice() {
+        if (this.dto.getProductList()==null) {
+            this.dto.setTotalPrice(0.0);
+        } else {
+            this.dto.setTotalPrice(this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingDouble(Double::doubleValue)));
+
+        }
     }
 
     public void deletePurchase() {
@@ -104,10 +164,12 @@ public class PurchaseController implements Serializable {
         }
         this.getAllPurchases();
         this.dto = new PurchaseDTO();
+        this.pdfdisabled = true;
     }
 
     public void editPurchase(SelectEvent<PurchaseDTO> _dto) {
         this.setLabel("Módosítás");
+        this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
     }
 
@@ -162,9 +224,10 @@ public class PurchaseController implements Serializable {
     }
 
     public void uiSaveProduct() {
+        if (this.dto.getProductList()==null) this.dto.setProductList(new ArrayList<>());
         if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
         this.dto.getProductList().add(this.productDTO);
-        if (this.productDTO.getTotalPrice() == null) this.productDTO.setTotalPrice(1);
+        this.productDTO.setTotalPrice(getPerProdTotal());
         this.productDTO = new PurchasedProductDTO();
         this.setLabel2("Termék hozzáadása");
     }
@@ -178,5 +241,13 @@ public class PurchaseController implements Serializable {
     public void deleteProduct() {
         this.dto.getProductList().remove(this.productDTO);
 
+    }
+
+    public Boolean getPdfdisabled() {
+        return pdfdisabled;
+    }
+
+    public void setPdfdisabled(Boolean pdfdisabled) {
+        this.pdfdisabled = pdfdisabled;
     }
 }

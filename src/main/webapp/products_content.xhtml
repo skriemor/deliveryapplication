@@ -34,10 +34,12 @@
                     <p:outputLabel for="price" value="Egységár: "/><br/>
                     <p:inputText id="price" value="#{productController.dto.price}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
                     <p:outputLabel for="comp" value="Kompenzációs felár: "/><br/>
-                    <p:selectOneMenu id="comp" value="#{productController.dto.compPercent}"  style="max-width: 120px" ><br/>
+                    <p:selectOneMenu id="comp" value="#{productController.dto.compPercent}"  style="max-width: 120px" editable="true" ><br/>
+                        <f:selectItem itemLabel="0%" itemValue="0"/>
+                        <f:selectItem itemLabel="5%" itemValue="5"/>
                         <f:selectItem itemLabel="7%" itemValue="7"/>
                         <f:selectItem itemLabel="12%" itemValue="12"/>
-                        <f:selectItem itemLabel="0%" itemValue="0"/>
+
                     </p:selectOneMenu><p/>
                     <p:outputLabel for="tar" value="Vám tarifaszám: "/><br/>
                     <p:inputText id="tar" value="#{productController.dto.tariffnum}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>

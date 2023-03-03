@@ -19,6 +19,9 @@ public class PurchasedProduct {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "quantity2")
+    private Integer quantity2;
+
     @Column(name = "correction_percent")
     private Double corrPercent;
 
@@ -29,7 +32,7 @@ public class PurchasedProduct {
     private Double corrFt;
 
     @Column(name = "total_price")
-    private Integer totalPrice;
+    private Double totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id")

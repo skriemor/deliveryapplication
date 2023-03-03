@@ -48,7 +48,7 @@ public class Purchase {
     private String notes;
 
     @Column(name = "total_price")
-    private Integer totalPrice;
+    private Double totalPrice;
 
     @Column(name = "booking_date", nullable = true)
     @DateTimeFormat(pattern = "yyyy.MM.dd")
