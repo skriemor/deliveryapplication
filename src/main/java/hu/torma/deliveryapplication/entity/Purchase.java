@@ -38,8 +38,6 @@ public class Purchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date receiptDate;
 
-    @Column(name = "receipt_number", nullable = false)
-    private String receiptNum;
     @ManyToOne
     @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
     private Site site;

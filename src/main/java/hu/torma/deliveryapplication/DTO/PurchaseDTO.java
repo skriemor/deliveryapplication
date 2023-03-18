@@ -26,8 +26,6 @@ public class PurchaseDTO implements Serializable {
 
     private Date receiptDate;
 
-    private String receiptNum;
-
     private SiteDTO site;
 
     private String notes;

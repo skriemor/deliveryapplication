@@ -43,18 +43,14 @@
                 <p:inputText id="accountmanager"  value="#{vendorController.dto.accountManager}" /><br/>
 
 
-                <p:outputLabel for="countrycode" value="Országkód: "/><br/>
-                <p:inputText id="countrycode"  value="#{vendorController.dto.countryCode}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
-                <p:outputLabel for="taxid" value="Adóazonosító jel:"/><br/>
+                   <p:outputLabel for="taxid" value="Adóazonosító jel:"/><br/>
                 <p:inputText id="taxid" value="#{vendorController.dto.taxId}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
                 <p:outputLabel for="taxnum" value="Adószám: "/><br/>
                 <p:inputText id="taxnum"  value="#{vendorController.dto.taxNumber}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
 
 
-                <p:outputLabel for="activity" value="Őstermelői tevékenység: "/><br/>
+                <p:outputLabel for="activity" value="NEBIH azonosító: "/><br/>
                 <p:inputText id="activity" value="#{vendorController.dto.activity}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
-                <p:outputLabel for="representative" value="Őst.csal.gazdaság képviselője: "/><br/>
-                <p:inputText id="representative"  value="#{vendorController.dto.representative}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
                 <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
                 <p:inputText id="filenum"  value="#{vendorController.dto.fileNumber}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
             </p:divider>
@@ -73,18 +69,6 @@
                 </p:selectOneMenu><br/>
                 <p:outputLabel for="felir" value="FELIR azonosító:"/><br/>
                 <p:inputText id="felir" value="#{vendorController.dto.felir}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
-                <p:outputLabel for="registrynum" value="Regiszt. okmányszám: "/><br/>
-                <p:inputText id="registrynum" value="#{vendorController.dto.registryNumber}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
-                <p:outputLabel for="pensioner" value="Nyugdíjas: "/><br/>
-                <p:selectOneMenu id="pensioner" value="#{vendorController.dto.pensioner}" required="true" style="max-width: 120px" ><br/>
-                    <f:selectItem itemLabel="Nem" itemValue="Nem"/>
-                    <f:selectItem itemLabel="Igen" itemValue="Igen"/>
-                </p:selectOneMenu><br/>
-                <p:outputLabel for="szja" value="SZJA levonás: "/><br/>
-                <p:selectOneMenu id="szja" value="#{vendorController.dto.szja}" required="true" style="max-width: 120px" ><br/>
-                    <f:selectItem itemLabel="Nem" itemValue="Nem"/>
-                    <f:selectItem itemLabel="Igen" itemValue="Igen"/>
-                </p:selectOneMenu><p/>
                 <h:commandButton value="#{vendorController.label}"
                                  action="#{vendorController.uiSaveVendor}"
                                  style="width: 10em;height: 2.6em">
@@ -135,14 +119,8 @@
         <p:column headerText="TAJ" sortBy="#{vendor.taj}" filterBy="#{vendor.taj}" filterMatchMode="contains" width="6em" >
             <h:outputText value="#{vendor.taj}"/>
         </p:column>
-        <p:column headerText="Ősterm." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}" filterMatchMode="contains"  width="6em">
+        <p:column headerText="NEBIH az." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}" filterMatchMode="contains"  width="6em">
             <h:outputText value="#{vendor.activity}"/>
-        </p:column>
-        <p:column headerText="Csal.gazd." sortBy="#{vendor.representative}" filterBy="#{vendor.representative}" filterMatchMode="contains" width="6.5em">
-            <h:outputText value="#{vendor.representative}"/>
-        </p:column>
-        <p:column headerText="Reg.okm." sortBy="#{vendor.registryNumber}" filterBy="#{vendor.registryNumber}" filterMatchMode="contains" width="5em">
-            <h:outputText value="#{vendor.registryNumber}"/>
         </p:column>
         <p:column headerText="Szül.hely" sortBy="#{vendor.birthPlace}" filterBy="#{vendor.birthPlace}" filterMatchMode="contains" width="5em">
             <h:outputText value="#{vendor.birthPlace}"/>
@@ -151,15 +129,6 @@
             <h:outputText value="#{vendor.birthDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
-        </p:column>
-        <p:column headerText="Nem" sortBy="#{vendor.gender}" filterBy="#{vendor.gender}" filterMatchMode="contains" width="3em">
-            <h:outputText value="#{vendor.gender.charAt(0)}"/>
-        </p:column>
-        <p:column headerText="Orsz." sortBy="#{vendor.countryCode}" filterBy="#{vendor.countryCode}" filterMatchMode="contains" width="3em">
-            <h:outputText value="#{vendor.countryCode}"/>
-        </p:column>
-        <p:column headerText="Nyugd." sortBy="#{vendor.pensioner}" filterBy="#{vendor.pensioner}" filterMatchMode="contains" width="3em" >
-            <h:outputText value="#{vendor.pensioner}"/>
         </p:column>
         <p:column headerText="Bankszámla szám" sortBy="#{vendor.accountNumber}" filterBy="#{vendor.accountNumber}" filterMatchMode="contains"  width="14em">
             <h:outputText value="#{vendor.accountNumber}"/>

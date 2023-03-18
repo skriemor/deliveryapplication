@@ -25,11 +25,6 @@ public class PurchasedProduct {
     @Column(name = "correction_percent")
     private Double corrPercent;
 
-    @Column(name = "correction_per_unit")
-    private Double corrPerUnit;
-
-    @Column(name = "correction_ft")
-    private Double corrFt;
 
     @Column(name = "total_price")
     private Double totalPrice;

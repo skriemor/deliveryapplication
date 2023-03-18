@@ -19,10 +19,6 @@ public class PurchasedProductDTO implements Serializable {
 
     private Double corrPercent;
 
-    private Double corrPerUnit;
-
-    private Double corrFt;
-
     private Double totalPrice;
 
     private PurchaseDTO purchase;
