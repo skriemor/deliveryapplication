@@ -10,7 +10,7 @@
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
     <style type="text/css">
     </style>
-    <p:panel header="Vásárlások" id="purchasePanel" >
+    <p:panel header="Vásárlások" id="purchasePanel" toggleable="true"  collapsed="true" >
         <div class="card">
 
             <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
@@ -20,7 +20,7 @@
                          style="border:0px none; padding: 0px; width: 100%;">
                 <p:divider >
 
-                    <p:outputLabel for="vendor" value="Felvásárló neve: "/><br/>
+                    <p:outputLabel for="vendor" value="Eladó neve: "/><br/>
                     <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}"  converter="#{vendorConverter}"  filter="true" filterMatchMode="contains">
                         <f:selectItems value="#{vendorController.dtoList}" var="vendorvar" itemLabel="#{vendorvar.vendorName}(#{vendorvar.taxId})" itemValue="#{vendorvar}" />
                     </p:selectOneMenu><br/>
@@ -77,7 +77,7 @@
 
         </div>
     </p:panel>
-    <p:panel header="Termékek" id="productPanel" >
+    <p:panel header="Termékek" id="productPanel" toggleable="true"  collapsed="true">
         <div class="card">
 
             <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
@@ -87,8 +87,9 @@
                          style="border:0px none; padding: 0px; width: 100%;">
                 <p:divider >
                     <p:outputLabel for="productName" value="Termék:"/><br/>
-                    <p:selectOneMenu id="productName" value="#{purchaseController.productDTO.product}"  converter="#{productConverter}"  filter="true" filterMatchMode="contains">
+                    <p:selectOneMenu id="productName" value="#{purchaseController.productDTO.product}"  converter="#{productConverter}"  filter="true" filterMatchMode="contains" required="true">
                         <p:ajax update="totalPricePerProduct" event="change"/>
+
                         <f:selectItems value="#{productController.dtoList}" var="productVar" itemLabel="#{productVar.id}" itemValue="#{productVar}"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="quantity" value="Nettó mennyiség:"/><br/>
