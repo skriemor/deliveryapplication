@@ -52,10 +52,10 @@ public class PurchaseController implements Serializable {
         try {
             quant = productDTO.getQuantity();
             perUnit = productDTO.getUnitPrice();
-            if (productDTO.getCorrPerUnit() != null) perUnit += productDTO.getCorrPerUnit();
+
             temp = quant * perUnit * (productDTO.getProduct().getCompPercent() + 100) / 100;
             if (productDTO.getCorrPercent() != null) temp *= (productDTO.getCorrPercent() + 100) / 100;
-            if (productDTO.getCorrFt() != null) temp += productDTO.getCorrFt();
+
 
         } catch (Exception e) {
 
