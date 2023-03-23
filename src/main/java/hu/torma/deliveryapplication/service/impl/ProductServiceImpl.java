@@ -49,4 +49,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductDTO getProductById(String s) {
         return mapper.map(repo.findById(s), ProductDTO.class);
     }
+
+    @Override
+    public Boolean exists(String s) {
+        return repo.existsById(s);
+    }
 }

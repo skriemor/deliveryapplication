@@ -9,18 +9,7 @@
 
 
 <h:form id="vendorForm" style="overflow-y: scroll; margin: 80px auto;">
-<head>
-    <script type="application/javascript">
-        function handleEnter(event) {
-            if (event.key==="Enter") {
-                const form = document.getElementById('vendorForm')
-                const index = [...form].indexOf(event.target);
-                form.elements[index + 1].focus();
-                event.preventDefault();
-            }
-        }
-    </script>
-</head>
+
 
 <style type="text/css">
 </style>
@@ -76,8 +65,10 @@
                 </p:inputText><br/>
 
 
-                <p:outputLabel for="activity" value="NEBIH azonosító: "/><br/>
-                <p:inputText id="activity" value="#{vendorController.dto.activity}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                <p:outputLabel for="activity" value="NEBIH azonosító: "/><p:message for="vendorForm:activity" style="color:red"/><br/>
+                <p:inputText id="activity" value="#{vendorController.dto.activity}" required="true" requiredMessage="Kötelező kitölteni!" >
+                    <f:validateRegex pattern="^[A-Z]{2}\d{7}$" />
+                </p:inputText><br/>
                 <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
                 <p:inputText id="filenum"  value="#{vendorController.dto.fileNumber}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
             </p:divider>
@@ -96,8 +87,10 @@
                     <f:selectItem itemLabel="Őstermelő" itemValue="Őstermelő"/>
                     <f:selectItem itemLabel="Átalány adózó őstermelő" itemValue="Átalány adózó őstermelő"/>
                 </p:selectOneMenu><br/>
-                <p:outputLabel for="felir" value="FELIR azonosító:"/><br/>
-                <p:inputText id="felir" value="#{vendorController.dto.felir}" required="true" requiredMessage="Kötelező kitölteni!" /><br/><br/>
+                <p:outputLabel for="felir" value="FELIR azonosító:"/><p:message for="vendorForm:activity" style="color:red"/><br/>
+                <p:inputText id="felir" value="#{vendorController.dto.felir}" required="true" requiredMessage="Kötelező kitölteni!" >
+                    <f:validateRegex pattern="^[A-Z]{2}\d{7}$"/>
+                </p:inputText><br/><br/>
                 <h:commandButton value="#{vendorController.label}"
                                  action="#{vendorController.uiSaveVendor}"
                                  style="width: 10em;height: 2.6em">

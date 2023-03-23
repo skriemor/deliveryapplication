@@ -13,5 +13,7 @@ public interface UnitService {
 
     void deleteUnit(UnitDTO UnitDTO);
 
-    Object getUnitByName(String s);
+    UnitDTO getUnitByName(String s);
+
+    UnitDTO getUnitById(String s);
 }

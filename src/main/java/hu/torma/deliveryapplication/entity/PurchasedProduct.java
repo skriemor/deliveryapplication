@@ -17,10 +17,10 @@ public class PurchasedProduct {
     private Double unitPrice;
 
     @Column(name = "quantity", nullable = false)
-    private Integer quantity;
+    private Double quantity;
 
     @Column(name = "quantity2")
-    private Integer quantity2;
+    private Double quantity2;
 
     @Column(name = "correction_percent")
     private Double corrPercent;

@@ -13,9 +13,9 @@ public class PurchasedProductDTO implements Serializable {
 
     private Double unitPrice;
 
-    private Integer quantity;
+    private Double quantity;
 
-    private Integer quantity2;
+    private Double quantity2;
 
     private Double corrPercent;
 

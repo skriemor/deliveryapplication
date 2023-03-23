@@ -2,6 +2,7 @@ package hu.torma.deliveryapplication.DTO;
 
 import hu.torma.deliveryapplication.entity.Unit;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -16,9 +17,11 @@ public class ProductDTO implements Serializable {
 
     private Double price;
 
-    private long compPercent;
+    private Double compPercent;
 
     private String tariffnum;
+
+
 
     @Override
     public boolean equals(Object o) {

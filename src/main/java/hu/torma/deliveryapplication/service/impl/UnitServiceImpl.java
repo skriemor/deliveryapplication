@@ -48,4 +48,9 @@ public class UnitServiceImpl implements UnitService {
     public UnitDTO getUnitByName(String s) {
         return mapper.map(repo.findById(s), UnitDTO.class);
     }
+
+    @Override
+    public UnitDTO getUnitById(String s) {
+        return mapper.map(repo.findById(s).get(), UnitDTO.class);
+    }
 }

@@ -39,6 +39,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     @Transactional
     public PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO) {
+        logger.info("Save was called");
         //for (var s : PurchaseDTO.getProductList()) logger.info(s.toString());
         for (var v : PurchaseDTO.getProductList())
             v.setPurchase(PurchaseDTO); //to make relations work by assigning purchase to each of purchased products' ends

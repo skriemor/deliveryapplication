@@ -10,7 +10,7 @@
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
     <style type="text/css">
     </style>
-    <p:panel header="Vásárlások" id="purchasePanel" toggleable="true"  collapsed="true" >
+    <p:panel header="Vásárlások" id="purchasePanel" toggleable="true"   >
         <div class="card">
 
             <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
@@ -52,18 +52,18 @@
                     <h:commandButton value="#{purchaseController.label}"
                                      action="#{purchaseController.uiSavePurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
+                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList" />
                     </h:commandButton>
 
                     <h:commandButton value="Új"
                                      action="#{purchaseController.newPurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
+                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList" />
                     </h:commandButton>
                     <h:commandButton value="Töröl"
                                      action="#{purchaseController.deletePurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm" render="purchaseList purchasePanel purchaseForm:productList" />
+                        <f:ajax execute="purchaseForm:PurchasePanel" render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:productList" />
                     </h:commandButton><p/>
                     <p:commandButton value="Letöltés excelként" ajax="false" onclick="PrimeFaces.monitorDownload(start, stop);"
                                      icon="pi pi-arrow-down" styleClass="mr-2" actionListener="#{purchaseController.pdf()}">
@@ -75,7 +75,156 @@
 
         </div>
     </p:panel>
-    <p:panel header="Termékek" id="productPanel" toggleable="true"  collapsed="true">
+    <p:panel header="Termékek" id="fixProductPanel" toggleable="true"  collapsed="false" >
+        <div class="card">
+
+            <p:panelGrid columns="6" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                         columnClasses="ui-grid-col-2,ui-grid-col-2,ui-grid-col-2, ui-grid-col-2, ui-grid-col-2, ui-grid-col-2"
+                         layout="grid"
+                         styleClass="ui-panelgrid-blank ui-fluid "
+                         style="border:0px none; padding: 0px; width: 100%; overflow-x: scroll">
+                <p:divider >
+                    <p:outputLabel for="prod1" value="Termék:"/><br/>
+                    <p:outputLabel id="prod1" value="#{purchaseController.one.product.id}" style="font-size: 2em;" /><br/>
+
+
+                    <p:outputLabel for="nquantity1" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity1" value="#{purchaseController.one.quantity}" required="false"   >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice1" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice1" value="#{purchaseController.one.unitPrice}" required="false" rendered="#{purchaseController.disableedit}" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr1" value="Korrekció %:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="corr1" value="#{purchaseController.one.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="prod2" value="Termék:"/><br/>
+                    <p:outputLabel id="prod2" value="#{purchaseController.two.product.id}" style="font-size: 2em;" /><br/>
+                    <p:outputLabel for="nquantity2" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity2" value="#{purchaseController.two.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice2" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice2" value="#{purchaseController.two.unitPrice}" required="false" rendered="#{purchaseController.disableedit}" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr2" value="Korrekció %:" rendered="#{purchaseController.disableedit}" /><br/>
+                    <p:inputText id="corr2" value="#{purchaseController.two.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="prod3" value="Termék:"/><br/>
+                    <p:outputLabel id="prod3" value="#{purchaseController.three.product.id}" style="font-size: 2em;" /><br/>
+
+
+                    <p:outputLabel for="nquantity3" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity3" value="#{purchaseController.three.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice3" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice3" value="#{purchaseController.three.unitPrice}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr3" value="Korrekció %:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="corr3" value="#{purchaseController.three.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="prod4" value="Termék:"/><br/>
+                    <p:outputLabel id="prod4" value="#{purchaseController.four.product.id}" style="font-size: 2em;" /><br/>
+
+
+                    <p:outputLabel for="nquantity4" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity4" value="#{purchaseController.four.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice4" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice4" value="#{purchaseController.four.unitPrice}" required="false" rendered="#{purchaseController.disableedit}" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr4" value="Korrekció %:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="corr4" value="#{purchaseController.four.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+
+
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="prod5" value="Termék:"/><br/>
+                    <p:outputLabel id="prod5" value="#{purchaseController.five.product.id}" style="font-size: 2em;" /><br/>
+
+
+                    <p:outputLabel for="nquantity5" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity5" value="#{purchaseController.five.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice5" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice5" value="#{purchaseController.five.unitPrice}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr5" value="Korrekció %:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="corr5" value="#{purchaseController.five.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel for="prod6" value="Termék:"/><br/>
+                    <p:outputLabel id="prod6" value="#{purchaseController.six.product.id}" style="font-size: 2em;" /><br/>
+
+
+                    <p:outputLabel for="nquantity6" value="Bruttó mennyiség:"/><br/>
+                    <p:inputText id="nquantity6" value="#{purchaseController.six.quantity}" required="false" >
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+                    <p:outputLabel for="unitPrice6" value="Mennyiségenkénti ár:" rendered="#{purchaseController.disableedit}"/><br/>
+                    <p:inputText id="unitPrice6" value="#{purchaseController.six.unitPrice}" required="false"  rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+                    <p:outputLabel for="corr6" value="Korrekció %:" rendered="#{purchaseController.disableedit}" /><br/>
+                    <p:inputText id="corr6" value="#{purchaseController.six.corrPercent}" required="false" rendered="#{purchaseController.disableedit}">
+                        <p:ajax event="keyup" update="totalPricePerProduct1" />
+                    </p:inputText><br/>
+
+
+                </p:divider>
+                <p:divider>
+                    <p:outputLabel id="totalPricePerProduct1" value="Termékek részösszesített ára: #{purchaseController.sixTotal} HUF" /><p/>
+                    <h:commandButton value="Hozzáadás / Mentés"
+                                     action="#{purchaseController.sixSave}"
+                                     style="width: 14em;height: 2.6em">
+                        <f:ajax execute="purchaseForm:fixProductPanel" render="purchaseForm:fixProductPanel purchaseForm:productList" />
+                    </h:commandButton>
+
+
+                    <h:commandButton value="Árak/korrekciók szerkesztése"
+                                     action="#{purchaseController.enableEdit()}"
+                                     style="width: 14em;height: 2.6em">
+                        <f:ajax execute="purchaseForm:fixProductPanel" render="purchaseForm:fixProductPanel" />
+                    </h:commandButton>
+                </p:divider>
+
+            </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:panel header="Termékek Módosítása" id="productPanel" toggleable="true"  collapsed="false">
         <div class="card">
 
             <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
@@ -83,55 +232,14 @@
                          layout="grid"
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0px none; padding: 0px; width: 100%;">
-                <p:divider >
-                    <p:outputLabel for="productName" value="Termék:"/><br/>
-                    <p:selectOneMenu id="productName" value="#{purchaseController.productDTO.product}"  converter="#{productConverter}"  filter="true" filterMatchMode="contains" required="true">
-                        <p:ajax update="totalPricePerProduct" event="change"/>
-
-                        <f:selectItems value="#{productController.dtoList}" var="productVar" itemLabel="#{productVar.id}" itemValue="#{productVar}"/>
-                    </p:selectOneMenu><br/>
-                    <p:outputLabel for="quantity" value="Nettó mennyiség:"/><br/>
-                    <p:inputText id="quantity" value="#{purchaseController.productDTO.quantity}" required="false" >
-                        <p:ajax event="keyup" update="totalPricePerProduct" />
-                    </p:inputText><br/>
-                    <p:outputLabel for="quantity2" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="quantity2" value="#{purchaseController.productDTO.quantity2}" required="false" /><br/>
-                    <p:outputLabel for="unitPrice" value="Mennyiségenkénti ár:"/><br/>
-                    <p:inputText id="unitPrice" value="#{purchaseController.productDTO.unitPrice}" required="false" >
-                        <p:ajax event="keyup" update="totalPricePerProduct" />
-                    </p:inputText><br/>
-
-                </p:divider>
-
-                <p:divider>
-                    <p:outputLabel for="corrPercent" value="Korrekció %:" /><br/>
-                    <p:inputText id="corrPercent" value="#{purchaseController.productDTO.corrPercent}" required="false">
-                        <p:ajax event="keyup" update="totalPricePerProduct" />
-                    </p:inputText><br/>
 
 
-                </p:divider>
 
-
-                <p:divider>
-                    <p:outputLabel id="totalPricePerProduct" value="Termékek részösszesített ára: #{purchaseController.perProdTotal} HUF" /><p/>
-                    <h:commandButton value="#{purchaseController.label2}"
-                                     action="#{purchaseController.uiSaveProduct}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
-                    </h:commandButton>
-
-                    <h:commandButton value="Bementek ürítése"
-                                     action="#{purchaseController.newProduct}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
-                    </h:commandButton>
-                    <h:commandButton value="Termék törlése"
+                    <h:commandButton value="Termékek törlése"
                                      action="#{purchaseController.deleteProduct}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:productPanel" render="productList productPanel" />
+                        <f:ajax  render="productList productPanel" />
                     </h:commandButton>
-                </p:divider>
 
             </p:panelGrid>
 

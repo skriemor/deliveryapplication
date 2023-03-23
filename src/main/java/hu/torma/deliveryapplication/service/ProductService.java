@@ -15,4 +15,6 @@ public interface ProductService {
     void deleteProduct(ProductDTO ProductDTO);
 
     ProductDTO getProductById(String s);
+
+    Boolean exists(String s);
 }
