@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
+    <style type="text/css">
+    </style>
+
+    <p:commandButton action="#{storageController.getAllQuantities()}" update="quantityForm:quantityList" value="Frissít" style="width: 100%"/>
+    <p:dataTable var="quantity" value="#{storageController.dtoList}" id="quantityList" stickyHeader="T"
+                 lazy="false"
+                 style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                 selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true">
+        <p:column headerText="Termék" width="5em" >
+            <h:outputText value="#{quantity.product.id}" id="product"/>
+        </p:column>
+        <p:column headerText="Mennyiség" width="11em">
+            <h:outputText value="#{quantity.amount} #{quantity.product.firstUnit.unitName}"/>
+        </p:column>
+
+
+    </p:dataTable>
+</h:form>
+</html>
+
+
+
+

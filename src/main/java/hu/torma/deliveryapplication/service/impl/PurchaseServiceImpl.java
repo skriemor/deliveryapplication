@@ -40,11 +40,9 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Transactional
     public PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO) {
         logger.info("Save was called");
-        //for (var s : PurchaseDTO.getProductList()) logger.info(s.toString());
         for (var v : PurchaseDTO.getProductList())
             v.setPurchase(PurchaseDTO); //to make relations work by assigning purchase to each of purchased products' ends
         var g = mapper.map(repo.save(mapper.map(PurchaseDTO, Purchase.class)), PurchaseDTO.class);
-        //for(var r: repo.findById(PurchaseDTO.getId()).get().getProductList()) logger.info(r.toString() + " was saved");
         return g;
     }
 

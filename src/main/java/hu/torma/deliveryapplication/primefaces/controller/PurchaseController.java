@@ -6,6 +6,7 @@ import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.DTO.UnitDTO;
 import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.PurchaseService;
+import hu.torma.deliveryapplication.service.StorageService;
 import hu.torma.deliveryapplication.service.UnitService;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
 import org.primefaces.event.SelectEvent;
@@ -105,6 +106,8 @@ public class PurchaseController implements Serializable {
     private PDFcreator pdFcreator;
     private Boolean pdfdisabled;
 
+    @Autowired
+    StorageService sService;
     @Autowired
     ProductService pService;
 
@@ -223,6 +226,7 @@ public class PurchaseController implements Serializable {
         disableedit = false;
         if (one.getUnitPrice() !=null && one.getQuantity()!=null) {
             this.setProductDTO(one);
+
             uiSaveProduct();
         }
         if (two.getUnitPrice() !=null && two.getQuantity()!=null) {
@@ -276,12 +280,20 @@ public class PurchaseController implements Serializable {
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
         service.savePurchase(this.dto);
+        manageStorage();
         getAllPurchases();
         this.setDto(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.pdfdisabled = true;
+
     }
 
+    private void manageStorage() {
+
+        for (PurchasedProductDTO p: this.dto.getProductList()) {
+            sService.addToQuantity(p.getProduct(), p.getQuantity2());
+        }
+    }
     private void calculateTotalPrice() {
         if (this.dto.getProductList() == null) {
             this.dto.setTotalPrice(0.0);
