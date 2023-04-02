@@ -25,4 +25,6 @@ public class PurchasedProductDTO implements Serializable {
 
     private ProductDTO product;
 
+    private SaleDTO sale;
+
 }

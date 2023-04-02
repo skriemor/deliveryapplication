@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:form id="buyerForm" style="overflow-y: scroll; margin: 80px auto;">
+
+
+<style type="text/css">
+</style>
+    <p:panel header="Vásárló" id="buyerPanel" >
+        <div class="card">
+
+        <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                     columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid "
+                     style="border:0px none; padding: 0px; width: 100%;">
+            <p:divider >
+                <p:outputLabel for="name" value="Eladó neve: "/> <h:message for="buyerForm:name" style="color:red"/><br/>
+                <p:inputText id="name" value="#{buyerController.dto.name}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
+                    <f:validateRegex pattern="^^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
+                </p:inputText><br/>
+                <p:outputLabel for="address" value="Lakcím: "/><br/>
+                <p:inputText id="address" value="#{buyerController.dto.address}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                <p:outputLabel for="paper" value="Papír: "/><br/>
+                <p:selectOneMenu id="paper" value="#{buyerController.dto.paper}" required="true" style="max-width: 120px" ><br/>
+                    <f:selectItem itemLabel="Igen" itemValue="Igen"/>
+                    <f:selectItem itemLabel="Nem" itemValue="Nem"/>
+                </p:selectOneMenu><br/>
+            </p:divider>
+            <p:divider>
+                <p:outputLabel for="accountNumber" value="Számlaszám: "/><h:message for="buyerForm:accountNumber" style="color:red"/><br/>
+                <p:inputText id="accountNumber"  value="#{buyerController.dto.accountNum}" validatorMessage="Rossz formátum">
+                    <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
+                </p:inputText><br/>
+                <p:outputLabel for="country" value="Ország: "/><br/>
+                <p:inputText id="country"  value="#{buyerController.dto.country}" /><br/>
+            </p:divider>
+            <p:divider>
+                <h:commandButton value="#{buyerController.label}"
+                                 action="#{buyerController.uiSaveBuyer}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="buyerForm" render="buyerList buyerPanel" />
+                </h:commandButton>
+
+                <h:commandButton value="Új"
+                                 action="#{buyerController.newBuyer}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="buyerForm" render="buyerList buyerPanel" />
+                </h:commandButton>
+                <h:commandButton value="Töröl"
+                                 action="#{buyerController.deleteBuyer}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="buyerForm" render="buyerList buyerPanel" />
+                </h:commandButton>
+            </p:divider>
+
+        </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:dataTable var="buyer" value="#{buyerController.dtoList}" id="buyerList"
+                 lazy="false" sortBy="#{buyerController.sortBy}" sortMode="single"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                   selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                    selection="#{buyerController.dto}" rowKey="#{buyer.accountNum}">
+        <p:ajax event="rowSelect"  listener="#{buyerController.editBuyer}" update="buyerForm:buyerPanel"/>
+
+        <p:column headerText="Neve" sortBy="#{buyer.name}" filterBy="#{buyer.name}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{buyer.name}"/>
+        </p:column>
+        <p:column headerText="Címe" sortBy="#{buyer.address}" filterBy="#{buyer.address}" filterMatchMode="contains"  width="4em">
+            <h:outputText value="#{buyer.address}"/>
+        </p:column>
+        <p:column headerText="Ország" sortBy="#{buyer.country}" filterBy="#{buyer.country}" filterMatchMode="contains"  width="14em">
+            <h:outputText value="#{buyer.country}"/>
+        </p:column>
+        <p:column   headerText="Bankszámla szám" sortBy="#{buyer.accountNum}" filterBy="#{buyer.accountNum}" filterMatchMode="contains"  width="14em">
+            <h:outputText value="#{buyer.accountNum}" id="accountNum"/>
+        </p:column>
+        <p:column headerText="Számla" sortBy="#{buyer.paper}" filterBy="#{buyer.paper}" filterMatchMode="contains"  width="14em">
+            <h:outputText value="#{buyer.paper}"/>
+        </p:column>
+    </p:dataTable>
+</h:form>
+</html>
+
+
+
+

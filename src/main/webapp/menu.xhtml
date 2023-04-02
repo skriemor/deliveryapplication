@@ -3,8 +3,11 @@
         <p:growl id="messages"/>
 
         <p:menubar>
+
             <p:submenu label="Adatbázis" icon="pi pi-fw pi-users">
                 <p:menuitem value="Eladók" icon="pi pi-fw pi-user" outcome="vendors.xhtml" />
+                <p:divider />
+                <p:menuitem value="Vevők" icon="pi pi-fw pi-user" outcome="buyers.xhtml" />
                 <p:divider />
                 <p:menuitem value="Telephelyek" icon="pi pi-fw pi-home"  outcome="sites.xhtml"/>
                 <p:divider />
@@ -14,13 +17,14 @@
             </p:submenu>
 
             <p:submenu label="Szállítólevél" icon="pi pi-fw pi-pencil">
-                <p:menuitem value="Vásárlások" icon="pi pi-fw pi-align-left" outcome="purchase.xhtml"/>
+                <p:menuitem value="Vásárlások" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
+                <p:divider />
+                <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml" />
             </p:submenu>
+
             <p:submenu label="Készlet" icon="pi pi-fw pi-table">
                 <p:menuitem value="Raktár" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
             </p:submenu>
-
-
 
         </p:menubar>
     </h:form>

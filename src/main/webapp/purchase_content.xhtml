@@ -13,11 +13,11 @@
     <p:panel header="Vásárlások" id="purchasePanel" toggleable="true"   >
         <div class="card">
 
-            <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+            <p:panelGrid columns="3" contentStyle="margin: 0; padding: 0; line-height: 21px;"
                          columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
                          layout="grid"
                          styleClass="ui-panelgrid-blank ui-fluid "
-                         style="border:0px none; padding: 0px; width: 100%;">
+                         style="border:0 none; padding: 0; width: 100%;">
                 <p:divider >
 
                     <p:outputLabel for="vendor" value="Eladó neve: "/><br/>
@@ -38,7 +38,7 @@
                 <p:divider>
                     <p:outputLabel for="completiondate" value="Teljesítés dátuma:"/><br/>
                     <p:datePicker id="completiondate"  value="#{purchaseController.dto.completionDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
-                    <p:outputLabel for="ticketdate" value="Felv.jegy dátuma:"/><br/>
+                    <p:outputLabel for="ticketdate" value="Fizetési határidő:"/><br/>
                     <p:datePicker id="ticketdate"  value="#{purchaseController.dto.ticketDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
                     <p:outputLabel for="paymentdate" value="Felv.jegy dátuma:"/><br/>
                     <p:datePicker id="paymentdate"  value="#{purchaseController.dto.receiptDate}" monthNavigator="true" yearRange="#{purchaseController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
@@ -52,13 +52,13 @@
                     <h:commandButton value="#{purchaseController.label}"
                                      action="#{purchaseController.uiSavePurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList" />
+                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel" />
                     </h:commandButton>
 
                     <h:commandButton value="Új"
                                      action="#{purchaseController.newPurchase}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList" />
+                        <f:ajax execute="purchaseForm:purchasePanel" render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel" />
                     </h:commandButton>
                     <h:commandButton value="Töröl"
                                      action="#{purchaseController.deletePurchase}"
@@ -206,7 +206,7 @@
                 </p:divider>
                 <p:divider>
                     <p:outputLabel id="totalPricePerProduct1" value="Termékek részösszesített ára: #{purchaseController.sixTotal} HUF" /><p/>
-                    <h:commandButton value="Hozzáadás / Mentés"
+                    <h:commandButton value="Mentés"
                                      action="#{purchaseController.sixSave}"
                                      style="width: 14em;height: 2.6em">
                         <f:ajax execute="purchaseForm:fixProductPanel" render="purchaseForm:fixProductPanel purchaseForm:productList" />
@@ -224,32 +224,12 @@
 
         </div>
     </p:panel>
-    <p:panel header="Termékek Módosítása" id="productPanel" toggleable="true"  collapsed="false">
-        <div class="card">
 
-            <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
-                         columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
-                         layout="grid"
-                         styleClass="ui-panelgrid-blank ui-fluid "
-                         style="border:0px none; padding: 0px; width: 100%;">
-
-
-
-                    <h:commandButton value="Termékek törlése"
-                                     action="#{purchaseController.deleteProduct}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax  render="productList productPanel" />
-                    </h:commandButton>
-
-            </p:panelGrid>
-
-        </div>
-    </p:panel>
     <p:dataTable var="product" value="#{purchaseController.dto.productList}" id="productList"
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
                  selection="#{purchaseController.productDTO}" rowKey="#{product.id}">
-        <p:ajax event="rowSelect"  listener="#{purchaseController.editProduct}" update="purchaseForm:productPanel"/>
+        <p:ajax event="rowSelect"  listener="#{purchaseController.editProduct}" />
         <p:column headerText="Termék neve" filterBy="#{product.product.id}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{product.product.id}" id="did"/>
         </p:column>
@@ -270,7 +250,7 @@
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{purchaseController.dto}" rowKey="#{purchase.id}">
-        <p:ajax event="rowSelect"  listener="#{purchaseController.editPurchase}" update="purchaseForm:purchasePanel purchaseForm:productPanel purchaseForm:productList"/>
+        <p:ajax event="rowSelect"  listener="#{purchaseController.editPurchase}" update="purchaseForm:purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
         <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{purchase.id}" id="id"/>
         </p:column>

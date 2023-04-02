@@ -37,4 +37,9 @@ public class PurchasedProduct {
     private Purchase purchase;
 
 
+    @ManyToOne
+    @JoinColumn(name = "sale_id", referencedColumnName = "id")
+    private Sale sale;
+
+
 }
