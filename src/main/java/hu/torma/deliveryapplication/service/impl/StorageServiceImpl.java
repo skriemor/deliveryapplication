@@ -43,7 +43,7 @@ public class StorageServiceImpl implements StorageService {
      * @return true if successful
      */
     @Override
-    public Boolean subQuantityOf(ProductDTO dto, Double qnt) {
+    public Boolean subQuantityOf(ProductDTO dto, Integer qnt) {
         Quantity quantity = repo.getQuantityByProductName(dto.getId());
         quantity.setAmount(quantity.getAmount() - qnt);
         repo.save(quantity);
@@ -63,15 +63,15 @@ public class StorageServiceImpl implements StorageService {
     }
 
     public Boolean calculateQuantityAmount(SaleDTO dto) {
-        Double amount;
+        Integer amount;
         for (Quantity q : repo.findAll()) {
-            amount = 0.0;
+            amount = 0;
             amount += pRepo.findAll().stream()
                     .map(c -> c.getProductList()
                             .stream()
                             .filter(f -> f.getProduct().getId().equals(q.getProduct().getId()))
                             .findFirst().get().getQuantity2())
-                    .collect(Collectors.summingDouble(Double::doubleValue));
+                    .collect(Collectors.summingInt(Integer::intValue));
 
             amount -= sRepo.findAll().stream().filter(p -> {
                          if (p.getId() == dto.getId()) return false;
@@ -82,37 +82,37 @@ public class StorageServiceImpl implements StorageService {
                             .stream()
                             .filter(f -> f.getProduct().getId().equals(q.getProduct().getId()))
                             .findFirst().get().getQuantity())
-                    .collect(Collectors.summingDouble(Double::doubleValue));
+                    .collect(Collectors.summingInt(Integer::intValue));
 
 
             Quantity qant = repo.findById(q.getId()).get();
-            amount = Math.floor(amount * 100) / 100;
+            amount = (int)(Math.floor(amount * 100) / 100);
             qant.setAmount(amount);
             repo.save(qant);
         }
         return true;
     }
     public Boolean calculateQuantityAmount() {
-        Double amount;
+        Integer amount;
         for (Quantity q : repo.findAll()) {
-            amount = 0.0;
+            amount = 0;
             amount += pRepo.findAll().stream()
                     .map(c -> c.getProductList()
                             .stream()
                             .filter(f -> f.getProduct().getId().equals(q.getProduct().getId()))
                             .findFirst().get().getQuantity2())
-                    .collect(Collectors.summingDouble(Double::doubleValue));
+                    .collect(Collectors.summingInt(Integer::intValue));
 
             amount -= sRepo.findAll().stream()
                     .map(c -> c.getProductList()
                             .stream()
                             .filter(f -> f.getProduct().getId().equals(q.getProduct().getId()))
                             .findFirst().get().getQuantity())
-                    .collect(Collectors.summingDouble(Double::doubleValue));
+                    .collect(Collectors.summingInt(Integer::intValue));
 
 
             Quantity qant = repo.findById(q.getId()).get();
-            amount = Math.floor(amount * 100) / 100;
+            amount = (int) (Math.floor(amount * 100) / 100);
             qant.setAmount(amount);
             repo.save(qant);
         }
@@ -124,7 +124,7 @@ public class StorageServiceImpl implements StorageService {
         if (!repo.existsByProductName(dto.getId())) {
             QuantityDTO qDto = new QuantityDTO();
             qDto.setProduct(dto);
-            qDto.setAmount(0.0);
+            qDto.setAmount(0);
             repo.save(mapper.map(qDto, Quantity.class));
         }
     }

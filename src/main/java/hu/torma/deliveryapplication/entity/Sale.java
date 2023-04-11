@@ -33,14 +33,6 @@ public class Sale {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date bookingDate;
 
-    @Column(name = "deadline_date", nullable = false)
-    @DateTimeFormat(pattern = "yyyy.MM.dd")
-    private Date deadlineDate;
-
-    @Column(name = "completion_date", nullable = true)
-    @DateTimeFormat(pattern = "yyyy.MM.dd")
-    private Date completionDate;
-
     @Column(nullable = false, name = "accountNumber")
     private String accountNumber;
 }

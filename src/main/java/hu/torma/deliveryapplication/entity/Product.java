@@ -22,10 +22,10 @@ public class Product {
     private Unit secondUnit;
 
     @Column(name = "price")
-    private Double price;
+    private Integer price;
 
     @Column(name = "compensational")
-    private Double compPercent;
+    private Integer compPercent;
 
     @Column(name = "tariffnumber")
     private String tariffnum;

@@ -1,37 +1,28 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.ProductDTO;
-import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
+import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.DTO.UnitDTO;
 import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.SaleService;
 import hu.torma.deliveryapplication.service.StorageService;
 import hu.torma.deliveryapplication.service.UnitService;
-import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
-import org.primefaces.PrimeFaces;
-import org.primefaces.context.PrimeFacesContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
-import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
-import javax.faces.component.UIInput;
-import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @SessionScope
 @Controller("saleController")
@@ -121,32 +112,32 @@ public class SaleController implements Serializable {
         listFiveProduct.add(pService.getProductById("IPARI"));
         one = new PurchasedProductDTO();
         one.setProduct(listFiveProduct.get(0));
-        one.setCorrPercent(5.0);
+        one.setCorrPercent(5);
         one.setUnitPrice(one.getProduct().getPrice());
 
         two = new PurchasedProductDTO();
         two.setProduct(listFiveProduct.get(1));
         two.setUnitPrice(two.getProduct().getPrice());
-        two.setCorrPercent(5.0);
+        two.setCorrPercent(5);
 
         three = new PurchasedProductDTO();
         three.setProduct(listFiveProduct.get(2));
         three.setUnitPrice(three.getProduct().getPrice());
-        three.setCorrPercent(5.0);
+        three.setCorrPercent(5);
 
         four = new PurchasedProductDTO();
         four.setProduct(listFiveProduct.get(3));
         four.setUnitPrice(four.getProduct().getPrice());
-        four.setCorrPercent(5.0);
+        four.setCorrPercent(5);
 
         five = new PurchasedProductDTO();
         five.setProduct(listFiveProduct.get(4));
         five.setUnitPrice(five.getProduct().getPrice());
-        five.setCorrPercent(5.0);
+        five.setCorrPercent(5);
 
         six = new PurchasedProductDTO();
         six.setProduct(listFiveProduct.get(5));
-        six.setCorrPercent(8.0);
+        six.setCorrPercent(8);
         six.setUnitPrice(six.getProduct().getPrice());
     }
 
@@ -170,30 +161,31 @@ public class SaleController implements Serializable {
     }
 
     private Boolean checkQuantity(PurchasedProductDTO dtoe) {
-        if (dtoe.getQuantity()==null)return true;
-       if(dtoe.getQuantity() > sService.getSupplyOf(dtoe.getProduct(), dto)) return false;
-       return true;
+        if (dtoe.getQuantity() == null) return true;
+        if (dtoe.getQuantity() > sService.getSupplyOf(dtoe.getProduct(), dto)) return false;
+        return true;
     }
+
     public Boolean validateStorage() {
         String productString = "";
-        if (!checkQuantity(one)) productString += one.getProduct().getId() +" ";
+        if (!checkQuantity(one)) productString += one.getProduct().getId() + " ";
         if (!checkQuantity(two)) productString += two.getProduct().getId() + ' ';
-        if (!checkQuantity(three)) productString += three.getProduct().getId()+" ";
-        if (!checkQuantity(four)) productString += four.getProduct().getId()+" ";
-        if (!checkQuantity(five)) productString += five.getProduct().getId()+" ";
+        if (!checkQuantity(three)) productString += three.getProduct().getId() + " ";
+        if (!checkQuantity(four)) productString += four.getProduct().getId() + " ";
+        if (!checkQuantity(five)) productString += five.getProduct().getId() + " ";
         if (!checkQuantity(six)) productString += six.getProduct().getId();
 
         log.info(productString);
-        if (!productString.equals("")){
-            productString = "Hiba, "+"a(z) "+productString+" termékből/termékekből nincs elég";
+        if (!productString.equals("")) {
+            productString = "Hiba, " + "a(z) " + productString + " termékből/termékekből nincs elég";
             errorMessage = productString;
             return false;
-        }
-        else {
+        } else {
             return true;
         }
 
     }
+
     public void sixSave() {
 
         this.dto.setProductList(new ArrayList<>());
@@ -242,7 +234,7 @@ public class SaleController implements Serializable {
         getAllSales();
         this.setDto(new SaleDTO());
         this.setProductDTO(new PurchasedProductDTO());
-        this.errorMessage= "";
+        this.errorMessage = "";
     }
 
     private void manageStorage() {
@@ -268,12 +260,12 @@ public class SaleController implements Serializable {
     }
 
     private void emptySix() {
-        one.setQuantity(0.0);
-        two.setQuantity(0.0);
-        three.setQuantity(0.0);
-        four.setQuantity(0.0);
-        five.setQuantity(0.0);
-        six.setQuantity(0.0);
+        one.setQuantity(0);
+        two.setQuantity(0);
+        three.setQuantity(0);
+        four.setQuantity(0);
+        five.setQuantity(0);
+        six.setQuantity(0);
     }
 
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
@@ -340,20 +332,20 @@ public class SaleController implements Serializable {
         UnitDTO kgUnit = uService.getUnitByName("kg");
         ProductDTO product = new ProductDTO();
         if (!pService.exists("I.OSZTÁLYÚ")) {
-            product.setPrice(672.0);
+            product.setPrice(672);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("I.OSZTÁLYÚ");
             pService.saveProduct(product);
         }
         if (!pService.exists("II.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(560.0);
+            product.setPrice(560);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("II.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -361,10 +353,10 @@ public class SaleController implements Serializable {
         }
         if (!pService.exists("III.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(448.0);
+            product.setPrice(448);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("III.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -372,10 +364,10 @@ public class SaleController implements Serializable {
         }
         if (!pService.exists("IV.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(224.0);
+            product.setPrice(224);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("IV.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -383,10 +375,10 @@ public class SaleController implements Serializable {
         }
         if (!pService.exists("GYÖKÉR")) {
             product = new ProductDTO();
-            product.setPrice(56.0);
+            product.setPrice(56);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("GYÖKÉR");
             pService.saveProduct(product);
@@ -394,10 +386,10 @@ public class SaleController implements Serializable {
         }
         if (!pService.exists("IPARI")) {
             product = new ProductDTO();
-            product.setPrice(300.0);
+            product.setPrice(300);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("IPARI");
             pService.saveProduct(product);

@@ -9,7 +9,16 @@
 
 <h:form id="saleForm" style="overflow-y: scroll; margin: 80px auto;">
 
-
+    <script type="application/javascript">
+        $('#saleForm').on('keydown', 'input', function (event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                var $this = $(event.target);
+                var index = parseFloat($this.attr('tabindex'));
+                $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+            }
+        });
+    </script>
     <style type="text/css">
     </style>
     <p:panel header="Vásárlások" id="salePanel" toggleable="true"   >
@@ -23,7 +32,7 @@
                 <p:divider >
 
                     <p:outputLabel for="buyer" value="Eladó neve: "/><br/>
-                    <p:selectOneMenu id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains">
+                    <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
                         <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="accountnumber"/>
@@ -48,14 +57,10 @@
 
                 </p:divider>
                 <p:divider>
-                    <p:outputLabel for="completiondate" value="Teljesítés dátuma:"/><br/>
-                    <p:datePicker id="completiondate"  value="#{saleController.dto.completionDate}" monthNavigator="true" yearRange="#{saleController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
-                    <p:outputLabel for="ticketdate" value="Fizetési határidő:"/><br/>
-                    <p:datePicker id="ticketdate"  value="#{saleController.dto.deadlineDate}" monthNavigator="true" yearRange="#{saleController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+
                     <p:outputLabel for="bookingdate" value="Felv.jegy dátuma:"/><br/>
                     <p:datePicker id="bookingdate"  value="#{saleController.dto.bookingDate}" monthNavigator="true" yearRange="#{saleController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
-                </p:divider>
-                <p:divider>
+
                     <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="saleForm:accountnumber" style="color:red"/><br/>
                     <p:inputText id="accountnumber"  value="#{saleController.dto.accountNumber}" validatorMessage="Rossz formátum">
                         <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
@@ -86,67 +91,92 @@
         </div>
     </p:panel>
     <p:panel header="Termékek" id="fixProductPanel" toggleable="true"  collapsed="false" >
-        <div class="card">
 
-            <p:panelGrid columns="6" contentStyle="margin: 0; padding: 0; line-height: 21px;"
-                         columnClasses="ui-grid-col-2,ui-grid-col-2,ui-grid-col-2, ui-grid-col-2, ui-grid-col-2, ui-grid-col-2"
-                         layout="grid"
-                         styleClass="ui-panelgrid-blank ui-fluid "
-                         style="border:0 none; padding: 0; width: 100%; overflow-x: scroll">
-                <p:divider >
-                    <p:outputLabel for="prod1" value="Termék:"/><br/>
-                    <p:outputLabel id="prod1" value="#{saleController.one.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity1" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity1" value="#{saleController.one.quantity}" required="false"  >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="prod2" value="Termék:"/><br/>
-                    <p:outputLabel id="prod2" value="#{saleController.two.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity2" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity2" value="#{saleController.two.quantity}" required="false" >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="prod3" value="Termék:"/><br/>
-                    <p:outputLabel id="prod3" value="#{saleController.three.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity3" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity3" value="#{saleController.three.quantity}" required="false" >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="prod4" value="Termék:"/><br/>
-                    <p:outputLabel id="prod4" value="#{saleController.four.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity4" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity4" value="#{saleController.four.quantity}" required="false" >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="prod5" value="Termék:"/><br/>
-                    <p:outputLabel id="prod5" value="#{saleController.five.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity5" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity5" value="#{saleController.five.quantity}" required="false" >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="prod6" value="Termék:"/><br/>
-                    <p:outputLabel id="prod6" value="#{saleController.six.product.id}" style="font-size: 2em;" /><br/>
-                    <p:outputLabel for="nquantity6" value="Bruttó mennyiség:"/><br/>
-                    <p:inputText id="nquantity6" value="#{saleController.six.quantity}" required="false" >
-                    </p:inputText><br/>
-                </p:divider>
-                <p:divider>
+
+            <table border="1px" style="border-collapse: collapse">
+                <thead>
+                <tr>
+                    <th>
+                        <p:outputLabel value="Minősítés:"/><p/>
+                    </th>
+                    <th>
+                        <p:outputLabel  value="Mennyiségenkénti ár:" /><br/>
+                    </th>
+                    <th>
+                        <p:outputLabel value="Nettó súly(kg):"/><br/>
+                    </th>
+
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td> <p:outputLabel id="prod1" value="#{saleController.one.product.id}"  /><br/></td>
+                    <td>   <p:inputText id="unitPrice1" value="#{saleController.one.unitPrice}" required="false" tabindex="55" >
+                        <p:ajax event="keyup" />
+                    </p:inputText><br/></td>
+                    <td>   <p:inputText id="nquantity1" value="#{saleController.one.quantity}" required="false" tabindex="61">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+                <tr>
+                    <td> <p:outputLabel id="prod2" value="#{saleController.two.product.id}" /><br/> </td>
+                    <td> <p:inputText id="unitPrice2" value="#{saleController.two.unitPrice}" required="false" tabindex="56">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                    <td> <p:inputText id="nquantity2" value="#{saleController.two.quantity}" required="false" tabindex="62">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+                <tr>
+                    <td> <p:outputLabel id="prod3" value="#{saleController.three.product.id}"   /><br/></td>
+                    <td>    <p:inputText id="unitPrice3" value="#{saleController.three.unitPrice}" required="false" tabindex="57">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                    <td>  <p:inputText id="nquantity3" value="#{saleController.three.quantity}" required="false" tabindex="63" >
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel id="prod4" value="#{saleController.four.product.id}"   /><br/></td>
+                    <td>  <p:inputText id="unitPrice4" value="#{saleController.four.unitPrice}" required="false"  tabindex="58">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                    <td><p:inputText id="nquantity4" value="#{saleController.four.quantity}" required="false" tabindex="64" >
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+                <tr>
+                    <td> <p:outputLabel id="prod5" value="#{saleController.five.product.id}"  /><br/></td>
+                    <td> <p:inputText id="unitPrice5" value="#{saleController.five.unitPrice}" required="false" tabindex="59">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                    <td> <p:inputText id="nquantity5" value="#{saleController.five.quantity}" required="false" tabindex="65">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+                <tr>
+                    <td>   <p:outputLabel id="prod6" value="#{saleController.six.product.id}"  /></td>
+                    <td> <p:inputText id="unitPrice6" value="#{saleController.six.unitPrice}" required="false" tabindex="60"  >
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                    <td><p:inputText id="nquantity6" value="#{saleController.six.quantity}" required="false"  tabindex="66">
+                        <p:ajax event="keyup"  />
+                    </p:inputText><br/></td>
+                </tr>
+
+                </tbody>
+            </table>
+
                     <h:commandButton value="Mentés"
                                      action="#{saleController.sixSave}"
                                      style="width: 14em;height: 2.6em">
                         <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel saleForm:productList" />
                     </h:commandButton>
 
-                </p:divider>
 
-            </p:panelGrid>
 
-        </div>
+
+
     </p:panel>
 
     <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList"
@@ -180,16 +210,8 @@
         <p:column headerText="Eladó neve" sortBy="#{sale.buyer.name}" filterBy="#{sale.buyer.name}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{sale.buyer.name}"/>
         </p:column>
-        <p:column headerText="Telj. dátum" sortBy="#{sale.completionDate}" filterBy="#{sale.completionDate}" filterMatchMode="contains" width="4.5em" >
-            <h:outputText value="#{sale.completionDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
-        <p:column headerText="Fiz határidő" sortBy="#{sale.deadlineDate}" filterBy="#{sale.deadlineDate}" filterMatchMode="contains" width="4.5em" >
-            <h:outputText value="#{sale.deadlineDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
+
+
         <p:column headerText="Számla kelt" sortBy="#{sale.bookingDate}" filterBy="#{sale.bookingDate}" filterMatchMode="contains" width="4.5em" >
             <h:outputText value="#{sale.bookingDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>

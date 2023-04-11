@@ -22,9 +22,9 @@
                      styleClass="ui-panelgrid-blank ui-fluid "
                      style="border:0px none; padding: 0px; width: 100%;">
             <p:divider >
-                <p:outputLabel for="name" value="Eladó neve: "/> <h:message for="vendorForm:name" style="color:red"/><br/>
+                <p:outputLabel for="name" value="Termelő neve: "/> <h:message for="vendorForm:name" style="color:red"/><br/>
                 <p:inputText id="name" value="#{vendorController.dto.vendorName}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
-                    <f:validateRegex pattern="^^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
+                    <f:validateRegex pattern="^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
                 </p:inputText><br/>
 
                 <p:outputLabel for="birthname" value="Születési neve: "/> <h:message for="vendorForm:birthname" style="color:red"/><br/>
@@ -37,8 +37,11 @@
                 </p:inputText><br/>
                 <p:outputLabel for="birthplace" value="Születési hely: "/><br/>
                 <p:inputText id="birthplace"  value="#{vendorController.dto.birthPlace}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+
                 <p:outputLabel for="birthdate" value="Születési idő: "/><br/>
-                <p:datePicker id="birthdate"  value="#{vendorController.dto.birthDate}" monthNavigator="true" yearRange="#{vendorController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+                <p:inputMask mask="9999.99.99" id="birthdate" value="#{vendorController.dto.birthDate}" >
+                    <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                </p:inputMask>
                 <p:outputLabel for="city" value="Település: "/><br/>
                 <p:inputText id="city"  value="#{vendorController.dto.city}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
                 <p:outputLabel for="postal" value="Irányítószám: "/><br/>
@@ -48,49 +51,56 @@
             </p:divider>
             <p:divider>
                 <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="vendorForm:accountnumber" style="color:red"/><br/>
-                <p:inputText id="accountnumber"  value="#{vendorController.dto.accountNumber}" validatorMessage="Rossz formátum">
+                <p:inputMask mask="99999999-99999999-99999999" id="accountnumber"  value="#{vendorController.dto.accountNumber}" validatorMessage="Rossz formátum">
                     <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
-                </p:inputText><br/>
-                <p:outputLabel for="accountmanager" value="Számlavezető: "/><br/>
-                <p:inputText id="accountmanager"  value="#{vendorController.dto.accountManager}" /><br/>
+                </p:inputMask><br/>
 
 
                    <p:outputLabel for="taxid" value="Adóazonosító jel:"/><h:message for="vendorForm:taxid" style="color:red"/><br/>
-                <p:inputText id="taxid" value="#{vendorController.dto.taxId}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
+                <p:inputMask id="taxid"  mask="9999999999" value="#{vendorController.dto.taxId}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
                     <f:validateRegex pattern="^\d{10}$"/>
-                </p:inputText><br/>
+                </p:inputMask><br/>
                 <p:outputLabel for="taxnum" value="Adószám: "/><h:message for="vendorForm:taxnum" style="color:red"/><br/>
-                <p:inputText id="taxnum"  value="#{vendorController.dto.taxNumber}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
+                <p:inputMask mask="99999999-9-99" id="taxnum"  value="#{vendorController.dto.taxNumber}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
                     <f:validateRegex pattern="^\d{8}-\d{1}-\d{2}$"/>
-                </p:inputText><br/>
+                </p:inputMask><br/>
 
 
                 <p:outputLabel for="activity" value="NEBIH azonosító: "/><p:message for="vendorForm:activity" style="color:red"/><br/>
-                <p:inputText id="activity" value="#{vendorController.dto.activity}" required="true" requiredMessage="Kötelező kitölteni!" >
-                    <f:validateRegex pattern="^[A-Z]{2}\d{7}$" />
-                </p:inputText><br/>
+                <p:inputMask mask="9999999999" id="activity" value="#{vendorController.dto.activity}" >
+                    <f:validateRegex pattern="\d{10}$" />
+                </p:inputMask><br/>
                 <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
-                <p:inputText id="filenum"  value="#{vendorController.dto.fileNumber}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                <p:inputText id="filenum"  value="#{vendorController.dto.fileNumber}"  /><br/>
+                <p:outputLabel for="phone" value="Telefonszám"/><br/>
+                <p:inputMask mask="(99) 999 9999" id="phone"  value="#{vendorController.dto.phone}" required="false" /><br/>
+                <p:outputLabel for="ggn" value="GGN szám"/><br/>
+                <p:inputText id="ggn"  value="#{vendorController.dto.ggn}" required="false" /><br/>
             </p:divider>
             <p:divider>
                 <p:outputLabel for="taj" value="TAJ szám: "/> <h:message for="vendorForm:taj" style="color:red"/><br/>
-                <p:inputText id="taj"  value="#{vendorController.dto.taj}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
+                <p:inputMask mask="999 999 999" id="taj"  value="#{vendorController.dto.taj}" required="true" requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
                     <f:validateRegex pattern="^\d{3}\s\d{3}\s\d{3}$"/>
-                </p:inputText><br/>
+                </p:inputMask><br/>
                 <p:outputLabel for="gender" value="Neme: "/><br/>
-                <p:selectOneMenu id="gender" value="#{vendorController.dto.gender}" required="true" style="max-width: 120px" ><br/>
+                <p:selectOneMenu id="gender" value="#{vendorController.dto.gender}"  style="max-width: 120px" ><br/>
                     <f:selectItem itemLabel="Férfi" itemValue="Férfi"/>
                     <f:selectItem itemLabel="Nő" itemValue="Nő"/>
                 </p:selectOneMenu><br/>
                 <p:outputLabel for="qualifier" value="Minősítés: "/><br/>
-                <p:selectOneMenu id="qualifier" value="#{vendorController.dto.qualification}" required="true" style="max-width: 240px" ><br/>
+                <p:selectOneMenu id="qualifier" value="#{vendorController.dto.qualification}"  style="max-width: 240px" ><br/>
                     <f:selectItem itemLabel="Őstermelő" itemValue="Őstermelő"/>
                     <f:selectItem itemLabel="Átalány adózó őstermelő" itemValue="Átalány adózó őstermelő"/>
                 </p:selectOneMenu><br/>
                 <p:outputLabel for="felir" value="FELIR azonosító:"/><p:message for="vendorForm:activity" style="color:red"/><br/>
-                <p:inputText id="felir" value="#{vendorController.dto.felir}" required="true" requiredMessage="Kötelező kitölteni!" >
+                <p:inputMask mask="aa9999999" id="felir" value="#{vendorController.dto.felir}"  >
                     <f:validateRegex pattern="^[A-Z]{2}\d{7}$"/>
-                </p:inputText><br/><br/>
+                </p:inputMask><br/>
+                <p:outputLabel for="contract" value="Szerződés:"/><br/>
+                <p:selectOneMenu id="contract" value="#{vendorController.dto.contract}"   required="false" style="max-width: 240px" ><br/>
+                    <f:selectItem itemLabel="Van" itemValue="Van"/>
+                    <f:selectItem itemLabel="Nincs" itemValue="Nincs"/>
+                </p:selectOneMenu><br/><br/>
                 <h:commandButton value="#{vendorController.label}"
                                  action="#{vendorController.uiSaveVendor}"
                                  style="width: 10em;height: 2.6em">

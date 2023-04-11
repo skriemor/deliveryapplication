@@ -15,7 +15,7 @@ public class Quantity {
     private Integer id;
 
     @Column(name = "amount", nullable = false)
-    private Double amount;
+    private Integer amount;
 
     @OneToOne
     private Product product;

@@ -11,15 +11,15 @@ import java.util.Objects;
 public class PurchasedProductDTO implements Serializable {
     private Integer id;
 
-    private Double unitPrice;
+    private Integer unitPrice;
 
-    private Double quantity;
+    private Integer quantity;
 
-    private Double quantity2;
+    private Integer quantity2;
 
-    private Double corrPercent;
+    private Integer corrPercent;
 
-    private Double totalPrice;
+    private Integer totalPrice;
 
     private PurchaseDTO purchase;
 

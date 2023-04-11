@@ -9,7 +9,7 @@ public class QuantityDTO implements Serializable {
 
     private Integer id;
 
-    private Double amount;
+    private Integer amount;
 
     private ProductDTO product;
 }

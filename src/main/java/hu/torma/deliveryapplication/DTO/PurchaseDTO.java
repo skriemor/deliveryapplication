@@ -18,12 +18,6 @@ public class PurchaseDTO implements Serializable {
 
     private VendorDTO vendor;
 
-    private String paymentMethod;
-
-    private Date completionDate;
-
-    private Date ticketDate;
-
     private Date receiptDate;
 
     private SiteDTO site;

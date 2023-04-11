@@ -26,27 +26,24 @@ public class Vendor {
     @Column(name = "vendor_name", nullable = false)
     private String vendorName;
 
-    @Column(name = "birth_name", nullable = false)
+    @Column(name = "birth_name")
     private String birthName;
 
-    @Column(name = "gender", nullable = false)
+    @Column(name = "gender")
     private String gender;
 
-    @Column(name = "name_of_mother", nullable = false)
+    @Column(name = "name_of_mother")
     private String nameOfMother;
 
-    @Column(name = "birth_place", nullable = false)
+    @Column(name = "birth_place")
     private String birthPlace;
 
-    @Column(name = "birth_date", nullable = false)
+    @Column(name = "birth_date")
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date birthDate;
 
     @Column(name = "account_number")
     private String accountNumber;
-
-    @Column(name = "account_manager")
-    private String accountManager;
 
     @Column(name = "city", nullable = false)
     private String city;
@@ -57,7 +54,7 @@ public class Vendor {
     @Column(name = "address")
     private String address;
 
-    @Column(name = "qualification", nullable = false)
+    @Column(name = "qualification")
     private String qualification;
 
 
@@ -72,5 +69,14 @@ public class Vendor {
 
     @Column(name = "felir")
     private String felir;
+
+    @Column(name = "ggn")
+    private String ggn;
+
+    @Column(name = "phone")
+    private String phone;
+
+    @Column(name = "contract")
+    private String contract;
 
 }

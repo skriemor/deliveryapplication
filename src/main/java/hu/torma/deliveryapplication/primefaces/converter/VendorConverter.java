@@ -29,6 +29,7 @@ public class VendorConverter implements Converter {
             VendorDTO vendor = (VendorDTO) o;
             return vendor.getVendorName() + "(" + vendor.getTaxId() + ")";
         } else {
+            if (o==null) return "Válasszon";
             String error =
                     "The object is not an instance of VendorDTO";
             throw new ClassCastException(error);

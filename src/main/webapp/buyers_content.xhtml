@@ -22,7 +22,7 @@
                      styleClass="ui-panelgrid-blank ui-fluid "
                      style="border:0px none; padding: 0px; width: 100%;">
             <p:divider >
-                <p:outputLabel for="name" value="Eladó neve: "/> <h:message for="buyerForm:name" style="color:red"/><br/>
+                <p:outputLabel for="name" value="Vevő neve: "/> <h:message for="buyerForm:name" style="color:red"/><br/>
                 <p:inputText id="name" value="#{buyerController.dto.name}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
                     <f:validateRegex pattern="^^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
                 </p:inputText><br/>
@@ -36,9 +36,9 @@
             </p:divider>
             <p:divider>
                 <p:outputLabel for="accountNumber" value="Számlaszám: "/><h:message for="buyerForm:accountNumber" style="color:red"/><br/>
-                <p:inputText id="accountNumber"  value="#{buyerController.dto.accountNum}" validatorMessage="Rossz formátum">
+                <p:inputMask mask="99999999-99999999-99999999" id="accountNumber"  value="#{buyerController.dto.accountNum}" validatorMessage="Rossz formátum">
                     <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
-                </p:inputText><br/>
+                </p:inputMask><br/>
                 <p:outputLabel for="country" value="Ország: "/><br/>
                 <p:inputText id="country"  value="#{buyerController.dto.country}" /><br/>
             </p:divider>

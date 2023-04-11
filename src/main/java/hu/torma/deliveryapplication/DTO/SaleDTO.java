@@ -17,8 +17,6 @@ public class SaleDTO implements Serializable {
     private BuyerDTO buyer;
     private String currency;
     private Date bookingDate;
-    private Date deadlineDate;
-    private Date completionDate;
     private String accountNumber;
     private Double price;
 }

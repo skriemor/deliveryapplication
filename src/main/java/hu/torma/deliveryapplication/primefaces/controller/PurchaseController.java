@@ -31,51 +31,68 @@ import java.util.stream.Collectors;
 @Controller("purchaseController")
 public class PurchaseController implements Serializable {
 
-    public Double getSixTotal() {
-        Double temp = 0.0;
-        Double sum = 0.0;
+    public Integer getNetOf(PurchasedProductDTO dto) {
+
+        if (dto.getQuantity() ==null || dto.getCorrPercent() == null) {
+            //logger.info("dto quantity or corr was 0");
+            return 0;
+        }
+        dto.setQuantity2((int)(dto.getQuantity() * ((100 - dto.getCorrPercent()) / 100.0)));
+        //logger.info("return net "+dto.getQuantity2());
+        return dto.getQuantity2();
+    }
+    public Integer getPriceOf(PurchasedProductDTO dto_) {
+        if (dto_.getQuantity() ==null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
+        dto_.setQuantity2((int)(dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
+        Integer sum =(int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
+        dto_.setTotalPrice(sum);
+        return sum;
+    }
+    public Integer getSixTotal() {
+        Integer temp = 0;
+        Integer sum;
         try {
             if (one.getQuantity() != null && one.getProduct().getCompPercent() != null && one.getUnitPrice() != null) {
-                sum = one.getUnitPrice() * one.getQuantity() * (1 + (0.01 * one.getProduct().getCompPercent()));
+                one.setQuantity2(getNetOf(one));
+                sum = (int)(one.getUnitPrice() * one.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent())));
                 one.setTotalPrice(sum);
-                one.setQuantity2(one.getQuantity() * ((100.0 - one.getCorrPercent()) / 100));
                 temp += sum;
             }
             if (two.getQuantity() != null && two.getProduct().getCompPercent() != null && two.getUnitPrice() != null) {
-                sum = two.getUnitPrice() * two.getQuantity() * (1 + (0.01 * two.getProduct().getCompPercent()));
+                two.setQuantity2(getNetOf(two));
+                sum =(int)( two.getUnitPrice() * two.getQuantity2() * (1 + (0.01 * two.getProduct().getCompPercent())));
                 two.setTotalPrice(sum);
-                two.setQuantity2(two.getQuantity() * ((100.0 - two.getCorrPercent()) / 100));
                 temp += sum;
             }
             if (three.getQuantity() != null && three.getProduct().getCompPercent() != null && three.getUnitPrice() != null) {
-                sum = three.getUnitPrice() * three.getQuantity() * (1 + (0.01 * three.getProduct().getCompPercent()));
+                three.setQuantity2(getNetOf(three));
+                sum = (int)(three.getUnitPrice() * three.getQuantity2() * (1 + (0.01 * three.getProduct().getCompPercent())));
                 three.setTotalPrice(sum);
-                three.setQuantity2(three.getQuantity() * ((100.0 - three.getCorrPercent()) / 100));
                 temp += sum;
             }
             if (four.getQuantity() != null && four.getProduct().getCompPercent() != null && four.getUnitPrice() != null) {
-                sum = four.getUnitPrice() * four.getQuantity() * (1 + (0.01 * four.getProduct().getCompPercent()));
+                four.setQuantity2(getNetOf(four));
+                sum = (int)(four.getUnitPrice() * four.getQuantity2() * (1 + (0.01 * four.getProduct().getCompPercent())));
                 four.setTotalPrice(sum);
-                four.setQuantity2(four.getQuantity() * ((100.0 - four.getCorrPercent()) / 100));
                 temp += sum;
             }
             if (five.getQuantity() != null && five.getProduct().getCompPercent() != null && five.getUnitPrice() != null) {
-                sum = five.getUnitPrice() * five.getQuantity() * (1 + (0.01 * five.getProduct().getCompPercent()));
+                five.setQuantity2(getNetOf(five));
+                sum = (int)(five.getUnitPrice() * five.getQuantity2() * (1 + (0.01 * five.getProduct().getCompPercent())));
                 five.setTotalPrice(sum);
-                five.setQuantity2(five.getQuantity() * ((100.0 - five.getCorrPercent()) / 100));
                 temp += sum;
             }
             if (six.getQuantity() != null && six.getProduct().getCompPercent() != null && six.getUnitPrice() != null) {
-                sum = six.getUnitPrice() * six.getQuantity() * (1 + (0.01 * six.getProduct().getCompPercent()));
+                six.setQuantity2(getNetOf(six));
+                sum =(int)( six.getUnitPrice() * six.getQuantity2() * (1 + (0.01 * six.getProduct().getCompPercent())));
                 six.setTotalPrice(sum);
-                six.setQuantity2(six.getQuantity() * ((100.0 - six.getCorrPercent()) / 100));
                 temp += sum;
             }
 
         } catch (Exception e) {
 
         }
-        return (double) (Math.round(temp * 100) / 100);
+        return  temp;
     }
 
     public void setSixTotal(Double sixTotal) {
@@ -85,15 +102,8 @@ public class PurchaseController implements Serializable {
     private Double sixTotal;
     private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
 
-    public Boolean getDisableedit() {
-        return disableedit;
-    }
 
-    public void setDisableedit(Boolean disableedit) {
-        this.disableedit = disableedit;
-    }
 
-    private Boolean disableedit = false;
     private PurchasedProductDTO one, two, three, four, five, six;
 
     private StreamedContent file;
@@ -164,32 +174,32 @@ public class PurchaseController implements Serializable {
         listFiveProduct.add(pService.getProductById("IPARI"));
         one = new PurchasedProductDTO();
         one.setProduct(listFiveProduct.get(0));
-        one.setCorrPercent(5.0);
+        one.setCorrPercent(5);
         one.setUnitPrice(one.getProduct().getPrice());
 
         two = new PurchasedProductDTO();
         two.setProduct(listFiveProduct.get(1));
         two.setUnitPrice(two.getProduct().getPrice());
-        two.setCorrPercent(5.0);
+        two.setCorrPercent(5);
 
         three = new PurchasedProductDTO();
         three.setProduct(listFiveProduct.get(2));
         three.setUnitPrice(three.getProduct().getPrice());
-        three.setCorrPercent(5.0);
+        three.setCorrPercent(5);
 
         four = new PurchasedProductDTO();
         four.setProduct(listFiveProduct.get(3));
         four.setUnitPrice(four.getProduct().getPrice());
-        four.setCorrPercent(5.0);
+        four.setCorrPercent(5);
 
         five = new PurchasedProductDTO();
         five.setProduct(listFiveProduct.get(4));
         five.setUnitPrice(five.getProduct().getPrice());
-        five.setCorrPercent(5.0);
+        five.setCorrPercent(5);
 
         six = new PurchasedProductDTO();
         six.setProduct(listFiveProduct.get(5));
-        six.setCorrPercent(8.0);
+        six.setCorrPercent(8);
         six.setUnitPrice(six.getProduct().getPrice());
     }
 
@@ -212,12 +222,9 @@ public class PurchaseController implements Serializable {
         this.sortBy = sortBy;
     }
 
-    public void enableEdit() {
-        disableedit = true;
-    }
+
 
     public void sixSave() {
-        disableedit = false;
         this.dto.setProductList(new ArrayList<>());
         if (one.getUnitPrice() != null && one.getQuantity() != null) {
             this.setProductDTO(one);
@@ -246,9 +253,9 @@ public class PurchaseController implements Serializable {
     }
 
     public void uiSaveProduct() {
-        logger.info("saveproductcalled");
-        if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
-        if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
+        //logger.info("saveproductcalled");
+        //if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
+        //if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
         this.dto.getProductList().add(this.productDTO);
         this.productDTO = new PurchasedProductDTO();
         this.setLabel2("Termék hozzáadása");
@@ -294,7 +301,7 @@ public class PurchaseController implements Serializable {
         if (this.dto.getProductList() == null) {
             this.dto.setTotalPrice(0.0);
         } else {
-            this.dto.setTotalPrice(this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingDouble(Double::doubleValue)));
+            this.dto.setTotalPrice((double)this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingInt(Integer::intValue)));
         }
     }
 
@@ -315,12 +322,12 @@ public class PurchaseController implements Serializable {
     }
 
     private void emptySix() {
-        one.setQuantity(0.0);
-        two.setQuantity(0.0);
-        three.setQuantity(0.0);
-        four.setQuantity(0.0);
-        five.setQuantity(0.0);
-        six.setQuantity(0.0);
+        one.setQuantity(0);
+        two.setQuantity(0);
+        three.setQuantity(0);
+        four.setQuantity(0);
+        five.setQuantity(0);
+        six.setQuantity(0);
     }
 
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
@@ -394,20 +401,20 @@ public class PurchaseController implements Serializable {
         UnitDTO kgUnit = uService.getUnitByName("kg");
         ProductDTO product = new ProductDTO();
         if (!pService.exists("I.OSZTÁLYÚ")) {
-            product.setPrice(672.0);
+            product.setPrice(672);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("I.OSZTÁLYÚ");
             pService.saveProduct(product);
         }
         if (!pService.exists("II.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(560.0);
+            product.setPrice(560);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("II.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -415,10 +422,10 @@ public class PurchaseController implements Serializable {
         }
         if (!pService.exists("III.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(448.0);
+            product.setPrice(448);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("III.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -426,10 +433,10 @@ public class PurchaseController implements Serializable {
         }
         if (!pService.exists("IV.OSZTÁLYÚ")) {
             product = new ProductDTO();
-            product.setPrice(224.0);
+            product.setPrice(224);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("IV.OSZTÁLYÚ");
             pService.saveProduct(product);
@@ -437,10 +444,10 @@ public class PurchaseController implements Serializable {
         }
         if (!pService.exists("GYÖKÉR")) {
             product = new ProductDTO();
-            product.setPrice(56.0);
+            product.setPrice(56);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("GYÖKÉR");
             pService.saveProduct(product);
@@ -448,10 +455,10 @@ public class PurchaseController implements Serializable {
         }
         if (!pService.exists("IPARI")) {
             product = new ProductDTO();
-            product.setPrice(300.0);
+            product.setPrice(300);
             product.setFirstUnit(kgUnit);
             product.setSecondUnit(kgUnit);
-            product.setCompPercent(0.0);
+            product.setCompPercent(0);
             product.setTariffnum("0");
             product.setId("IPARI");
             pService.saveProduct(product);

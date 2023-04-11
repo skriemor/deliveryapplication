@@ -14,20 +14,20 @@ public class PurchasedProduct {
     private Integer Id;
 
     @Column(name = "unit_price", nullable = false)
-    private Double unitPrice;
+    private Integer unitPrice;
 
     @Column(name = "quantity", nullable = false)
-    private Double quantity;
+    private Integer quantity;
 
     @Column(name = "quantity2")
-    private Double quantity2;
+    private Integer quantity2;
 
     @Column(name = "correction_percent")
-    private Double corrPercent;
+    private Integer corrPercent;
 
 
     @Column(name = "total_price")
-    private Double totalPrice;
+    private Integer totalPrice;
 
     @ManyToOne
     @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id")
