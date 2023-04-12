@@ -42,10 +42,14 @@
                 <p:inputMask mask="9999.99.99" id="birthdate" value="#{vendorController.dto.birthDate}" >
                     <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                 </p:inputMask>
+
+                <p:outputLabel for="postal" value="Irányítószám: "/><br/>
+                <p:inputText id="postal" value="#{vendorController.dto.postalCode}" required="true" requiredMessage="Kötelező kitölteni!" >
+                    <p:ajax event="keyup" update="vendorForm:city" listener="#{vendorController.autoCity()}"/>
+                </p:inputText><br/>
                 <p:outputLabel for="city" value="Település: "/><br/>
                 <p:inputText id="city"  value="#{vendorController.dto.city}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
-                <p:outputLabel for="postal" value="Irányítószám: "/><br/>
-                <p:inputText id="postal" value="#{vendorController.dto.postalCode}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+
                 <p:outputLabel for="address" value="Lakcím: "/><br/>
                 <p:inputText id="address" value="#{vendorController.dto.address}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
             </p:divider>
@@ -67,7 +71,7 @@
 
 
                 <p:outputLabel for="activity" value="NEBIH azonosító: "/><p:message for="vendorForm:activity" style="color:red"/><br/>
-                <p:inputMask mask="9999999999" id="activity" value="#{vendorController.dto.activity}" >
+                <p:inputMask  required="false" mask="9999999999" id="activity" value="#{vendorController.dto.activity}" >
                     <f:validateRegex pattern="\d{10}$" />
                 </p:inputMask><br/>
                 <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>

@@ -18,6 +18,15 @@
                 $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
             }
         });
+
+        function funcForWindowPopup()
+        {
+            var popup = null;
+            popup = window.open("buyers_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
+            popup.openerFormId = "vendorForm";
+            popup.focus();
+        }
+
     </script>
     <style type="text/css">
     </style>
@@ -30,14 +39,14 @@
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0 none; padding: 0; width: 100%;">
                 <p:divider >
-
-                    <p:outputLabel for="buyer" value="Eladó neve: "/><br/>
+                    <p:remoteCommand update="buyer" name="updateBuyer"/>
+                    <p:outputLabel for="buyer" value="Eladó neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
                         <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="accountnumber"/>
                     </p:selectOneMenu><br/>
-                    <p:outputLabel for="currency" value="Fizetési mód:"/><br/>
+                    <p:outputLabel for="currency" value="Fizetési valuta:"/><br/>
                     <p:selectOneMenu id="currency" value="#{saleController.dto.currency}" required="true" style="max-width: 120px" editable="true" ><br/>
                         <f:selectItem itemLabel="HUF" itemValue="HUF"/>
                         <f:selectItem itemLabel="EUR" itemValue="EUR"/>
@@ -59,12 +68,14 @@
                 <p:divider>
 
                     <p:outputLabel for="bookingdate" value="Felv.jegy dátuma:"/><br/>
-                    <p:datePicker id="bookingdate"  value="#{saleController.dto.bookingDate}" monthNavigator="true" yearRange="#{saleController.dateRange}" yearNavigator="true" required="true" pattern="yyyy.MM.dd" /><br/>
+                    <p:inputMask mask="9999.99.99" id="bookingdate" value="#{saleController.dto.bookingDate}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:inputMask>
 
                     <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="saleForm:accountnumber" style="color:red"/><br/>
-                    <p:inputText id="accountnumber"  value="#{saleController.dto.accountNumber}" validatorMessage="Rossz formátum">
+                    <p:inputMask mask="99999999-99999999-99999999" id="accountnumber"  value="#{saleController.dto.accountNumber}" validatorMessage="Rossz formátum">
                         <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
-                    </p:inputText><p/>
+                    </p:inputMask><p/>
                     <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
                     <h:commandButton value="#{saleController.label}"
                                      action="#{saleController.uiSaveSale}"

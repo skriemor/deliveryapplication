@@ -2,6 +2,7 @@ package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.VendorDTO;
 import hu.torma.deliveryapplication.service.VendorService;
+import hu.torma.deliveryapplication.utility.postal.PostalCodeHU;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -15,15 +16,19 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SessionScope
 @Controller("vendorController")
 public class VendorController implements Serializable {
 
+    Logger log = Logger.getLogger("Vendorlogger");
     private List<SortMeta> sortBy;
     @Autowired
     VendorService vService;
 
+    @Autowired
+    PostalCodeHU postalService;
     private String label;
     private VendorDTO dto;
     private List<VendorDTO> dtoList;
@@ -43,6 +48,17 @@ public class VendorController implements Serializable {
     public void getAllVendors() {
         this.dtoList = vService.getAllVendors();
         this.setLabel("Hozzáadás");
+    }
+
+    public void autoCity() {
+        log.info("Autocitied");
+        if (this.dto != null && this.dto.getPostalCode()!=null) {
+            String city = postalService.getCityByPostal(Integer.valueOf(this.dto.getPostalCode()));
+            log.info("City name: "+city);
+            this.dto.setCity(city);
+
+        }
+
     }
 
     public void setDto(VendorDTO dto) {

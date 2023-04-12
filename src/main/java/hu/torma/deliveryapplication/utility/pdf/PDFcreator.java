@@ -1,18 +1,17 @@
 package hu.torma.deliveryapplication.utility.pdf;
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFCellStyle;
-import org.apache.poi.xssf.usermodel.XSSFDataFormat;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DataFormat;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-import org.primefaces.util.SerializableSupplier;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.faces.context.FacesContext;
 import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.logging.Logger;
@@ -44,6 +43,7 @@ public class PDFcreator {
             e.printStackTrace();
         }
     }
+
     private void createRowCol(int row, int cell, String s) {
         if (sheet.getRow(row) == null) sheet.createRow(row);
         if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
@@ -54,6 +54,7 @@ public class PDFcreator {
 
 
     }
+
     private void createRowCol(int row, int cell, Integer s) {
         if (sheet.getRow(row) == null) sheet.createRow(row);
         if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
@@ -64,6 +65,7 @@ public class PDFcreator {
 
 
     }
+
     private void createRowCol(int row, int cell, Double s) {
         if (sheet.getRow(row) == null) sheet.createRow(row);
         if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
@@ -114,12 +116,12 @@ public class PDFcreator {
         createRowCol(28, 2, pur.getProductList().get(4).getQuantity().intValue());
         createRowCol(29, 2, pur.getProductList().get(5).getQuantity().intValue());
         //correction
-        createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent().intValue() +"%");
-        createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent().intValue() +"%");
-        createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent().intValue() +"%");
-        createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent().intValue() +"%");
-        createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent().intValue() +"%");
-        createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent().intValue() +"%");
+        createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent().intValue() + "%");
+        createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent().intValue() + "%");
+        createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent().intValue() + "%");
+        createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent().intValue() + "%");
+        createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent().intValue() + "%");
+        createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent().intValue() + "%");
         //net w
         createRowCol(24, 4, pur.getProductList().get(0).getQuantity2().intValue());
         createRowCol(25, 4, pur.getProductList().get(1).getQuantity2().intValue());
@@ -131,17 +133,16 @@ public class PDFcreator {
         var totalp = pur.getTotalPrice().intValue();
         createRowCol(30, 5, totalp);
         //totalW
-        var totalw = pur.getProductList().stream().map(c->c.getQuantity2().intValue()).collect(Collectors.summingInt(Integer::intValue));
+        var totalw = pur.getProductList().stream().map(c -> c.getQuantity2().intValue()).collect(Collectors.summingInt(Integer::intValue));
         createRowCol(30, 4, totalw);
-        //fee
-        createRowCol(31, 5, "Töltse ki");
+
         //avg price e40
 
-        Double avgprice = (double)(Math.round((totalp / (double)totalw) *100) /100);
-        log.info(avgprice+"");
+        Double avgprice = (double) (Math.round((totalp / (double) totalw) * 100) / 100);
+        log.info(avgprice + "");
         createRowCol(39, 4, avgprice);
         //f40
-        var f40 =(int) Math.round(totalw * avgprice);
+        var f40 = (int) Math.round(totalw * avgprice);
         createRowCol(39, 5, f40);
         //c40
         int c40 = (int) Math.round(f40 / 1.12);
@@ -150,7 +151,7 @@ public class PDFcreator {
         int d40 = f40 - c40;
         createRowCol(39, 3, d40);
         //e41
-        var e41 = (double) Math.round((avgprice / 1.12)*100) /100;
+        var e41 = (double) Math.round((avgprice / 1.12) * 100) / 100;
         createRowCol(40, 4, e41);
     }
 

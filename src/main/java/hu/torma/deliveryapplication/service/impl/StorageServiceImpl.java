@@ -29,6 +29,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Autowired
     SaleRepository sRepo;
+
     @Override
     public Double getSupplyOf(ProductDTO dto, SaleDTO saleToIgnore) {
         calculateQuantityAmount(saleToIgnore);
@@ -74,9 +75,10 @@ public class StorageServiceImpl implements StorageService {
                     .collect(Collectors.summingInt(Integer::intValue));
 
             amount -= sRepo.findAll().stream().filter(p -> {
-                         if (p.getId() == dto.getId()) return false;
-                        return true;
-                    }
+                                if (p.getId() == dto.getId() || p.getProductList() == null || p.getProductList().size() < 1)
+                                    return false;
+                                return true;
+                            }
                     )
                     .map(c -> c.getProductList()
                             .stream()
@@ -86,12 +88,13 @@ public class StorageServiceImpl implements StorageService {
 
 
             Quantity qant = repo.findById(q.getId()).get();
-            amount = (int)(Math.floor(amount * 100) / 100);
+            amount = (int) (Math.floor(amount * 100) / 100);
             qant.setAmount(amount);
             repo.save(qant);
         }
         return true;
     }
+
     public Boolean calculateQuantityAmount() {
         Integer amount;
         for (Quantity q : repo.findAll()) {
@@ -104,6 +107,7 @@ public class StorageServiceImpl implements StorageService {
                     .collect(Collectors.summingInt(Integer::intValue));
 
             amount -= sRepo.findAll().stream()
+                    .filter(e -> e.getProductList() !=null && e.getProductList().size()>0)
                     .map(c -> c.getProductList()
                             .stream()
                             .filter(f -> f.getProduct().getId().equals(q.getProduct().getId()))

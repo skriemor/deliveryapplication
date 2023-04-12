@@ -17,6 +17,24 @@
             $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
         }
     });
+
+    function funcForWindowPopup()
+    {
+        var popup = null;
+        popup = window.open("vendors_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
+        popup.openerFormId = "vendorForm";
+        popup.focus();
+    }
+    function funcForWindowPopup2()
+    {
+        var popup = null;
+        popup = window.open("sites_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
+        popup.openerFormId = "vendorForm";
+        popup.focus();
+
+    }
+
+
 </script>
     <style type="text/css">
     </style>
@@ -29,14 +47,17 @@
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0 none; padding: 0; width: 100%;">
                 <p:divider >
+                    <p:remoteCommand name="updateVendor" update="vendor"/>
+                    <p:remoteCommand name="updateSite" update="site"/>
 
-                    <p:outputLabel for="vendor" value="Eladó neve: "/><br/>
-                    <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}"  required="true" converter="#{vendorConverter}"  filter="true" filterMatchMode="contains">
+                    <p:outputLabel for="vendor" value="Eladó neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
+                    <p:selectOneMenu  id="vendor" value="#{purchaseController.dto.vendor}"  required="true" converter="#{vendorConverter}"  filter="true" filterMatchMode="contains">
+                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
-                        <f:selectItems value="#{vendorController.dtoList}" var="vendorvar" itemLabel="#{vendorvar.vendorName}(#{vendorvar.city})" itemValue="#{vendorvar}" />
+                        <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar" itemLabel="#{vendorvar.vendorName}(#{vendorvar.city})" itemValue="#{vendorvar}" />
                     </p:selectOneMenu><br/>
 
-                    <p:outputLabel for="site" value="Telephely: "/><br/>
+                    <p:outputLabel for="site" value="Telephely: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup2()"/><br/>
                     <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="true"  converter="#{siteConverter}"  filter="true" filterMatchMode="contains">
                         <f:selectItems value="#{siteController.dtoList}" var="sitevar" itemLabel="#{sitevar.siteName}" itemValue="#{sitevar}"/>
                     </p:selectOneMenu><br/>
@@ -81,7 +102,7 @@
     </p:panel>
     <p:panel header="Termékek" id="fixProductPanel" toggleable="true"  collapsed="false" >
 
-        <table border="1px" style="border-collapse: collapse">
+        <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
             <thead>
             <tr>
                 <th>
