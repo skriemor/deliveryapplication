@@ -35,4 +35,5 @@ public class Sale {
 
     @Column(nullable = false, name = "accountNumber")
     private String accountNumber;
+
 }

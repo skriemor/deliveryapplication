@@ -276,14 +276,25 @@ public class PurchaseController implements Serializable {
         return file;
     }
 
+    private void setActuals () {
+        for (var a: this.dto.getProductList()) {
+            a.setActual(a.getQuantity2());
+        }
+
+    }
     public void uiSavePurchase() {
         logger.warning("uiSaveCalled");
         if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
         calculateTotalPrice();
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
-        service.savePurchase(this.dto);
-        manageStorage();
+        setActuals();
+        if (this.dto.getCompletedPurchaseDTOS() == null) {
+            service.savePurchase(this.dto);
+        } else {
+            logger.warning("Ehhez a merlegeleshez mar tartoznak felvasarlasi jegyek");
+        }
+
         getAllPurchases();
         this.setDto(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
@@ -291,11 +302,7 @@ public class PurchaseController implements Serializable {
 
     }
 
-    private void manageStorage() {
-        for (PurchasedProductDTO p : this.dto.getProductList()) {
-            sService.createQuantityIfNotExists(p.getProduct());
-        }
-    }
+
 
     private void calculateTotalPrice() {
         if (this.dto.getProductList() == null) {
@@ -398,7 +405,10 @@ public class PurchaseController implements Serializable {
     }
 
     private void checkFive() {
-        UnitDTO kgUnit = uService.getUnitByName("kg");
+        UnitDTO kgUnit = new UnitDTO();
+        kgUnit.setId("kg");
+        kgUnit.setUnitName("Kilogramm");
+        uService.saveUnit(kgUnit);
         ProductDTO product = new ProductDTO();
         if (!pService.exists("I.OSZTÁLYÚ")) {
             product.setPrice(672);

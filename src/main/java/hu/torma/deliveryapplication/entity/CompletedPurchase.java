@@ -11,21 +11,33 @@ import java.util.List;
 @Entity
 @Data
 @EqualsAndHashCode
-@Table(name = "purchase")
-public class Purchase {
+@Table(name = "completed_purchase")
+public class CompletedPurchase {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @OneToMany(mappedBy = "purchase", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PurchasedProduct> productList;
-
     @ManyToOne
     @JoinColumn(name = "vendor_name", nullable = false, referencedColumnName = "tax_id")
     private Vendor vendor;
 
+    @Column(name = "one")
+    private int one;
 
+    @Column(name = "two")
+    private int two;
+
+    @Column(name = "three")
+    private int three;
+
+    @Column(name = "four")
+    private int four;
+    @Column(name = "five")
+    private int five;
+
+    @Column(name = "six")
+    private int six;
 
     @Column(name = "receipt_date")
     @DateTimeFormat(pattern = "yyyy.MM.dd")
@@ -41,10 +53,9 @@ public class Purchase {
     @Column(name = "total_price")
     private Double totalPrice;
 
-    @Column(name = "booking_date", nullable = true)
-    @DateTimeFormat(pattern = "yyyy.MM.dd")
-    private Date bookedDate;
 
-    @OneToMany(mappedBy = "purchase", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CompletedPurchase> completedList;
+    @ManyToOne
+    @JoinColumn(name = "purchase_id")
+    private Purchase purchase;
+
 }

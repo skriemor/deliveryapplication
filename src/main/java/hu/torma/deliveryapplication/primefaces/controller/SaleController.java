@@ -230,18 +230,12 @@ public class SaleController implements Serializable {
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookingDate(date);
         service.saveSale(this.dto);
-        manageStorage();
         getAllSales();
         this.setDto(new SaleDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.errorMessage = "";
     }
 
-    private void manageStorage() {
-        for (PurchasedProductDTO p : this.dto.getProductList()) {
-            sService.createQuantityIfNotExists(p.getProduct());
-        }
-    }
 
     public void deleteSale() {
         if (this.dto != null) {
@@ -329,7 +323,10 @@ public class SaleController implements Serializable {
     }
 
     private void checkFive() {
-        UnitDTO kgUnit = uService.getUnitByName("kg");
+        UnitDTO kgUnit = new UnitDTO();
+        kgUnit.setId("kg");
+        kgUnit.setUnitName("Kilogramm");
+        uService.saveUnit(kgUnit);
         ProductDTO product = new ProductDTO();
         if (!pService.exists("I.OSZTÁLYÚ")) {
             product.setPrice(672);

@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.entity.Site;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -28,4 +29,7 @@ public class PurchaseDTO implements Serializable {
 
     private Date bookedDate;
 
+    private PurchaseDTO purchase;
+
+    private List<CompletedPurchaseDTO> completedPurchaseDTOS;
 }

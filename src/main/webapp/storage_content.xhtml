@@ -11,16 +11,19 @@
     <style type="text/css">
     </style>
 
-    <p:commandButton action="#{storageController.getAllQuantities()}" update="quantityForm:quantityList" value="Frissít" style="width: 100%"/>
-    <p:dataTable var="quantity" value="#{storageController.dtoList}" id="quantityList" stickyHeader="T"
+    <p:commandButton action="#{storageController.updateList}" update="quantityForm:quantityList" value="Frissít" style="width: 100%"/>
+    <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T"
                  lazy="false"
                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  emptyMessage="Nincs találat" resizableColumns="true">
         <p:column headerText="Termék" width="5em" >
-            <h:outputText value="#{quantity.product.id}" id="product"/>
+            <h:outputText value="#{quantity.productName}" id="product"/>
         </p:column>
-        <p:column headerText="Mennyiség" width="11em">
-            <h:outputText value="#{quantity.amount} #{quantity.product.firstUnit.unitName}"/>
+        <p:column headerText="Valódi Mennyiség" width="11em">
+            <h:outputText value="#{quantity.q1}kg"/>
+        </p:column>
+        <p:column headerText="Hivatalos" width="11em">
+            <h:outputText value="#{quantity.q2}kg"/>
         </p:column>
 
 
