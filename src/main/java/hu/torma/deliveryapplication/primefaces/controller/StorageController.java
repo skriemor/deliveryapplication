@@ -24,11 +24,11 @@ public class StorageController {
 
     @PostConstruct
     public void init() {
-        updateList();
-    }
-    public void updateList(){
-        storageList = service.getDisplayUnits();
 
+    }
+    public ArrayList<DisplayUnit> getStorageList(){
+        storageList = service.getDisplayUnits();
+        return new ArrayList<>(storageList);
     }
 
 

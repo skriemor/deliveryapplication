@@ -134,7 +134,7 @@ public class CompletedPurchaseController implements Serializable {
     @PostConstruct
     public void getAllPurchases() {
         // this.dtoList = purchaseDTO.getCompletedPurchaseDTOS();
-        this.setLabel("Hozzáadás");
+        this.setLabel("Felv.jegy Mentése");
         this.setLabel2("Termék hozzáadása");
     }
 
@@ -206,7 +206,7 @@ public class CompletedPurchaseController implements Serializable {
     public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
         //emptySix();
 
-        this.setLabel("Módosítás");
+        this.setLabel("Felv.jegy Módosítása");
         this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
         acquireQuants();
@@ -230,7 +230,7 @@ public class CompletedPurchaseController implements Serializable {
         emptySix();
         this.dto = new CompletedPurchaseDTO();
         this.purchaseDTO = new PurchaseDTO();
-        this.setLabel("Hozzáadás");
+        this.setLabel("Felv. jegy Hozzáadása");
     }
 
     public void setLabel(String label) {

@@ -80,33 +80,7 @@
                     </p:inputMask>
                     <p:outputLabel for="receiptId" value="Számla sorszáma:"/><br/>
                     <p:inputText id="receiptId" value="#{purchaseController.dto.receiptId}" required="false"/>
-                    <h:commandButton value="#{purchaseController.label}"
-                                     action="#{purchaseController.uiSavePurchase}"
-                                     style="width: 10em;height: 2.6em">
 
-                        <f:ajax execute="purchaseForm:purchasePanel"
-                                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
-                    </h:commandButton>
-
-                    <h:commandButton value="Új"
-                                     action="#{purchaseController.newPurchase}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:purchasePanel"
-                                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
-                    </h:commandButton>
-                    <h:commandButton value="Töröl"
-                                     action="#{purchaseController.deletePurchase}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:PurchasePanel"
-                                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:productList"/>
-                    </h:commandButton>
-                    <p/>
-                    <p:commandButton value="Letöltés excelként" ajax="false"
-                                     onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     icon="pi pi-arrow-down" styleClass="mr-2"
-                                     actionListener="#{purchaseController.pdf()}">
-                        <p:fileDownload value="#{purchaseController.file}"/>
-                    </p:commandButton>
                 </p:divider>
 
             </p:panelGrid>
@@ -281,6 +255,35 @@
 
 
     </p:panel>
+    <hr></hr>
+    <h:commandButton value="#{purchaseController.label}"
+                     action="#{purchaseController.uiSavePurchase}"
+                     style="width: 10em;height: 2.6em">
+
+        <f:ajax execute="purchaseForm:purchasePanel"
+                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
+    </h:commandButton>
+
+    <h:commandButton value="Új"
+                     action="#{purchaseController.newPurchase}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="purchaseForm:purchasePanel"
+                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
+    </h:commandButton>
+    <h:commandButton value="Töröl"
+                     action="#{purchaseController.deletePurchase}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="purchaseForm:PurchasePanel"
+                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:productList"/>
+    </h:commandButton>
+    <p/>
+    <p:commandButton value="Letöltés excelként" ajax="false"
+                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                     icon="pi pi-arrow-down" styleClass="mr-2"
+                     actionListener="#{purchaseController.pdf()}">
+        <p:fileDownload value="#{purchaseController.file}"/>
+    </p:commandButton>
+
 
     <p:dataTable var="product" value="#{purchaseController.dto.productList}" id="productList"
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"

@@ -82,33 +82,7 @@
                                  value="#{completedPurchaseController.dto.paymentDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
-                    <h:commandButton value="#{completedPurchaseController.label}"
-                                     action="#{completedPurchaseController.uiSaveCompletedPurchase()}"
-                                     style="width: 10em;height: 2.6em">
 
-                        <f:ajax execute="purchaseForm:purchasePanel"
-                                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
-                    </h:commandButton>
-
-                    <h:commandButton value="Új"
-                                     action="#{completedPurchaseController.newPurchase}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:purchasePanel"
-                                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
-                    </h:commandButton>
-                    <h:commandButton value="Töröl"
-                                     action="#{completedPurchaseController.deletePurchase}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="purchaseForm:PurchasePanel"
-                                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:recordList "/>
-                    </h:commandButton>
-                    <p/>
-                    <p:commandButton value="Letöltés excelként" ajax="false"
-                                     onclick="PrimeFaces.monitorDownload(start, stop);"
-                                     icon="pi pi-arrow-down" styleClass="mr-2"
-                                     actionListener="#{completedPurchaseController.pdf()}">
-                        <p:fileDownload value="#{completedPurchaseController.file}"/>
-                    </p:commandButton>
                 </p:divider>
 
             </p:panelGrid>
@@ -232,8 +206,8 @@
             </tbody>
         </table>
 
-        <p:outputLabel id="totalPricePerProduct1"
-                       value="Termékek részösszesített ára: #{completedPurchaseController.sixTotal} HUF"/>
+        <p:outputLabel  id="totalPricePerProduct1"
+                       value="Termékek részösszesített ára: #{ completedPurchaseController.sixTotal} HUF"/>
         <p/>
 
 
@@ -266,6 +240,35 @@
                 render="purchaseList purchaseForm:fixProductPanel recordList"/>
     </h:commandButton>
 
+    <hr></hr>
+    <p/>
+    <h:commandButton value="#{completedPurchaseController.label}"
+                     action="#{completedPurchaseController.uiSaveCompletedPurchase()}"
+                     style="width: 10em;height: 2.6em">
+
+        <f:ajax execute="purchaseForm:purchasePanel"
+                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
+    </h:commandButton>
+
+    <h:commandButton value="Új"
+                     action="#{completedPurchaseController.newPurchase}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="purchaseForm:purchasePanel"
+                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
+    </h:commandButton>
+    <h:commandButton value="Töröl"
+                     action="#{completedPurchaseController.deletePurchase}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="purchaseForm:PurchasePanel"
+                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:recordList "/>
+    </h:commandButton>
+    <p/>
+    <p:commandButton value="Letöltés excelként" ajax="false"
+                     onclick="PrimeFaces.monitorDownload(start, stop);"
+                     icon="pi pi-arrow-down" styleClass="mr-2"
+                     actionListener="#{completedPurchaseController.pdf()}">
+        <p:fileDownload value="#{completedPurchaseController.file}"/>
+    </p:commandButton>
     <p:dataTable var="record" value="#{completedPurchaseController.recordDTOS}" id="recordList"
                  lazy="false"
                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"

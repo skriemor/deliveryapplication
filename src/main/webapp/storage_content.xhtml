@@ -206,7 +206,7 @@
             </p:dataTable>
         </p:tab>
         <p:tab title="Készlet">
-            <p:commandButton action="#{storageController.updateList}" update="quantityForm:tabView:quantityList" value="Frissít" style="width: 100%"/>
+
             <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
