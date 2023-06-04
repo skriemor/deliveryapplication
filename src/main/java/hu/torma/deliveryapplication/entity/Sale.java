@@ -33,7 +33,19 @@ public class Sale {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date bookingDate;
 
-    @Column(nullable = false, name = "accountNumber")
-    private String accountNumber;
+    @Column(name = "deadline_date", nullable = true)
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
+    private Date deadLine;
+
+    @Column(name = "completion_date", nullable = true)
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
+    private Date completionDate;
+
+    @Column(name = "receipt_date", nullable = true)
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
+    private Date receiptDate;
+
+    @Column(nullable = true, name = "receipt_id")
+    private String receiptId;
 
 }

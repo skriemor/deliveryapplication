@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+<h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
+
+    <style type="text/css">
+    </style>
+
+    <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList"
+                 lazy="false" sortBy="#{displayController.sortBy}" sortMode="single"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                  emptyMessage="Nincs találat" resizableColumns="true">
+        <p:column headerText="Sorszám" sortBy="#{purchase.id}"  width="5em" >
+            <h:outputText value="#{purchase.id}" id="id"/>
+        </p:column>
+        <p:column headerText="Eladó neve" sortBy="#{purchase.vendor.vendorName}"  width="5em" >
+            <h:outputText value="#{purchase.vendor.vendorName}"/>
+        </p:column>
+        <p:column headerText="Helység" sortBy="#{purchase.vendor.city}"  width="5em" >
+            <h:outputText value="#{purchase.vendor.city}"/>
+        </p:column>
+        <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}"  width="5em" >
+            <h:outputText value="#{purchase.site.siteName}"/>
+        </p:column>
+        <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}"  width="5em" >
+            <h:outputText value="#{purchase.totalPrice}"/>
+        </p:column>
+        <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}"  width="4.5em" >
+            <h:outputText value="#{purchase.bookedDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}"  width="4.5em" >
+            <h:outputText value="#{purchase.receiptDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+    </p:dataTable>
+</h:form>
+</html>
+
+
+
+

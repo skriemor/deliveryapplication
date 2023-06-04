@@ -28,4 +28,5 @@ public class VendorDTO implements Serializable {
     private String ggn;
     private String phone;
     private String contract;
+    private MediatorDTO mediator;
 }

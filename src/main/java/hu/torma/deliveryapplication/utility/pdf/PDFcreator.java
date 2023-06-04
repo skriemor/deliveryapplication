@@ -1,6 +1,7 @@
 package hu.torma.deliveryapplication.utility.pdf;
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
+import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -95,45 +96,45 @@ public class PDFcreator {
         createRowCol(20, 5, pur.getVendor().getContract());
         //prices
 
-        createRowCol(24, 5, pur.getProductList().get(0).getTotalPrice().intValue());
-        createRowCol(25, 5, pur.getProductList().get(1).getTotalPrice().intValue());
-        createRowCol(26, 5, pur.getProductList().get(2).getTotalPrice().intValue());
-        createRowCol(27, 5, pur.getProductList().get(3).getTotalPrice().intValue());
-        createRowCol(28, 5, pur.getProductList().get(4).getTotalPrice().intValue());
-        createRowCol(29, 5, pur.getProductList().get(5).getTotalPrice().intValue());
+        createRowCol(24, 5, pur.getProductList().get(0).getTotalPrice());
+        createRowCol(25, 5, pur.getProductList().get(1).getTotalPrice());
+        createRowCol(26, 5, pur.getProductList().get(2).getTotalPrice());
+        createRowCol(27, 5, pur.getProductList().get(3).getTotalPrice());
+        createRowCol(28, 5, pur.getProductList().get(4).getTotalPrice());
+        createRowCol(29, 5, pur.getProductList().get(5).getTotalPrice());
         //unitprics
-        createRowCol(24, 1, pur.getProductList().get(0).getUnitPrice().intValue());
-        createRowCol(25, 1, pur.getProductList().get(1).getUnitPrice().intValue());
-        createRowCol(26, 1, pur.getProductList().get(2).getUnitPrice().intValue());
-        createRowCol(27, 1, pur.getProductList().get(3).getUnitPrice().intValue());
-        createRowCol(28, 1, pur.getProductList().get(4).getUnitPrice().intValue());
-        createRowCol(29, 1, pur.getProductList().get(5).getUnitPrice().intValue());
+        createRowCol(24, 1, pur.getProductList().get(0).getUnitPrice());
+        createRowCol(25, 1, pur.getProductList().get(1).getUnitPrice());
+        createRowCol(26, 1, pur.getProductList().get(2).getUnitPrice());
+        createRowCol(27, 1, pur.getProductList().get(3).getUnitPrice());
+        createRowCol(28, 1, pur.getProductList().get(4).getUnitPrice());
+        createRowCol(29, 1, pur.getProductList().get(5).getUnitPrice());
         //gross weigt
-        createRowCol(24, 2, pur.getProductList().get(0).getQuantity().intValue());
-        createRowCol(25, 2, pur.getProductList().get(1).getQuantity().intValue());
-        createRowCol(26, 2, pur.getProductList().get(2).getQuantity().intValue());
-        createRowCol(27, 2, pur.getProductList().get(3).getQuantity().intValue());
-        createRowCol(28, 2, pur.getProductList().get(4).getQuantity().intValue());
-        createRowCol(29, 2, pur.getProductList().get(5).getQuantity().intValue());
+        createRowCol(24, 2, pur.getProductList().get(0).getQuantity());
+        createRowCol(25, 2, pur.getProductList().get(1).getQuantity());
+        createRowCol(26, 2, pur.getProductList().get(2).getQuantity());
+        createRowCol(27, 2, pur.getProductList().get(3).getQuantity());
+        createRowCol(28, 2, pur.getProductList().get(4).getQuantity());
+        createRowCol(29, 2, pur.getProductList().get(5).getQuantity());
         //correction
-        createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent().intValue() + "%");
-        createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent().intValue() + "%");
-        createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent().intValue() + "%");
-        createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent().intValue() + "%");
-        createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent().intValue() + "%");
-        createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent().intValue() + "%");
+        createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent() + "%");
+        createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent() + "%");
+        createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent() + "%");
+        createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent() + "%");
+        createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent() + "%");
+        createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent() + "%");
         //net w
-        createRowCol(24, 4, pur.getProductList().get(0).getQuantity2().intValue());
-        createRowCol(25, 4, pur.getProductList().get(1).getQuantity2().intValue());
-        createRowCol(26, 4, pur.getProductList().get(2).getQuantity2().intValue());
-        createRowCol(27, 4, pur.getProductList().get(3).getQuantity2().intValue());
-        createRowCol(28, 4, pur.getProductList().get(4).getQuantity2().intValue());
-        createRowCol(29, 4, pur.getProductList().get(5).getQuantity2().intValue());
+        createRowCol(24, 4, pur.getProductList().get(0).getQuantity2());
+        createRowCol(25, 4, pur.getProductList().get(1).getQuantity2());
+        createRowCol(26, 4, pur.getProductList().get(2).getQuantity2());
+        createRowCol(27, 4, pur.getProductList().get(3).getQuantity2());
+        createRowCol(28, 4, pur.getProductList().get(4).getQuantity2());
+        createRowCol(29, 4, pur.getProductList().get(5).getQuantity2());
         //total
         var totalp = pur.getTotalPrice().intValue();
         createRowCol(30, 5, totalp);
         //totalW
-        var totalw = pur.getProductList().stream().map(c -> c.getQuantity2().intValue()).collect(Collectors.summingInt(Integer::intValue));
+        var totalw = (Integer) pur.getProductList().stream().map(PurchasedProductDTO::getQuantity2).mapToInt(Integer::intValue).sum();
         createRowCol(30, 4, totalw);
 
         //avg price e40

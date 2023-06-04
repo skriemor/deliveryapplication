@@ -38,6 +38,10 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Override
     @Transactional
     public CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
+        if (CompletedPurchaseDTO.getRecords() != null) {
+            for (var c : CompletedPurchaseDTO.getRecords())
+                c.setCompletedPurchase(CompletedPurchaseDTO);
+        }
         var g = mapper.map(repo.save(mapper.map(CompletedPurchaseDTO, CompletedPurchase.class)), CompletedPurchaseDTO.class);
         return g;
     }

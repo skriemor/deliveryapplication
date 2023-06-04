@@ -1,9 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.MediatorDTO;
-import hu.torma.deliveryapplication.DTO.VendorDTO;
 import hu.torma.deliveryapplication.service.MediatorService;
-import hu.torma.deliveryapplication.service.VendorService;
+import hu.torma.deliveryapplication.service.MediatorService;
 import hu.torma.deliveryapplication.utility.postal.PostalCodeHU;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
@@ -21,21 +20,21 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @SessionScope
-@Controller("vendorController")
-public class VendorController implements Serializable {
+@Controller("mediatorController")
+public class MediatorController implements Serializable {
 
-    Logger log = Logger.getLogger("Vendorlogger");
+    Logger log = Logger.getLogger("Mediatorlogger");
     private List<SortMeta> sortBy;
     @Autowired
-    VendorService vService;
+    MediatorService vService;
     @Autowired
     MediatorService mService;
 
     @Autowired
     PostalCodeHU postalService;
     private String label;
-    private VendorDTO dto;
-    private List<VendorDTO> dtoList;
+    private MediatorDTO dto;
+    private List<MediatorDTO> dtoList;
     private String dateRange;
 
     public String getMediator() {
@@ -50,36 +49,21 @@ public class VendorController implements Serializable {
 
     @PostConstruct
     public void init() {
-        sortBy = new ArrayList<>();
-        sortBy.add(SortMeta.builder()
-                .field("taxId")
-                .order(SortOrder.ASCENDING)
-                .build());
-        dateRange = (LocalDate.now().getYear() - 120) + ":" + (LocalDate.now().getYear() - 14);
+
     }
 
     @PostConstruct
-    public void getAllVendors() {
-        this.dtoList = vService.getAllVendors();
+    public void getAllMediators() {
+        this.dtoList = vService.getAllMediators();
         this.setLabel("Hozzáadás");
     }
 
-    public void autoCity() {
-        log.info("Autocitied");
-        if (this.dto != null && this.dto.getPostalCode()!=null) {
-            String city = postalService.getCityByPostal(Integer.valueOf(this.dto.getPostalCode()));
-            log.info("City name: "+city);
-            this.dto.setCity(city);
 
-        }
-
-    }
-
-    public void setDto(VendorDTO dto) {
+    public void setDto(MediatorDTO dto) {
         this.dto = dto;
     }
 
-    public void setDtoList(List<VendorDTO> dtoList) {
+    public void setDtoList(List<MediatorDTO> dtoList) {
         this.dtoList = dtoList;
     }
 
@@ -87,28 +71,28 @@ public class VendorController implements Serializable {
         this.sortBy = sortBy;
     }
 
-    public void uiSaveVendor() {
+    public void uiSaveMediator() {
 
-        vService.saveVendor(this.dto);
-        getAllVendors();
-        this.setDto(new VendorDTO());
+        vService.saveMediator(this.dto);
+        getAllMediators();
+        this.setDto(new MediatorDTO());
     }
 
-    public void deleteVendor() {
+    public void deleteMediator() {
         if (this.dto != null) {
-            vService.deleteVendor(this.dto);
+            vService.deleteMediator(this.dto);
         }
-        this.getAllVendors();
-        this.dto = new VendorDTO();
+        this.getAllMediators();
+        this.dto = new MediatorDTO();
     }
 
-    public void editVendor(SelectEvent<VendorDTO> _dto) {
+    public void editMediator(SelectEvent<MediatorDTO> _dto) {
         this.setLabel("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
     }
 
-    public void newVendor() {
-        this.dto = new VendorDTO();
+    public void newMediator() {
+        this.dto = new MediatorDTO();
         this.setLabel("Hozzáadás");
     }
 
@@ -116,9 +100,9 @@ public class VendorController implements Serializable {
         this.label = label;
     }
 
-    public VendorDTO getDto() {
+    public MediatorDTO getDto() {
         if (this.dto == null) {
-            this.dto = new VendorDTO();
+            this.dto = new MediatorDTO();
         }
         return this.dto;
     }
@@ -131,11 +115,11 @@ public class VendorController implements Serializable {
         return sortBy;
     }
 
-    public List<VendorDTO> getDtoList() {
+    public List<MediatorDTO> getDtoList() {
         return dtoList;
     }
 
-    public VendorService getvService() {
+    public MediatorService getvService() {
         return vService;
     }
 

@@ -33,58 +33,60 @@ public class PurchaseController implements Serializable {
 
     public Integer getNetOf(PurchasedProductDTO dto) {
 
-        if (dto.getQuantity() ==null || dto.getCorrPercent() == null) {
+        if (dto.getQuantity() == null || dto.getCorrPercent() == null) {
             //logger.info("dto quantity or corr was 0");
             return 0;
         }
-        dto.setQuantity2((int)(dto.getQuantity() * ((100 - dto.getCorrPercent()) / 100.0)));
+        dto.setQuantity2((int) (dto.getQuantity() * ((100 - dto.getCorrPercent()) / 100.0)));
         //logger.info("return net "+dto.getQuantity2());
         return dto.getQuantity2();
     }
+
     public Integer getPriceOf(PurchasedProductDTO dto_) {
-        if (dto_.getQuantity() ==null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
-        dto_.setQuantity2((int)(dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
-        Integer sum =(int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
+        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
+        dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
+        Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
         dto_.setTotalPrice(sum);
         return sum;
     }
+
     public Integer getSixTotal() {
         Integer temp = 0;
         Integer sum;
         try {
             if (one.getQuantity() != null && one.getProduct().getCompPercent() != null && one.getUnitPrice() != null) {
                 one.setQuantity2(getNetOf(one));
-                sum = (int)(one.getUnitPrice() * one.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent())));
+                sum = (int) (one.getUnitPrice() * one.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent())));
                 one.setTotalPrice(sum);
                 temp += sum;
             }
             if (two.getQuantity() != null && two.getProduct().getCompPercent() != null && two.getUnitPrice() != null) {
                 two.setQuantity2(getNetOf(two));
-                sum =(int)( two.getUnitPrice() * two.getQuantity2() * (1 + (0.01 * two.getProduct().getCompPercent())));
+                sum = (int) (two.getUnitPrice() * two.getQuantity2() * (1 + (0.01 * two.getProduct().getCompPercent())));
                 two.setTotalPrice(sum);
                 temp += sum;
             }
             if (three.getQuantity() != null && three.getProduct().getCompPercent() != null && three.getUnitPrice() != null) {
                 three.setQuantity2(getNetOf(three));
-                sum = (int)(three.getUnitPrice() * three.getQuantity2() * (1 + (0.01 * three.getProduct().getCompPercent())));
+                sum = (int) (three.getUnitPrice() * three.getQuantity2() * (1 + (0.01 * three.getProduct().getCompPercent())));
                 three.setTotalPrice(sum);
                 temp += sum;
             }
             if (four.getQuantity() != null && four.getProduct().getCompPercent() != null && four.getUnitPrice() != null) {
                 four.setQuantity2(getNetOf(four));
-                sum = (int)(four.getUnitPrice() * four.getQuantity2() * (1 + (0.01 * four.getProduct().getCompPercent())));
+                sum = (int) (four.getUnitPrice() * four.getQuantity2() * (1 + (0.01 * four.getProduct().getCompPercent())));
                 four.setTotalPrice(sum);
                 temp += sum;
             }
             if (five.getQuantity() != null && five.getProduct().getCompPercent() != null && five.getUnitPrice() != null) {
                 five.setQuantity2(getNetOf(five));
-                sum = (int)(five.getUnitPrice() * five.getQuantity2() * (1 + (0.01 * five.getProduct().getCompPercent())));
+                sum = (int) (five.getUnitPrice() * five.getQuantity2() * (1 + (0.01 * five.getProduct().getCompPercent())));
                 five.setTotalPrice(sum);
                 temp += sum;
             }
             if (six.getQuantity() != null && six.getProduct().getCompPercent() != null && six.getUnitPrice() != null) {
                 six.setQuantity2(getNetOf(six));
-                sum =(int)( six.getUnitPrice() * six.getQuantity2() * (1 + (0.01 * six.getProduct().getCompPercent())));
+                sum = (int) (six.getUnitPrice() * six.getQuantity2() * (1 + (0.01 * six.getProduct().getCompPercent())));
                 six.setTotalPrice(sum);
                 temp += sum;
             }
@@ -92,7 +94,7 @@ public class PurchaseController implements Serializable {
         } catch (Exception e) {
 
         }
-        return  temp;
+        return temp;
     }
 
     public void setSixTotal(Double sixTotal) {
@@ -101,7 +103,6 @@ public class PurchaseController implements Serializable {
 
     private Double sixTotal;
     private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
-
 
 
     private PurchasedProductDTO one, two, three, four, five, six;
@@ -223,7 +224,6 @@ public class PurchaseController implements Serializable {
     }
 
 
-
     public void sixSave() {
         this.dto.setProductList(new ArrayList<>());
         if (one.getUnitPrice() != null && one.getQuantity() != null) {
@@ -276,24 +276,17 @@ public class PurchaseController implements Serializable {
         return file;
     }
 
-    private void setActuals () {
-        for (var a: this.dto.getProductList()) {
-            a.setActual(a.getQuantity2());
-        }
 
-    }
     public void uiSavePurchase() {
         logger.warning("uiSaveCalled");
-        if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
+        if (this.dto.getProductList() == null) return;
+        //if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
         calculateTotalPrice();
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
-        setActuals();
-        if (this.dto.getCompletedPurchaseDTOS() == null) {
-            service.savePurchase(this.dto);
-        } else {
-            logger.warning("Ehhez a merlegeleshez mar tartoznak felvasarlasi jegyek");
-        }
+        this.dto.setRemainingPrice(this.dto.getTotalPrice());
+        service.savePurchase(this.dto);
+
 
         getAllPurchases();
         this.setDto(new PurchaseDTO());
@@ -303,19 +296,16 @@ public class PurchaseController implements Serializable {
     }
 
 
-
     private void calculateTotalPrice() {
         if (this.dto.getProductList() == null) {
             this.dto.setTotalPrice(0.0);
         } else {
-            this.dto.setTotalPrice((double)this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingInt(Integer::intValue)));
+            this.dto.setTotalPrice((double) this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingInt(Integer::intValue)));
         }
     }
 
     public void deletePurchase() {
-        if (this.dto != null) {
-            service.deletePurchase(this.dto);
-        }
+        service.deletePurchase(this.dto);
         this.getAllPurchases();
         this.dto = new PurchaseDTO();
         this.pdfdisabled = true;

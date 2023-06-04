@@ -44,7 +44,7 @@
                     <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
-                        <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="accountnumber"/>
+                        <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="receiptId"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="currency" value="Fizetési valuta:"/><br/>
                     <p:selectOneMenu id="currency" value="#{saleController.dto.currency}" required="true" style="max-width: 120px" editable="true" ><br/>
@@ -62,20 +62,27 @@
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="sum" value="kifizetendő:"/><br/>
                     <p:inputText id="sum" value="#{saleController.dto.price}" required="true" /><br/>
-
+                    <p:outputLabel for="receiptId" value="Számla sorszáma: "/><h:message for="saleForm:receiptId" style="color:red"/><br/>
+                    <p:inputText id="receiptId"  value="#{saleController.dto.receiptId}"  required="false">
+                    </p:inputText>
 
                 </p:divider>
                 <p:divider>
 
-                    <p:outputLabel for="bookingdate" value="Felv.jegy dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="bookingdate" value="#{saleController.dto.bookingDate}">
+                    <p:outputLabel for="receiptDate" value="Számla dátuma:"/><br/>
+                    <p:inputMask mask="9999.99.99" id="receiptDate" value="#{saleController.dto.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                    </p:inputMask>
+                    </p:inputMask><br/>
+                    <p:outputLabel for="deadline" value="Fizetési határidő:"/><br/>
+                    <p:inputMask mask="9999.99.99" id="deadline" value="#{saleController.dto.deadLine}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:inputMask><br/>
+                    <p:outputLabel for="paymentDate" value="Fizetés dátuma:"/><br/>
+                    <p:inputMask mask="9999.99.99" id="paymentDate" value="#{saleController.dto.completionDate}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:inputMask><br/>
 
-                    <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="saleForm:accountnumber" style="color:red"/><br/>
-                    <p:inputMask mask="99999999-99999999-99999999" id="accountnumber"  value="#{saleController.dto.accountNumber}" validatorMessage="Rossz formátum">
-                        <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
-                    </p:inputMask><p/>
+                   <p/>
                     <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
                     <h:commandButton value="#{saleController.label}"
                                      action="#{saleController.uiSaveSale}"
@@ -184,10 +191,6 @@
                         <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel saleForm:productList" />
                     </h:commandButton>
 
-
-
-
-
     </p:panel>
 
     <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList"
@@ -233,6 +236,16 @@
         </p:column>
         <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{sale.price}"/>
+        </p:column>
+        <p:column headerText="Fiz. dát." sortBy="#{sale.completionDate}" filterBy="#{sale.completionDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{sale.completionDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
+        <p:column headerText="Telj.Dát." sortBy="#{sale.receiptDate}" filterBy="#{sale.receiptDate}" filterMatchMode="contains" width="4.5em" >
+            <h:outputText value="#{sale.receiptDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
         </p:column>
     </p:dataTable>
 </h:form>

@@ -2,7 +2,9 @@ package hu.torma.deliveryapplication.DTO;
 
 import hu.torma.deliveryapplication.entity.Sale;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import javax.persistence.Column;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +19,9 @@ public class SaleDTO implements Serializable {
     private BuyerDTO buyer;
     private String currency;
     private Date bookingDate;
-    private String accountNumber;
+    private String receiptId;
     private Double price;
+    private Date deadLine;
+    private Date completionDate;
+    private Date receiptDate;
 }

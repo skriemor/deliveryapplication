@@ -82,8 +82,8 @@ public class SaleController implements Serializable {
     }
 
     public void updateAccountNum() {
-        if (this.dto.getBuyer() != null)
-            this.dto.setAccountNumber(this.dto.getBuyer().getAccountNum());
+        //if (this.dto.getBuyer() != null)
+            //this.dto.setAccountNumber(this.dto.getBuyer().getAccountNum());
     }
 
     public void setProductDTO(PurchasedProductDTO productDTO) {

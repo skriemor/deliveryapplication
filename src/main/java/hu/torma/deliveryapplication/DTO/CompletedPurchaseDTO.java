@@ -4,21 +4,38 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @Data
 public class CompletedPurchaseDTO implements Serializable {
-    private final Integer id;
-    private final VendorDTO vendor;
-    private final int one;
-    private final int two;
-    private final int three;
-    private final int four;
-    private final int five;
-    private final int six;
-    private final Date receiptDate;
-    private final SiteDTO site;
-    private final String notes;
-    private final Double totalPrice;
-    private final Date bookedDate;
-    private final PurchaseDTO purchase;
+    Integer id;
+    VendorDTO vendor;
+    int one;
+    int two;
+    int three;
+    int four;
+    int five;
+    int six;
+    Date receiptDate;
+    SiteDTO site;
+    String notes;
+    int totalPrice;
+    Date bookedDate;
+
+    Date paymentDate;
+    private List<CompletionRecordDTO> records;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CompletedPurchaseDTO that = (CompletedPurchaseDTO) o;
+        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(bookedDate, that.bookedDate);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice, bookedDate, records);
+    }
 }

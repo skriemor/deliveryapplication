@@ -22,9 +22,6 @@ public class PurchasedProduct {
     @Column(name = "quantity2")
     private Integer quantity2;
 
-    @Column(name = "actual_quantity")
-    private Integer actual;
-
     @Column(name = "correction_percent")
     private Integer corrPercent;
 

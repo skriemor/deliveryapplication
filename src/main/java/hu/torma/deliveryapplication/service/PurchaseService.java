@@ -15,4 +15,6 @@ public interface PurchaseService {
     void deletePurchase(PurchaseDTO PurchaseDTO);
 
     PurchaseDTO addProductToPurchase(PurchaseDTO PurchaseDTO, PurchasedProductDTO PurchasedProductDTO);
+
+    PurchaseDTO getPurchaseById(Integer id);
 }

@@ -4,10 +4,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Objects;
@@ -79,4 +76,15 @@ public class Vendor {
     @Column(name = "contract")
     private String contract;
 
+    @ManyToOne
+    @JoinColumn(name = "mediator_id")
+    private Mediator mediator;
+
+    public Mediator getMediator() {
+        return mediator;
+    }
+
+    public void setMediator(Mediator mediator) {
+        this.mediator = mediator;
+    }
 }

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:form id="mediatorForm" style="overflow-y: scroll; margin: 80px auto;">
+
+
+<style type="text/css">
+</style>
+    <p:panel header="Közvetítő" id="mediatorPanel" >
+        <div class="card">
+
+        <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                     columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid "
+                     style="border:0px none; padding: 0px; width: 100%;">
+            <p:divider >
+                <p:outputLabel for="name" value="Közvetítő neve: "/> <h:message for="mediatorForm:name" style="color:red"/><br/>
+                <p:inputText id="name" value="#{mediatorController.dto.id}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
+
+                </p:inputText><br/>
+
+
+
+                <h:commandButton value="#{mediatorController.label}"
+                                 action="#{mediatorController.uiSaveMediator}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="mediatorForm" render="mediatorList mediatorPanel" />
+                </h:commandButton>
+
+                <h:commandButton value="Új"
+                                 action="#{mediatorController.newMediator}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="mediatorForm" render="mediatorList mediatorPanel" />
+                </h:commandButton>
+                <h:commandButton value="Töröl"
+                                 action="#{mediatorController.deleteMediator}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="mediatorForm" render="mediatorList mediatorPanel" />
+                </h:commandButton>
+            </p:divider>
+
+        </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:dataTable var="mediator" value="#{mediatorController.dtoList}" id="mediatorList"
+                 lazy="false"
+                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                   selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                    selection="#{mediatorController.dto}" rowKey="#{mediator.id}">
+        <p:ajax event="rowSelect"  listener="#{mediatorController.editMediator}" update="mediatorForm:mediatorPanel"/>
+
+        <p:column headerText="Neve" sortBy="#{mediator.id}" filterBy="#{mediator.id}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{mediator.id}"/>
+        </p:column>
+
+    </p:dataTable>
+
+
+
+
+
+
+
+</h:form>
+</html>
+
+
+
+

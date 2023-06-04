@@ -24,7 +24,7 @@
             <p:divider >
                 <p:outputLabel for="name" value="Vevő neve: "/> <h:message for="buyerForm:name" style="color:red"/><br/>
                 <p:inputText id="name" value="#{buyerController.dto.name}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
-                    <f:validateRegex pattern="^^([a-zA-Z]{2,}\s[a-zA-Z]{1,}'?-?[a-zA-Z]{2,}\s?([a-zA-Z]{1,})?)"/>
+
                 </p:inputText><br/>
                 <p:outputLabel for="address" value="Lakcím: "/><br/>
                 <p:inputText id="address" value="#{buyerController.dto.address}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>

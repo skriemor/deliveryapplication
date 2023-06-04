@@ -2,10 +2,7 @@ package hu.torma.deliveryapplication.entity;
 
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Data
@@ -22,5 +19,6 @@ public class Buyer {
     private String country;
     @Column(name = "address", nullable = false)
     private String address;
+
 
 }

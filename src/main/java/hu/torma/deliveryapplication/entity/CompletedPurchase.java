@@ -2,6 +2,8 @@ package hu.torma.deliveryapplication.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -43,6 +45,10 @@ public class CompletedPurchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date receiptDate;
 
+    @Column(name = "payment_date")
+    @DateTimeFormat(pattern = "yyyy.MM.dd")
+    private Date paymentDate;
+
     @ManyToOne
     @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
     private Site site;
@@ -51,11 +57,11 @@ public class CompletedPurchase {
     private String notes;
 
     @Column(name = "total_price")
-    private Double totalPrice;
+    private int totalPrice;
 
+    @LazyCollection(LazyCollectionOption.FALSE)
+    @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CompletionRecord> records;
 
-    @ManyToOne
-    @JoinColumn(name = "purchase_id")
-    private Purchase purchase;
 
 }
