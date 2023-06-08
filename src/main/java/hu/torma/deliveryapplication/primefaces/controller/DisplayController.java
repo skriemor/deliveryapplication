@@ -10,11 +10,13 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @SessionScope
 @Controller("displayController")
@@ -128,7 +130,7 @@ public class DisplayController implements Serializable {
 
     private void doFilterPaidOnly() {
         if (paidOnly) {
-            CPDTOS = CPDTOS.stream().filter(cp->cp.getPaymentDate()!=null).toList();
+            CPDTOS = CPDTOS.stream().filter(cp -> cp.getPaymentDate() != null).toList();
         }
     }
 
@@ -161,6 +163,7 @@ public class DisplayController implements Serializable {
         doFilterPaidOnly();
         return new ArrayList<>(CPDTOS);
     }
+
     public ArrayList<MediatorDisplay> getMediatorDisplays() {
         var tmp = new ArrayList<MediatorDisplay>();
         mediatorDTOS = mediatorService.getAllMediators();
@@ -172,11 +175,11 @@ public class DisplayController implements Serializable {
     private ArrayList<PurchaseDTO> getPurchasedProductListDateFiltered(List<PurchaseDTO> lst) {
         if (filterDateFrom3 != null && filterDateTo3 != null) {
 
-            lst = lst.stream().filter(p -> (p.getReceiptDate().after(filterDateFrom3) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3)) ) && p.getReceiptDate().before(filterDateTo3)).toList();
+            lst = lst.stream().filter(p -> (p.getReceiptDate().after(filterDateFrom3) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3))) && p.getReceiptDate().before(filterDateTo3)).toList();
 
         }
         if (filterDateFrom3 != null && filterDateTo3 == null) {
-            lst = lst.stream().filter(p -> p.getReceiptDate().after(filterDateFrom3) ||p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3))).toList();
+            lst = lst.stream().filter(p -> p.getReceiptDate().after(filterDateFrom3) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3))).toList();
         }
         if (filterDateFrom3 == null && filterDateTo3 != null) {
             lst = lst.stream().filter(p -> p.getReceiptDate().before(filterDateTo3)).toList();
@@ -192,7 +195,7 @@ public class DisplayController implements Serializable {
             var disp = new MediatorDisplay();
             var tmpsv = purchaseService.getAllPurchases();
             tmpsv = getPurchasedProductListDateFiltered(tmpsv);
-            var tmps = tmpsv.stream().filter(p -> p.getVendor().getMediator().getId().equals(m.getId())).flatMap(g -> g.getProductList().stream()).toList();
+            var tmps = tmpsv.stream().filter(p -> p.getVendor().getMediator() != null && p.getVendor().getMediator().getId().equals(m.getId())).flatMap(g -> g.getProductList().stream()).toList();
 
             disp.setOne(tmps.stream().filter(c -> c.getProduct().getId().equals("I.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
             disp.setTwo(tmps.stream().filter(c -> c.getProduct().getId().equals("II.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
@@ -206,15 +209,18 @@ public class DisplayController implements Serializable {
     }
 
 
-
     @Autowired
     CompletionRecordService recordService;
+
+    public String getFormattedRemainingPrice(int id) {
+        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(","," ");
+    }
     public int getRemaningPrice(int id) {
         var temp = purchaseService.getPurchaseById(id);
         var tempList = temp.getProductList();
         var total = temp.getTotalPrice();
-        var records = recordService.getAllCompletionRecords().stream().filter(r->r.getPurchaseId() == id).toList();
-        for (var r: records){
+        var records = recordService.getAllCompletionRecords().stream().filter(r -> r.getPurchaseId() == id).toList();
+        for (var r : records) {
             total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
             total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
             total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
@@ -224,5 +230,9 @@ public class DisplayController implements Serializable {
         }
 
         return total.intValue();
+    }
+
+    public String getFormattedNumber(int i) {
+        return NumberFormat.getNumberInstance(Locale.US).format(i).replaceAll(","," ");
     }
 }

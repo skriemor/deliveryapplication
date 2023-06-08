@@ -3,8 +3,10 @@ package hu.torma.deliveryapplication.DTO;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Data
@@ -39,5 +41,10 @@ public class CompletedPurchaseDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice, bookedDate, records);
+    }
+
+
+    public String getFormattedTotalPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(","," ");
     }
 }

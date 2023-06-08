@@ -20,9 +20,11 @@ import javax.annotation.PostConstruct;
 import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -41,6 +43,9 @@ public class PurchaseController implements Serializable {
         return dto.getQuantity2();
     }
 
+    public String getFormattedPriceOf(PurchasedProductDTO i){
+        return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(i)).replaceAll(","," ");
+    }
     public Integer getPriceOf(PurchasedProductDTO dto_) {
         if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
@@ -115,7 +120,9 @@ public class PurchaseController implements Serializable {
        return total.intValue();
     }
 
-
+    public String getFormattedRemainingPrice(int id) {
+        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(","," ");
+    }
 
 
 
@@ -546,5 +553,9 @@ public class PurchaseController implements Serializable {
 
     public void setSix(PurchasedProductDTO six) {
         this.six = six;
+    }
+
+    public String getFormattedSixTotal() {
+        return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(","," ");
     }
 }

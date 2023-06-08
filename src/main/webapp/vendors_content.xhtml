@@ -94,8 +94,7 @@
                     <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="vendorForm:accountnumber"
                                                                                         style="color:red"/><br/>
                     <p:inputMask mask="99999999-99999999-99999999" id="accountnumber" tabindex="8"
-                                 value="#{vendorController.dto.accountNumber}" validatorMessage="Rossz formátum">
-                        <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
+                                 value="#{vendorController.dto.accountNumber}" >
                     </p:inputMask><br/>
 
 
@@ -121,7 +120,6 @@
                     </p:commandLink>
                     <p:inputMask required="false" mask="9999999999" id="activity" tabindex="11"
                                  value="#{vendorController.dto.activity}">
-                        <f:validateRegex pattern="\d{10}$"/>
                     </p:inputMask><br/>
                     <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
                     <p:inputText id="filenum" value="#{vendorController.dto.fileNumber}" tabindex="12"/><br/>
@@ -150,7 +148,7 @@
                             style="color:red"/><br/>
                     </p:commandLink>
                     <p:inputMask mask="aa9999999" id="felir" value="#{vendorController.dto.felir}" tabindex="17">
-                        <f:validateRegex pattern="^[A-Z]{2}\d{7}$"/>
+
                     </p:inputMask><br/>
                     <p:outputLabel for="contract" value="Szerződés:"/><br/>
                     <p:selectOneMenu id="contract" value="#{vendorController.dto.contract}" required="false" tabindex="18"

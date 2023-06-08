@@ -68,14 +68,14 @@
                     <h:outputText value="#{cPurchase.six}"/>
                 </p:column>
                 <p:column headerText="Vételár"   width="5em" >
-                    <h:outputText value="#{cPurchase.totalPrice}"/>
+                    <h:outputText value="#{cPurchase.formattedTotalPrice} HUF"/>
                 </p:column>
                 <p:column headerText="Rögz. dátum"   width="4.5em" >
                     <h:outputText value="#{cPurchase.bookedDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Mérleg dátum"   width="4.5em" >
+                <p:column headerText="Felv. dátum"   width="4.5em" >
                     <h:outputText value="#{cPurchase.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
@@ -129,12 +129,13 @@
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
+                <p:column headerText="Vételár"  filterBy="#{sale.formattedPrice}" filterMatchMode="contains" width="5em" >
+                    <h:outputText value="#{sale.formattedPrice}"/>
+                </p:column>
                 <p:column headerText="Fiz. valuta"  filterBy="#{sale.currency}" filterMatchMode="contains" width="5em" >
                     <h:outputText value="#{sale.currency}"/>
                 </p:column>
-                <p:column headerText="Vételár"  filterBy="#{sale.price}" filterMatchMode="contains" width="5em" >
-                    <h:outputText value="#{sale.price}"/>
-                </p:column>
+
             </p:dataTable>
         </p:tab>
         <p:tab title="Vásárlások">
@@ -191,10 +192,10 @@
                     <h:outputText value="#{purchase.productList.get(5).quantity2}"/>
                 </p:column>
                 <p:column headerText="Vételár"   width="5em" >
-                    <h:outputText value="#{purchase.totalPrice.intValue()}"/>
+                    <h:outputText value="#{purchase.formattedTotalPrice} HUF"/>
                 </p:column>
                 <p:column headerText="Fennm. összeg"   width="5em" >
-                    <h:outputText value="#{displayController.getRemaningPrice(purchase.id)}"/>
+                    <h:outputText value="#{displayController.getFormattedRemainingPrice(purchase.id)} HUF"/>
                 </p:column>
                 <p:column headerText="Rögz. dátum"   width="4.5em" >
                     <h:outputText value="#{purchase.bookedDate}">

@@ -139,7 +139,7 @@
                     <p:outputLabel id="net1" value="#{purchaseController.getNetOf(purchaseController.one)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price1" value="#{purchaseController.getPriceOf(purchaseController.one)}Ft"/>
+                    <p:outputLabel id="price1" value="#{purchaseController.getFormattedPriceOf(purchaseController.one)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -160,7 +160,7 @@
                     <p:outputLabel id="net2" value="#{purchaseController.getNetOf(purchaseController.two)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price2" value="#{purchaseController.getPriceOf(purchaseController.two)}Ft"/>
+                    <p:outputLabel id="price2" value="#{purchaseController.getFormattedPriceOf(purchaseController.two)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -181,7 +181,7 @@
                     <p:outputLabel id="net3" value="#{purchaseController.getNetOf(purchaseController.three)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price3" value="#{purchaseController.getPriceOf(purchaseController.three)}Ft"/>
+                    <p:outputLabel id="price3" value="#{purchaseController.getFormattedPriceOf(purchaseController.three)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -202,7 +202,7 @@
                     <p:outputLabel id="net4" value="#{purchaseController.getNetOf(purchaseController.four)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price4" value="#{purchaseController.getPriceOf(purchaseController.four)}Ft"/>
+                    <p:outputLabel id="price4" value="#{purchaseController.getFormattedPriceOf(purchaseController.four)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -223,7 +223,7 @@
                     <p:outputLabel id="net5" value="#{purchaseController.getNetOf(purchaseController.five)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price5" value="#{purchaseController.getPriceOf(purchaseController.five)}Ft"/>
+                    <p:outputLabel id="price5" value="#{purchaseController.getFormattedPriceOf(purchaseController.five)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -244,14 +244,14 @@
                     <p:outputLabel id="net6" value="#{purchaseController.getNetOf(purchaseController.six)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price6" value="#{purchaseController.getPriceOf(purchaseController.six)}Ft"/>
+                    <p:outputLabel id="price6" value="#{purchaseController.getFormattedPriceOf(purchaseController.six)}Ft"/>
                 </td>
             </tr>
 
             </tbody>
         </table>
         <p:outputLabel id="totalPricePerProduct1"
-                       value="Termékek részösszesített ára: #{purchaseController.sixTotal} HUF"/>
+                       value="Termékek részösszesített ára: #{purchaseController.getFormattedSixTotal()} HUF"/>
         <p/>
         <h:commandButton value="Mentés"
                          action="#{purchaseController.sixSave}"
@@ -343,11 +343,11 @@
         </p:column>
         <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}"
                   filterMatchMode="contains" width="5em">
-            <h:outputText value="#{purchase.totalPrice.intValue()}"/>
+            <h:outputText value="#{purchase.formattedTotalPrice} HUF"/>
         </p:column>
         <p:column headerText="Fennm.Össz." sortBy="#{purchaseController.getRemaningPrice(purchase.id)}" filterBy="#{purchaseController.getRemaningPrice(purchase.id)}"
                   filterMatchMode="contains" width="5em">
-            <h:outputText value="#{purchaseController.getRemaningPrice(purchase.id)}"/>
+            <h:outputText value="#{purchaseController.getFormattedRemainingPrice(purchase.id)} HUF"/>
         </p:column>
         <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}" filterBy="#{purchase.bookedDate}"
                   filterMatchMode="contains" width="4.5em">

@@ -16,10 +16,12 @@ import org.springframework.web.context.annotation.SessionScope;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 @SessionScope
@@ -34,6 +36,16 @@ public class CompletedPurchaseController implements Serializable {
         var g = this.purchaseDTO.getProductList().get(i);
         Integer sum = (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
         return sum;
+    }
+
+    public String getFormattedPriceOf(int g) {
+        return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(g)).replaceAll(",", " ");
+
+    }
+
+    public String getFormattedSixTotal() {
+        return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
+
     }
 
     public Integer getSixTotal() {
@@ -54,14 +66,15 @@ public class CompletedPurchaseController implements Serializable {
         return temp;
     }
 
-@Autowired
-PurchaseService purchaseService;
-    public int getRemaningPrice(int id) {
+    @Autowired
+    PurchaseService purchaseService;
+
+    public int getRemainingPrice(int id) {
         var temp = purchaseService.getPurchaseById(id);
         var tempList = temp.getProductList();
         var total = temp.getTotalPrice();
-        var records = recordService.getAllCompletionRecords().stream().filter(r->r.getPurchaseId() == id).toList();
-        for (var r: records){
+        var records = recordService.getAllCompletionRecords().stream().filter(r -> r.getPurchaseId() == id).toList();
+        for (var r : records) {
             total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
             total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
             total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
@@ -73,6 +86,11 @@ PurchaseService purchaseService;
         return total.intValue();
     }
 
+    public String getFormattedRemainingPrice(int id) {
+
+        return NumberFormat.getNumberInstance(Locale.US).format(getRemainingPrice(id)).replaceAll(",", " ");
+
+    }
 
     public void setSixTotal(Double sixTotal) {
         this.sixTotal = sixTotal;
@@ -194,7 +212,7 @@ PurchaseService purchaseService;
         setQuants();
         calculateTotalPrice();
         logger.info("DTO's ONE IS: " + dto.getOne());
-        this.dto.setTotalPrice(getSixTotal());
+        this.dto.setTotalPrice(dto.getRecords().stream().mapToInt(CompletionRecordDTO::getPrice).sum());
         var b = cService.saveCompletedPurchase(dto);
         getAllPurchases();
 
@@ -429,7 +447,7 @@ PurchaseService purchaseService;
         var usedIDs = new ArrayList<Integer>();
         if (dto.getRecords() != null)
             usedIDs.addAll(dto.getRecords().stream().map(v -> v.getPurchaseId().intValue()).toList());
-        var temp = OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId())).filter(v->getRemaningPrice(v.getId())!=0).toList();
+        var temp = OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId())).filter(v -> getRemainingPrice(v.getId()) != 0).toList();
         return new ArrayList<>(temp);
     }
 }

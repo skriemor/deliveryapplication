@@ -6,8 +6,10 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import java.io.Serializable;
+import java.text.NumberFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * A DTO for the {@link Sale} entity
@@ -24,4 +26,8 @@ public class SaleDTO implements Serializable {
     private Date deadLine;
     private Date completionDate;
     private Date receiptDate;
+
+    public String getFormattedPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(","," ");
+    }
 }

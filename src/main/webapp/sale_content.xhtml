@@ -83,25 +83,7 @@
                     </p:inputMask><br/>
 
                    <p/>
-                    <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
-                    <h:commandButton value="#{saleController.label}"
-                                     action="#{saleController.uiSaveSale}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel saleForm:productList saleForm:fixProductPanel" />
-                    </h:commandButton>
 
-                    <h:commandButton value="Új"
-                                     action="#{saleController.newSale}"
-                                     style="width: 10em;height: 2.6em">
-                        <p:resetInput target="saleForm:salePanel"/>
-                        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:productList saleForm:fixProductPanel" />
-                        <p:ajax update="saleForm:salePanel"/>
-                    </h:commandButton>
-                    <h:commandButton value="Töröl"
-                                     action="#{saleController.deleteSale}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="saleForm:SalePanel" render="saleList salePanel saleForm:fixProductPanel saleForm:productList" />
-                    </h:commandButton><p/>
                 </p:divider>
 
             </p:panelGrid>
@@ -193,6 +175,26 @@
 
     </p:panel>
 
+    <hr/>
+    <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
+    <h:commandButton value="#{saleController.label}"
+                     action="#{saleController.uiSaveSale}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel saleForm:productList saleForm:fixProductPanel" />
+    </h:commandButton>
+
+    <h:commandButton value="Új"
+                     action="#{saleController.newSale}"
+                     style="width: 10em;height: 2.6em">
+        <p:resetInput target="saleForm:salePanel"/>
+        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:productList saleForm:fixProductPanel" />
+        <p:ajax update="saleForm:salePanel"/>
+    </h:commandButton>
+    <h:commandButton value="Töröl"
+                     action="#{saleController.deleteSale}"
+                     style="width: 10em;height: 2.6em">
+        <f:ajax execute="saleForm:SalePanel" render="saleList salePanel saleForm:fixProductPanel saleForm:productList" />
+    </h:commandButton><p/>
     <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList"
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
@@ -231,12 +233,13 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
+        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains" width="5em" >
+            <h:outputText value="#{sale.formattedPrice}"/>
+        </p:column>
         <p:column headerText="Fiz. valuta" sortBy="#{sale.currency}" filterBy="#{sale.currency}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{sale.currency}"/>
         </p:column>
-        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains" width="5em" >
-            <h:outputText value="#{sale.price}"/>
-        </p:column>
+
         <p:column headerText="Fiz. dát." sortBy="#{sale.completionDate}" filterBy="#{sale.completionDate}" filterMatchMode="contains" width="4.5em" >
             <h:outputText value="#{sale.completionDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>

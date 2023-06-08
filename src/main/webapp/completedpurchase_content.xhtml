@@ -78,7 +78,7 @@
 
                 </p:divider>
                 <p:divider>
-                    <p:outputLabel for="receiptDate" value="Mérlegelési jegy dátuma:" /><br/>
+                    <p:outputLabel for="receiptDate" value="Felvásárlási jegy dátuma:" /><br/>
                     <p:inputMask mask="9999.99.99" id="receiptDate" tabindex="4"
                                  value="#{completedPurchaseController.dto.receiptDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
@@ -165,7 +165,7 @@
 
 
                 <td align="center">
-                    <p:outputLabel id="price1" value="#{completedPurchaseController.getPriceOf(0)}Ft"/>
+                    <p:outputLabel id="price1" value="#{completedPurchaseController.getFormattedPriceOf(0)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -180,7 +180,7 @@
                     <p:ajax event="keyup" update="totalPricePerProduct1  price2"/>
                 </p:inputText><br/></td>
                 <td align="center">
-                    <p:outputLabel id="price2" value="#{completedPurchaseController.getPriceOf(1)}Ft"/>
+                    <p:outputLabel id="price2" value="#{completedPurchaseController.getFormattedPriceOf(1)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -195,7 +195,7 @@
                     <p:ajax event="keyup" update="totalPricePerProduct1  price3"/>
                 </p:inputText><br/></td>
                 <td align="center">
-                    <p:outputLabel id="price3" value="#{completedPurchaseController.getPriceOf(2)}Ft"/>
+                    <p:outputLabel id="price3" value="#{completedPurchaseController.getFormattedPriceOf(2)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -210,7 +210,7 @@
                     <p:ajax event="keyup" update="totalPricePerProduct1  price4"/>
                 </p:inputText><br/></td>
                 <td align="center">
-                    <p:outputLabel id="price4" value="#{completedPurchaseController.getPriceOf(3)}Ft"/>
+                    <p:outputLabel id="price4" value="#{completedPurchaseController.getFormattedPriceOf(3)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -225,7 +225,7 @@
                     <p:ajax event="keyup" update="totalPricePerProduct1  price5"/>
                 </p:inputText><br/></td>
                 <td align="center">
-                    <p:outputLabel id="price5" value="#{completedPurchaseController.getPriceOf(4)}Ft"/>
+                    <p:outputLabel id="price5" value="#{completedPurchaseController.getFormattedPriceOf(4)}Ft"/>
                 </td>
             </tr>
             <tr>
@@ -240,7 +240,7 @@
                     <p:ajax event="keyup" update="totalPricePerProduct1  price6"/>
                 </p:inputText><br/></td>
                 <td align="center">
-                    <p:outputLabel id="price6" value="#{completedPurchaseController.getPriceOf(5)}Ft"/>
+                    <p:outputLabel id="price6" value="#{completedPurchaseController.getFormattedPriceOf(5)}Ft"/>
                 </td>
             </tr>
 
@@ -248,7 +248,7 @@
         </table>
 
         <p:outputLabel  id="totalPricePerProduct1"
-                       value="Termékek részösszesített ára: #{ completedPurchaseController.sixTotal} HUF"/>
+                       value="Termékek részösszesített ára: #{ completedPurchaseController.getFormattedSixTotal()} HUF"/>
         <p/>
 
 
@@ -261,7 +261,7 @@
             <p:ajax event="change"  update="fixProductPanel" />
             <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
             <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                           itemLabel="#{purchasevar.id} (#{completedPurchaseController.getRemaningPrice(purchasevar.id)} HUF)"
+                           itemLabel="#{purchasevar.id} (#{completedPurchaseController.getFormattedRemainingPrice(purchasevar.id)} HUF)"
                            itemValue="#{purchasevar}"/>
         </p:selectOneMenu><br/>-
     </p:panel>
@@ -368,15 +368,10 @@
                   filterMatchMode="contains" width="5em">
             <h:outputText value="#{purchase.site.siteName}"/>
         </p:column>
-        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}" filterBy="#{purchase.receiptDate}"
-                  filterMatchMode="contains" width="4.5em">
-            <h:outputText value="#{purchase.receiptDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
+
         <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}"
                   filterMatchMode="contains" width="5em">
-            <h:outputText value="#{purchase.totalPrice}"/>
+            <h:outputText value="#{purchase.getFormattedTotalPrice()} HUF"/>
         </p:column>
         <p:column headerText="Fiz. dátum" sortBy="#{purchase.paymentDate}" filterBy="#{purchase.paymentDate}"
                   filterMatchMode="contains" width="4.5em">
@@ -384,9 +379,9 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}" filterBy="#{purchase.bookedDate}"
+        <p:column headerText="Felv.jegy dátuma" sortBy="#{purchase.receiptDate}" filterBy="#{purchase.receiptDate}"
                   filterMatchMode="contains" width="4.5em">
-            <h:outputText value="#{purchase.bookedDate}">
+            <h:outputText value="#{purchase.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>

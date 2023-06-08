@@ -6,10 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.text.NumberFormat;
+import java.util.*;
 
 @Data
 public class PurchaseDTO implements Serializable {
@@ -45,5 +43,13 @@ public class PurchaseDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, vendor, receiptDate, site, notes, totalPrice, remainingPrice, bookedDate);
+    }
+
+    public String getFormattedTotalPrice(){
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(","," ");
+    }
+
+    public String getFormattedRemainingPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.remainingPrice).replaceAll(","," ");
     }
 }
