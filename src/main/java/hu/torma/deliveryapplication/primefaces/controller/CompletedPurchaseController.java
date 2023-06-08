@@ -54,6 +54,26 @@ public class CompletedPurchaseController implements Serializable {
         return temp;
     }
 
+@Autowired
+PurchaseService purchaseService;
+    public int getRemaningPrice(int id) {
+        var temp = purchaseService.getPurchaseById(id);
+        var tempList = temp.getProductList();
+        var total = temp.getTotalPrice();
+        var records = recordService.getAllCompletionRecords().stream().filter(r->r.getPurchaseId() == id).toList();
+        for (var r: records){
+            total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
+        }
+
+        return total.intValue();
+    }
+
+
     public void setSixTotal(Double sixTotal) {
         this.sixTotal = sixTotal;
     }
@@ -409,7 +429,7 @@ public class CompletedPurchaseController implements Serializable {
         var usedIDs = new ArrayList<Integer>();
         if (dto.getRecords() != null)
             usedIDs.addAll(dto.getRecords().stream().map(v -> v.getPurchaseId().intValue()).toList());
-        var temp = OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId())).toList();
+        var temp = OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId())).filter(v->getRemaningPrice(v.getId())!=0).toList();
         return new ArrayList<>(temp);
     }
 }

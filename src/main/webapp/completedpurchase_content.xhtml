@@ -37,7 +37,7 @@
     </script>
     <style type="text/css">
     </style>
-    <p:panel header="Vásárlások" id="purchasePanel" toggleable="true">
+    <p:panel header="Felvásárlási jegyek" id="purchasePanel" toggleable="true">
         <div class="card">
 
             <p:panelGrid columns="3" contentStyle="margin: 0; padding: 0; line-height: 21px;"
@@ -46,15 +46,16 @@
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0 none; padding: 0; width: 100%;">
                 <p:divider>
-                    <p:remoteCommand name="updateVendor" update="vendor"/>
+                    <p:remoteCommand name="updateVendor" update="vendor v1 v2 v3 v4 v5 v6 v7 v8"/>
                     <p:remoteCommand name="updateSite" update="site"/>
 
                     <p:outputLabel for="vendor" value="Eladó neve: "/><p:commandButton
                         style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
                         onclick="funcForWindowPopup()"/><br/>
-                    <p:selectOneMenu id="vendor" value="#{completedPurchaseController.dto.vendor}" required="true"
+                    <p:selectOneMenu id="vendor" value="#{completedPurchaseController.dto.vendor}" required="true" tabindex="1"
                                      converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
-                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>
+                        <p:ajax event="change" update="v1 v2 v3 v4 v5 v6 v7 v8"/>
+                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor v1 v2 v3 v4 v5 v6 v7 v8" />
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
                                        itemLabel="#{vendorvar.vendorName}(#{vendorvar.city})" itemValue="#{vendorvar}"/>
@@ -63,22 +64,27 @@
                     <p:outputLabel for="site" value="Telephely: "/><p:commandButton
                         style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
                         onclick="funcForWindowPopup2()"/><br/>
-                    <p:selectOneMenu id="site" value="#{completedPurchaseController.dto.site}" required="true"
+                    <p:selectOneMenu id="site" value="#{completedPurchaseController.dto.site}" required="true" tabindex="2"
                                      converter="#{siteConverter}" filter="true" filterMatchMode="contains">
                         <f:selectItems value="#{siteController.dtoList}" var="sitevar" itemLabel="#{sitevar.siteName}"
                                        itemValue="#{sitevar}"/>
                     </p:selectOneMenu><br/>
-
+                    <p:outputLabel for="paymentMethod" value="Fizetési mód: "/>
+                   <br/>
+                    <p:selectOneMenu id="paymentMethod" value="#{completedPurchaseController.dto.paymentMethod}" required="true" tabindex="3">
+                        <f:selectItem itemValue="Készpénz" itemLabel="Készpénz"/>
+                        <f:selectItem itemValue="Átutalás" itemLabel="Átutalás"/>
+                    </p:selectOneMenu><br/>
 
                 </p:divider>
                 <p:divider>
-                    <p:outputLabel for="receiptDate" value="Mérlegelési jegy dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="receiptDate"
+                    <p:outputLabel for="receiptDate" value="Mérlegelési jegy dátuma:" /><br/>
+                    <p:inputMask mask="9999.99.99" id="receiptDate" tabindex="4"
                                  value="#{completedPurchaseController.dto.receiptDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
                     <p:outputLabel for="paymentDate" value="Fizetés dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="paymentDate"
+                    <p:inputMask mask="9999.99.99" id="paymentDate" tabindex="5"
                                  value="#{completedPurchaseController.dto.paymentDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
@@ -86,6 +92,41 @@
                 </p:divider>
 
             </p:panelGrid>
+
+        </div>
+
+        <div title="Termelői adatok">
+            <table border="1" style="border-collapse: collapse">
+                <tr>
+                    <td><p:outputLabel value="Termelő neve: "/> </td>
+                    <td><p:outputLabel id="v1" value="#{completedPurchaseController.dto.vendor.vendorName}"/></td>
+                    <td><p:outputLabel value="Szerődés: "/></td>
+                    <td><p:outputLabel id="v3" value="#{completedPurchaseController.dto.vendor.contract}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="Születési ideje: "/></td>
+                    <td><p:outputLabel id="v2" value="#{completedPurchaseController.dto.vendor.birthDate}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:outputLabel></td>
+                    <td><p:outputLabel value="ÖCSG: "/></td>
+                    <td><p:outputLabel id="v8" value="#{completedPurchaseController.dto.vendor.fileNumber}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="Adószáma: "/></td>
+                    <td><p:outputLabel id="v5" value="#{completedPurchaseController.dto.vendor.taxNumber}"/></td>
+                    <td><p:outputLabel value="Számlaszáma: "/></td>
+                    <td><p:outputLabel id="v6" value="#{completedPurchaseController.dto.vendor.accountNumber}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="Telefon: "/></td>
+                    <td><p:outputLabel id="v4" value="#{completedPurchaseController.dto.vendor.phone}"/></td>
+                    <td><p:outputLabel value="NEBIH: "/></td>
+                    <td><p:outputLabel id="v7" value="#{completedPurchaseController.dto.vendor.activity}"/></td>
+                </tr>
+            </table>
+
+
+
 
         </div>
     </p:panel>
@@ -220,7 +261,7 @@
             <p:ajax event="change"  update="fixProductPanel" />
             <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
             <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                           itemLabel="#{purchasevar.id} (#{purchasevar.remainingPrice.intValue()} HUF)"
+                           itemLabel="#{purchasevar.id} (#{completedPurchaseController.getRemaningPrice(purchasevar.id)} HUF)"
                            itemValue="#{purchasevar}"/>
         </p:selectOneMenu><br/>-
     </p:panel>
@@ -241,6 +282,7 @@
     </h:commandButton>
 
     <hr></hr>
+
     <p/>
     <h:commandButton value="#{completedPurchaseController.label}"
                      action="#{completedPurchaseController.uiSaveCompletedPurchase()}"

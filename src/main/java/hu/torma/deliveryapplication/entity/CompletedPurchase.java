@@ -56,6 +56,9 @@ public class CompletedPurchase {
     @Column(name = "notes")
     private String notes;
 
+    @Column(name = "payment_method")
+    private String paymentMethod;
+
     @Column(name = "total_price")
     private int totalPrice;
 

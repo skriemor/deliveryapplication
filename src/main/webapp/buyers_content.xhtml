@@ -9,8 +9,16 @@
 
 
 <h:form id="buyerForm" style="overflow-y: scroll; margin: 80px auto;">
-
-
+    <script type="application/javascript">
+        $('#buyerForm').on('keydown', 'input', function (event) {
+            if (event.which == 13) {
+                event.preventDefault();
+                var $this = $(event.target);
+                var index = parseFloat($this.attr('tabindex'));
+                $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+            }
+        });
+    </script>
 <style type="text/css">
 </style>
     <p:panel header="Vásárló" id="buyerPanel" >
@@ -23,24 +31,24 @@
                      style="border:0px none; padding: 0px; width: 100%;">
             <p:divider >
                 <p:outputLabel for="name" value="Vevő neve: "/> <h:message for="buyerForm:name" style="color:red"/><br/>
-                <p:inputText id="name" value="#{buyerController.dto.name}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név">
+                <p:inputText id="name" value="#{buyerController.dto.name}" required="true" requiredMessage="Kötelező kitölteni!"  validatorMessage="Helytelen név" tabindex="1">
 
                 </p:inputText><br/>
                 <p:outputLabel for="address" value="Lakcím: "/><br/>
-                <p:inputText id="address" value="#{buyerController.dto.address}" required="true" requiredMessage="Kötelező kitölteni!" /><br/>
+                <p:inputText id="address" value="#{buyerController.dto.address}" required="true" requiredMessage="Kötelező kitölteni!"  tabindex="2"/><br/>
                 <p:outputLabel for="paper" value="Papír: "/><br/>
-                <p:selectOneMenu id="paper" value="#{buyerController.dto.paper}" required="true" style="max-width: 120px" ><br/>
+                <p:selectOneMenu id="paper" value="#{buyerController.dto.paper}" required="true" style="max-width: 120px"  tabindex="3"><br/>
                     <f:selectItem itemLabel="Igen" itemValue="Igen"/>
                     <f:selectItem itemLabel="Nem" itemValue="Nem"/>
                 </p:selectOneMenu><br/>
             </p:divider>
             <p:divider>
-                <p:outputLabel for="accountNumber" value="Számlaszám: "/><h:message for="buyerForm:accountNumber" style="color:red"/><br/>
-                <p:inputMask mask="99999999-99999999-99999999" id="accountNumber"  value="#{buyerController.dto.accountNum}" validatorMessage="Rossz formátum">
+                <p:outputLabel for="accountNumber" value="Számlaszám: "/><h:message for="buyerForm:accountNumber" style="color:red" /><br/>
+                <p:inputMask mask="99999999-99999999-99999999" id="accountNumber"  value="#{buyerController.dto.accountNum}" validatorMessage="Rossz formátum" tabindex="4">
                     <f:validateRegex pattern="^\d{8}-\d{8}-\d{8}$"/>
                 </p:inputMask><br/>
                 <p:outputLabel for="country" value="Ország: "/><br/>
-                <p:inputText id="country"  value="#{buyerController.dto.country}" /><br/>
+                <p:inputText id="country"  value="#{buyerController.dto.country}" tabindex="5" /><br/>
             </p:divider>
             <p:divider>
                 <h:commandButton value="#{buyerController.label}"

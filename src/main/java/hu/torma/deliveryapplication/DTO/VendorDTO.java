@@ -11,7 +11,6 @@ public class VendorDTO implements Serializable {
     private String taxNumber;
     private String vendorName;
     private String birthName;
-    private String gender;
     private String nameOfMother;
     private String birthPlace;
     private Date birthDate;
@@ -29,4 +28,13 @@ public class VendorDTO implements Serializable {
     private String phone;
     private String contract;
     private MediatorDTO mediator;
+
+
+    @Override
+    public String toString() {
+        return "VendorDTO{" +
+                "taxId='" + taxId + '\'' +
+                ", vendorName='" + vendorName + '\'' +
+                '}';
+    }
 }

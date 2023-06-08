@@ -26,8 +26,6 @@ public class Vendor {
     @Column(name = "birth_name")
     private String birthName;
 
-    @Column(name = "gender")
-    private String gender;
 
     @Column(name = "name_of_mother")
     private String nameOfMother;

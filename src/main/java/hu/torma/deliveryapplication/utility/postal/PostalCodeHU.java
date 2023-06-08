@@ -4,10 +4,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,9 +27,10 @@ public class PostalCodeHU {
     private void importPostalCodes() {
         try {
 
-            res = new ClassPathResource("IrszHnk.csv", this.getClass().getClassLoader());
-            file = new File(res.getURI());
-            FileInputStream fis = new FileInputStream(file);
+            //res = new ClassPathResource("IrszHnk.csv", this.getClass().getClassLoader());
+         //   file = new File(res.getURI());
+            InputStream fis = this.getClass().getClassLoader().getResourceAsStream("IrszHnk.csv");
+            //FileInputStream fis = new FileInputStream(file);
             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.ISO_8859_1);
             BufferedReader br = new BufferedReader(isr);
 

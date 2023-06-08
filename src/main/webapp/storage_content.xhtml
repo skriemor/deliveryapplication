@@ -191,7 +191,10 @@
                     <h:outputText value="#{purchase.productList.get(5).quantity2}"/>
                 </p:column>
                 <p:column headerText="Vételár"   width="5em" >
-                    <h:outputText value="#{purchase.totalPrice}"/>
+                    <h:outputText value="#{purchase.totalPrice.intValue()}"/>
+                </p:column>
+                <p:column headerText="Fennm. összeg"   width="5em" >
+                    <h:outputText value="#{displayController.getRemaningPrice(purchase.id)}"/>
                 </p:column>
                 <p:column headerText="Rögz. dátum"   width="4.5em" >
                     <h:outputText value="#{purchase.bookedDate}">

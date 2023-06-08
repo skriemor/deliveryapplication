@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.Objects;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,18 @@ public class PDFcreator {
     private void createWorkBook() {
         try {
             res = new ClassPathResource("form.xlsx", this.getClass().getClassLoader());
-            file = new File(res.getURI());
-            workbook = new XSSFWorkbook(file);
+
+
+
+            //file = new File(this.getClass().getClassLoader().getResource("form.xlsx"));
+            //file = new File(res.getURI());
+            workbook = new XSSFWorkbook(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("form.xlsx")));
+           // workbook = new XSSFWorkbook(file);
+
+
+
+
+
             sheet = workbook.getSheetAt(0);
             style = workbook.createCellStyle();
             DataFormat format = workbook.createDataFormat();
@@ -139,7 +150,7 @@ public class PDFcreator {
 
         //avg price e40
 
-        Double avgprice = (double) (Math.round((totalp / (double) totalw) * 100) / 100);
+        Double avgprice = (double)Math.round((totalp / (double) totalw * 100)) /100 ;
         log.info(avgprice + "");
         createRowCol(39, 4, avgprice);
         //f40

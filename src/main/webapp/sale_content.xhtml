@@ -41,13 +41,13 @@
                 <p:divider >
                     <p:remoteCommand update="buyer" name="updateBuyer"/>
                     <p:outputLabel for="buyer" value="Eladó neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
-                    <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains">
+                    <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains" tabindex="1">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
                         <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="receiptId"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="currency" value="Fizetési valuta:"/><br/>
-                    <p:selectOneMenu id="currency" value="#{saleController.dto.currency}" required="true" style="max-width: 120px" editable="true" ><br/>
+                    <p:selectOneMenu id="currency" value="#{saleController.dto.currency}" required="true" style="max-width: 120px" editable="true" tabindex="2"><br/>
                         <f:selectItem itemLabel="HUF" itemValue="HUF"/>
                         <f:selectItem itemLabel="EUR" itemValue="EUR"/>
                         <f:selectItem itemLabel="USD" itemValue="USD"/>
@@ -61,24 +61,24 @@
                         <f:selectItem itemLabel="TRY" itemValue="TRY"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="sum" value="kifizetendő:"/><br/>
-                    <p:inputNumber  thousandSeparator="&nbsp;" id="sum" value="#{saleController.dto.price}" required="true" /><br/>
+                    <p:inputNumber  thousandSeparator="&nbsp;" id="sum" value="#{saleController.dto.price}" required="true" tabindex="3" /><br/>
                     <p:outputLabel for="receiptId" value="Számla sorszáma: "/><h:message for="saleForm:receiptId" style="color:red"/><br/>
-                    <p:inputText id="receiptId"  value="#{saleController.dto.receiptId}"  required="false">
+                    <p:inputText id="receiptId"  value="#{saleController.dto.receiptId}"  required="false" tabindex="4">
                     </p:inputText>
 
                 </p:divider>
                 <p:divider>
 
                     <p:outputLabel for="receiptDate" value="Számla dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="receiptDate" value="#{saleController.dto.receiptDate}">
+                    <p:inputMask mask="9999.99.99" id="receiptDate" value="#{saleController.dto.receiptDate}" tabindex="5">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask><br/>
                     <p:outputLabel for="deadline" value="Fizetési határidő:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="deadline" value="#{saleController.dto.deadLine}">
+                    <p:inputMask mask="9999.99.99" id="deadline" value="#{saleController.dto.deadLine}" tabindex="6">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask><br/>
                     <p:outputLabel for="paymentDate" value="Fizetés dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="paymentDate" value="#{saleController.dto.completionDate}">
+                    <p:inputMask mask="9999.99.99" id="paymentDate" value="#{saleController.dto.completionDate}" tabindex="7">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask><br/>
 

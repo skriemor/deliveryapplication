@@ -146,4 +146,12 @@ public class VendorController implements Serializable {
     public String getDateRange() {
         return dateRange;
     }
+
+    public String getFileNumber() {
+        return dto.getFileNumber();
+    }
+    public void setFileNumber(String filen) {
+        dto.setFileNumber(filen);
+    }
+
 }

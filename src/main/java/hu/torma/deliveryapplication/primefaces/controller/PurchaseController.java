@@ -4,11 +4,9 @@ import hu.torma.deliveryapplication.DTO.ProductDTO;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.DTO.UnitDTO;
-import hu.torma.deliveryapplication.service.ProductService;
-import hu.torma.deliveryapplication.service.PurchaseService;
-import hu.torma.deliveryapplication.service.StorageService;
-import hu.torma.deliveryapplication.service.UnitService;
+import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
+import org.primefaces.PrimeFaces;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -19,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.sql.Date;
 import java.time.LocalDate;
@@ -96,6 +95,33 @@ public class PurchaseController implements Serializable {
         }
         return temp;
     }
+
+    @Autowired
+    CompletionRecordService recordService;
+    public int getRemaningPrice(int id) {
+        var temp = service.getPurchaseById(id);
+        var tempList = temp.getProductList();
+        var total = temp.getTotalPrice();
+        var records = recordService.getAllCompletionRecords().stream().filter(r->r.getPurchaseId() == id).toList();
+        for (var r: records){
+            total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
+        }
+
+       return total.intValue();
+    }
+
+
+
+
+
+
+
+
 
     public void setSixTotal(Double sixTotal) {
         this.sixTotal = sixTotal;

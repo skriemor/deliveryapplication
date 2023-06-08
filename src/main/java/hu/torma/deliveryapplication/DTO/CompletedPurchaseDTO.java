@@ -23,6 +23,8 @@ public class CompletedPurchaseDTO implements Serializable {
     int totalPrice;
     Date bookedDate;
 
+    String paymentMethod;
+
     Date paymentDate;
     private List<CompletionRecordDTO> records;
 
