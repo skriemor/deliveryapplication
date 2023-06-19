@@ -17,17 +17,41 @@ import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SessionScope
 @Controller("completedPurchaseController")
 public class CompletedPurchaseController implements Serializable {
 
+
+
+    public Double getNetAvgPrice() {
+        return (double) Math.round(getGrossAvgPrice() / 1.12 * 100) / 100;
+    }
+
+    public Double getDiff() {
+        return getGrossTotal() - getNetTotal();
+    }
+
+    public Double getGrossTotal() {
+        return (double) Math.round(getGrossAvgPrice() * getNetSum());
+    }
+
+    public Double getGrossAvgPrice() {
+        return (double) Math.round(getSixTotal() / (double) getNetSum() * 100) / 100;
+    }
+
+    public Double getNetTotal() {
+        return (double) Math.round(getGrossTotal() / 1.12);
+    }
+
+
+    public Integer getNetSum() {
+        return quantities.stream().mapToInt(Quant::getNum).sum();
+    }
     @Autowired
     private CompletionRecordService recordService;
 
@@ -38,6 +62,12 @@ public class CompletedPurchaseController implements Serializable {
         return sum;
     }
 
+    public String getFormattedNumber(double num) {
+        if (num - (int) num == 0.0){
+            return NumberFormat.getNumberInstance(Locale.US).format((int) num).replaceAll(",", " ");
+        }
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
+    }
     public String getFormattedPriceOf(int g) {
         return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(g)).replaceAll(",", " ");
 
@@ -223,7 +253,7 @@ public class CompletedPurchaseController implements Serializable {
         this.setPurchaseDTO(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.pdfdisabled = true;
-
+        emptySix();
     }
 
 
@@ -428,10 +458,15 @@ public class CompletedPurchaseController implements Serializable {
         logger.info("Added record" + recordDTO.toString());
         this.recordDTO = new CompletionRecordDTO();
         this.purchaseDTO = new PurchaseDTO();
-
+        emptySix();
 
     }
+    public String toDottedDate(java.util.Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
 
+        return dt==null?"0000.01.01":sdf.format(dt);
+    }
     public void removeRecord() {
         if (this.dto.getRecords().size() < 1) return;
         if (this.recordDTO != null) dto.getRecords().remove(dto.getRecords().size() - 1);

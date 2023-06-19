@@ -15,7 +15,14 @@
                 event.preventDefault();
                 var $this = $(event.target);
                 var index = parseFloat($this.attr('tabindex'));
+                if (index == 13) {
+                    $('[tabindex=14]').click();
+                    $('[tabindex=15]').click().focus().select();
+
+                }
+
                 $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+
             }
         });
 
@@ -40,7 +47,7 @@
                          style="border:0 none; padding: 0; width: 100%;">
                 <p:divider >
                     <p:remoteCommand update="buyer" name="updateBuyer"/>
-                    <p:outputLabel for="buyer" value="Eladó neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
+                    <p:outputLabel for="buyer" value="Vevő neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains" tabindex="1">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
@@ -99,9 +106,7 @@
                     <th>
                         <p:outputLabel value="Minősítés:"/><p/>
                     </th>
-                    <th>
-                        <p:outputLabel  value="Mennyiségenkénti ár:" /><br/>
-                    </th>
+
                     <th>
                         <p:outputLabel value="Nettó súly(kg):"/><br/>
                     </th>
@@ -111,63 +116,48 @@
                 <tbody>
                 <tr>
                     <td> <p:outputLabel id="prod1" value="#{saleController.one.product.id}"  /><br/></td>
-                    <td>   <p:inputText id="unitPrice1" value="#{saleController.one.unitPrice}" required="false" tabindex="55" >
-                        <p:ajax event="keyup" />
-                    </p:inputText><br/></td>
-                    <td>   <p:inputText id="nquantity1" value="#{saleController.one.quantity}" required="false" tabindex="61">
-                        <p:ajax event="keyup"  />
+                    <td>   <p:inputText id="nquantity1"  value="#{saleController.one.quantity}" required="false" tabindex="8">
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
                 <tr>
                     <td> <p:outputLabel id="prod2" value="#{saleController.two.product.id}" /><br/> </td>
-                    <td> <p:inputText id="unitPrice2" value="#{saleController.two.unitPrice}" required="false" tabindex="56">
-                        <p:ajax event="keyup"  />
-                    </p:inputText><br/></td>
-                    <td> <p:inputText id="nquantity2" value="#{saleController.two.quantity}" required="false" tabindex="62">
-                        <p:ajax event="keyup"  />
+                    <td> <p:inputText id="nquantity2"  value="#{saleController.two.quantity}" required="false" tabindex="9">
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
                 <tr>
                     <td> <p:outputLabel id="prod3" value="#{saleController.three.product.id}"   /><br/></td>
-                    <td>    <p:inputText id="unitPrice3" value="#{saleController.three.unitPrice}" required="false" tabindex="57">
-                        <p:ajax event="keyup"  />
-                    </p:inputText><br/></td>
-                    <td>  <p:inputText id="nquantity3" value="#{saleController.three.quantity}" required="false" tabindex="63" >
-                        <p:ajax event="keyup"  />
+                    <td>  <p:inputText id="nquantity3"  value="#{saleController.three.quantity}" required="false" tabindex="10" >
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
                 <tr>
                     <td><p:outputLabel id="prod4" value="#{saleController.four.product.id}"   /><br/></td>
-                    <td>  <p:inputText id="unitPrice4" value="#{saleController.four.unitPrice}" required="false"  tabindex="58">
-                        <p:ajax event="keyup"  />
-                    </p:inputText><br/></td>
-                    <td><p:inputText id="nquantity4" value="#{saleController.four.quantity}" required="false" tabindex="64" >
-                        <p:ajax event="keyup"  />
+                    <td><p:inputText id="nquantity4"  value="#{saleController.four.quantity}" required="false" tabindex="11" >
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
                 <tr>
                     <td> <p:outputLabel id="prod5" value="#{saleController.five.product.id}"  /><br/></td>
-                    <td> <p:inputText id="unitPrice5" value="#{saleController.five.unitPrice}" required="false" tabindex="59">
-                        <p:ajax event="keyup"  />
-                    </p:inputText><br/></td>
-                    <td> <p:inputText id="nquantity5" value="#{saleController.five.quantity}" required="false" tabindex="65">
-                        <p:ajax event="keyup"  />
+                    <td> <p:inputText id="nquantity5"  value="#{saleController.five.quantity}" required="false" tabindex="12">
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
                 <tr>
                     <td>   <p:outputLabel id="prod6" value="#{saleController.six.product.id}"  /></td>
-                    <td> <p:inputText id="unitPrice6" value="#{saleController.six.unitPrice}" required="false" tabindex="60"  >
-                        <p:ajax event="keyup"  />
-                    </p:inputText><br/></td>
-                    <td><p:inputText id="nquantity6" value="#{saleController.six.quantity}" required="false"  tabindex="66">
-                        <p:ajax event="keyup"  />
+                    <td><p:inputText id="nquantity6"  value="#{saleController.six.quantity}" required="false"  tabindex="13">
+                        <p:ajax event="keyup" update="weightSum"  />
                     </p:inputText><br/></td>
                 </tr>
-
+                <tr>
+                    <td><p:outputLabel value="Összesen:"/> </td>
+                    <td><p:outputLabel value="#{saleController.weightSum}" id="weightSum"/> </td>
+                </tr>
                 </tbody>
             </table>
 
-                    <h:commandButton value="Mentés"
+                    <h:commandButton value="Mentés" tabindex="14"
                                      action="#{saleController.sixSave}"
                                      style="width: 14em;height: 2.6em">
                         <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel saleForm:productList" />
@@ -177,7 +167,7 @@
 
     <hr/>
     <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
-    <h:commandButton value="#{saleController.label}"
+    <h:commandButton value="#{saleController.label}" tabindex="15"
                      action="#{saleController.uiSaveSale}"
                      style="width: 10em;height: 2.6em">
         <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel saleForm:productList saleForm:fixProductPanel" />
@@ -195,7 +185,7 @@
                      style="width: 10em;height: 2.6em">
         <f:ajax execute="saleForm:SalePanel" render="saleList salePanel saleForm:fixProductPanel saleForm:productList" />
     </h:commandButton><p/>
-    <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList"
+    <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList" tableStyle="width: auto;"
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
                  selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
                  selection="#{saleController.productDTO}" rowKey="#{product.id}">
@@ -206,46 +196,44 @@
         <p:column headerText="Mennyiség"  filterBy="#{product.quantity}" filterMatchMode="contains" width="5em" >
             <h:outputText value="#{product.quantity}"/>
         </p:column>
-        <p:column headerText="Egységár"  filterBy="#{product.unitPrice}" filterMatchMode="contains" width="5em" >
-            <h:outputText value="#{product.unitPrice}"/>
-        </p:column>
+
     </p:dataTable>
 
 
 
 
-    <p:dataTable var="sale" value="#{saleController.dtoList}" id="saleList"
+    <p:dataTable var="sale" value="#{saleController.dtoList}" id="saleList" rows="10" paginatorPosition="top" tableStyle="width: auto;" paginator="true"
                  lazy="false" sortBy="#{saleController.sortBy}" sortMode="single"
-                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{saleController.dto}" rowKey="#{sale.id}">
         <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel saleForm:productList saleForm:fixProductPanel"/>
-        <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains" width="5em" >
+        <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
-        <p:column headerText="Eladó neve" sortBy="#{sale.buyer.name}" filterBy="#{sale.buyer.name}" filterMatchMode="contains" width="5em" >
+        <p:column headerText="Vevő neve" sortBy="#{sale.buyer.name}" filterBy="#{sale.buyer.name}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.buyer.name}"/>
         </p:column>
 
 
-        <p:column headerText="Számla kelt" sortBy="#{sale.bookingDate}" filterBy="#{sale.bookingDate}" filterMatchMode="contains" width="4.5em" >
+        <p:column headerText="Számla kelt" sortBy="#{sale.bookingDate}" filterBy="#{saleController.toDottedDate(sale.bookingDate)}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.bookingDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains" width="5em" >
+        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.formattedPrice}"/>
         </p:column>
-        <p:column headerText="Fiz. valuta" sortBy="#{sale.currency}" filterBy="#{sale.currency}" filterMatchMode="contains" width="5em" >
+        <p:column headerText="Fiz. valuta" sortBy="#{sale.currency}" filterBy="#{sale.currency}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.currency}"/>
         </p:column>
 
-        <p:column headerText="Fiz. dát." sortBy="#{sale.completionDate}" filterBy="#{sale.completionDate}" filterMatchMode="contains" width="4.5em" >
+        <p:column headerText="Fiz. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
             <h:outputText value="#{sale.completionDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Telj.Dát." sortBy="#{sale.receiptDate}" filterBy="#{sale.receiptDate}" filterMatchMode="contains" width="4.5em" >
+        <p:column headerText="Telj.Dát." sortBy="#{sale.receiptDate}" filterBy="#{saleController.toDottedDate(sale.receiptDate)}" filterMatchMode="contains">
             <h:outputText value="#{sale.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>

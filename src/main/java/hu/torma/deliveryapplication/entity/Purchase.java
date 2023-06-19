@@ -36,7 +36,7 @@ public class Purchase {
     private Date receiptDate;
 
     @ManyToOne
-    @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
+    @JoinColumn(name = "site", nullable = true, referencedColumnName = "site_id")
     private Site site;
 
     @Column(name = "notes")

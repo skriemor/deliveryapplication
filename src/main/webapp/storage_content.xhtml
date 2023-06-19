@@ -39,48 +39,48 @@
                 <p:commandButton id="doFilterButton4" value="SZŰRÉS" update="CPList"/>
             </p:panel>
 
-            <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList"
+            <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList" paginatorPosition="top" paginator="true" rows="10" tableStyle="width: auto"
                          lazy="false"
-                         style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                         style="overflow-x: scroll; margin-bottom: 5em;"
                          emptyMessage="Nincs találat" resizableColumns="true">
-                <p:column headerText="Sorszám"  width="5em" >
+                <p:column headerText="Sorszám"   >
                     <h:outputText value="#{cPurchase.id}" />
                 </p:column>
-                <p:column headerText="Eladó neve"   width="5em" >
+                <p:column headerText="Eladó neve"   >
                     <h:outputText value="#{cPurchase.vendor.vendorName}"/>
                 </p:column>
-                <p:column headerText="I.OSZTÁLYÚ"   width="5em" >
+                <p:column headerText="I.OSZTÁLYÚ"   >
                     <h:outputText value="#{cPurchase.one}"/>
                 </p:column>
-                <p:column headerText="II.OSZTÁLYÚ"  width="5em" >
+                <p:column headerText="II.OSZTÁLYÚ"   >
                     <h:outputText value="#{cPurchase.two}"/>
                 </p:column>
-                <p:column headerText="III.OSZTÁLYÚ"  width="5em" >
+                <p:column headerText="III.OSZTÁLYÚ"   >
                     <h:outputText value="#{cPurchase.three}"/>
                 </p:column>
-                <p:column headerText="IV.OSZTÁLYÚ"  width="5em" >
+                <p:column headerText="IV.OSZTÁLYÚ"  >
                     <h:outputText value="#{cPurchase.four}"/>
                 </p:column>
-                <p:column headerText="IPARI"  width="5em" >
+                <p:column headerText="IPARI"   >
                     <h:outputText value="#{cPurchase.five}"/>
                 </p:column>
-                <p:column headerText="GYÖKÉR"  width="5em" >
+                <p:column headerText="GYÖKÉR"   >
                     <h:outputText value="#{cPurchase.six}"/>
                 </p:column>
-                <p:column headerText="Vételár"   width="5em" >
+                <p:column headerText="Vételár"    >
                     <h:outputText value="#{cPurchase.formattedTotalPrice} HUF"/>
                 </p:column>
-                <p:column headerText="Rögz. dátum"   width="4.5em" >
+                <p:column headerText="Rögz. dátum"   >
                     <h:outputText value="#{cPurchase.bookedDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Felv. dátum"   width="4.5em" >
+                <p:column headerText="Felv. dátum"    >
                     <h:outputText value="#{cPurchase.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Fiz. dátum"   width="4.5em" >
+                <p:column headerText="Fiz. dátum"    >
                     <h:outputText value="#{cPurchase.paymentDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
@@ -112,27 +112,27 @@
                 </table>
                 <p:commandButton id="doFilterButton2" value="SZŰRÉS" update="saleList"/>
             </p:panel>
-            <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList"
+            <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList" paginator="true" paginatorPosition="top" tableStyle="width: auto" rows="10"
                          lazy="false"
-                        style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                        style="overflow-x: scroll; margin-bottom: 5em"
                           emptyMessage="Nincs találat" resizableColumns="true">
-                <p:column headerText="Sorszám"  filterBy="#{sale.id}" filterMatchMode="contains" width="5em" >
+                <p:column headerText="Sorszám"  width="5em" >
                     <h:outputText value="#{sale.id}" id="saleId"/>
                 </p:column>
-                <p:column headerText="Eladó neve"  filterBy="#{sale.buyer.name}" filterMatchMode="contains" width="5em" >
+                <p:column headerText="Eladó neve"   width="5em" >
                     <h:outputText value="#{sale.buyer.name}"/>
                 </p:column>
 
 
-                <p:column headerText="Számla kelt"  filterBy="#{sale.bookingDate}" filterMatchMode="contains" width="4.5em" >
-                    <h:outputText value="#{sale.bookingDate}">
+                <p:column headerText="Számla kelt"   width="4.5em" >
+                    <h:outputText value="#{sale.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
-                <p:column headerText="Vételár"  filterBy="#{sale.formattedPrice}" filterMatchMode="contains" width="5em" >
+                <p:column headerText="Vételár"   width="5em" >
                     <h:outputText value="#{sale.formattedPrice}"/>
                 </p:column>
-                <p:column headerText="Fiz. valuta"  filterBy="#{sale.currency}" filterMatchMode="contains" width="5em" >
+                <p:column headerText="Fiz. valuta"   width="5em" >
                     <h:outputText value="#{sale.currency}"/>
                 </p:column>
 
@@ -163,9 +163,9 @@
                 </table>
             <p:commandButton id="doFilterButton" value="SZŰRÉS" update="purchaseList"/>
             </p:panel>
-            <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList"
+            <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList" tableStyle="width: auto" paginatorPosition="top" paginator="true" rows="10"
                          lazy="false"
-                          style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                          style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
                 <p:column headerText="Sorszám"  width="5em" >
                     <h:outputText value="#{purchase.id}" id="id"/>
@@ -211,9 +211,9 @@
         </p:tab>
         <p:tab title="Készlet">
 
-            <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T"
+            <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T" rows="10" paginator="true" paginatorPosition="top" tableStyle="width: auto"
                          lazy="false"
-                         style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                         style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
                 <p:column headerText="Termék" width="5em" >
                     <h:outputText value="#{quantity.productName}" id="product"/>
@@ -256,9 +256,9 @@
                 </table>
                 <p:commandButton id="doFilterButton3" value="SZŰRÉS" update="mediatorList"/>
             </p:panel>
-            <p:dataTable var="mediatorDisp" value="#{displayController.mediatorDisplays}" id="mediatorList" stickyHeader="T"
+            <p:dataTable var="mediatorDisp" value="#{displayController.mediatorDisplays}" id="mediatorList" stickyHeader="T" tableStyle="width: auto" paginatorPosition="top" paginator="true" rows="10"
                          lazy="false"
-                         style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                         style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
                 <p:column headerText="Közvetítő neve" width="5em" >
                     <h:outputText value="#{mediatorDisp.mediatorName}" id="mediatorName"/>

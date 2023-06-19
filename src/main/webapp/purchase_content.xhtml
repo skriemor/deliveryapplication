@@ -15,11 +15,18 @@
                 event.preventDefault();
                 var $this = $(event.target);
                 var index = parseFloat($this.attr('tabindex'));
+                if (index == 11) {
+                    $('[tabindex=12]').click();
+                    $('[tabindex=13]').click().focus().select();
+
+                }
+
                 $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+
             }
         });
 
-        function jumpToTop(){
+        function jumpToTop() {
             window.location.href = "#top1";
         }
 
@@ -61,18 +68,22 @@
                         onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}" required="true" tabindex="1"
                                      converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
-                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>
+                        <p:ajax event="change" update="@this"/>
+                        <!-- <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>-->
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
-                                       itemLabel="#{vendorvar.vendorName}(#{vendorvar.city})" itemValue="#{vendorvar}"/>
+                                       itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})" itemValue="#{vendorvar}"/>
                     </p:selectOneMenu><br/>
 
                     <p:outputLabel for="site" value="Telephely: "/><p:commandButton
                         style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
                         onclick="funcForWindowPopup2()"/><br/>
-                    <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="true" tabindex="2"
+                    <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="false" tabindex="2"
                                      converter="#{siteConverter}" filter="true" filterMatchMode="contains">
-                        <f:selectItems value="#{siteController.dtoList}" var="sitevar" itemLabel="#{sitevar.siteName}"
+                        <p:ajax event="change" update="@this"/>
+                        <!--  <p:ajax event="select" listener="#{siteServiceImpl.allSites}" update="site"/>-->
+                        <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+                        <f:selectItems value="#{siteServiceImpl.allSites}" var="sitevar" itemLabel="#{sitevar.siteName}"
                                        itemValue="#{sitevar}"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="note" value="Megjegyzés:"/><br/>
@@ -82,11 +93,13 @@
                 </p:divider>
                 <p:divider>
                     <p:outputLabel for="paymentdate" value="Mérlegelési jegy dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="paymentdate" value="#{purchaseController.dto.receiptDate}" tabindex="4"><p/>
+                    <p:inputMask mask="9999.99.99" id="paymentdate" value="#{purchaseController.dto.receiptDate}"
+                                 tabindex="4"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
                     <p:outputLabel for="receiptId" value="Számla sorszáma:"/><br/>
-                    <p:inputText id="receiptId" value="#{purchaseController.dto.receiptId}" required="false" tabindex="5"/>
+                    <p:inputText id="receiptId" value="#{purchaseController.dto.receiptId}" required="false"
+                                 tabindex="5"><p:ajax event="change" update="@this"/> </p:inputText>
 
                 </p:divider>
 
@@ -125,135 +138,169 @@
                 <td><p:outputLabel id="prod1" value="#{purchaseController.one.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice1" value="#{purchaseController.one.unitPrice}" required="false"
                                  tabindex="55">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 price1 net1"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 net1"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity1" value="#{purchaseController.one.quantity}" required="false"
-                                 tabindex="61">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 price1 net1"/>
+                                 tabindex="6">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 net1"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr1" value="#{purchaseController.one.corrPercent}" required="false"
                                  tabindex="67">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 price1 net1"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 net1"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net1" value="#{purchaseController.getNetOf(purchaseController.one)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price1" value="#{purchaseController.getFormattedPriceOf(purchaseController.one)}Ft"/>
+                    <p:outputLabel id="price1"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.one)}Ft"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel id="prod2" value="#{purchaseController.two.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice2" value="#{purchaseController.two.unitPrice}" required="false"
                                  tabindex="56">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net2 price2"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net2 price2"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity2" value="#{purchaseController.two.quantity}" required="false"
-                                 tabindex="62">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net2 price2"/>
+                                 tabindex="7">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net2 price2"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr2" value="#{purchaseController.two.corrPercent}" required="false"
                                  tabindex="68">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net2 price2"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net2 price2"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net2" value="#{purchaseController.getNetOf(purchaseController.two)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price2" value="#{purchaseController.getFormattedPriceOf(purchaseController.two)}Ft"/>
+                    <p:outputLabel id="price2"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.two)}Ft"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel id="prod3" value="#{purchaseController.three.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice3" value="#{purchaseController.three.unitPrice}" required="false"
                                  tabindex="57">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net3 price3"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net3 price3"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity3" value="#{purchaseController.three.quantity}" required="false"
-                                 tabindex="63">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net3 price3"/>
+                                 tabindex="8">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net3 price3"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr3" value="#{purchaseController.three.corrPercent}" required="false"
                                  tabindex="69">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net3 price3"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net3 price3"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net3" value="#{purchaseController.getNetOf(purchaseController.three)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price3" value="#{purchaseController.getFormattedPriceOf(purchaseController.three)}Ft"/>
+                    <p:outputLabel id="price3"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.three)}Ft"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel id="prod4" value="#{purchaseController.four.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice4" value="#{purchaseController.four.unitPrice}" required="false"
                                  tabindex="58">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net4 price4"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net4 price4"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity4" value="#{purchaseController.four.quantity}" required="false"
-                                 tabindex="64">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net4 price4"/>
+                                 tabindex="9">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net4 price4"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr4" value="#{purchaseController.four.corrPercent}" required="false"
                                  tabindex="70">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net4 price4"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net4 price4"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net4" value="#{purchaseController.getNetOf(purchaseController.four)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price4" value="#{purchaseController.getFormattedPriceOf(purchaseController.four)}Ft"/>
+                    <p:outputLabel id="price4"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.four)}Ft"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel id="prod5" value="#{purchaseController.five.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice5" value="#{purchaseController.five.unitPrice}" required="false"
                                  tabindex="59">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net5 price5"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net5 price5"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity5" value="#{purchaseController.five.quantity}" required="false"
-                                 tabindex="65">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net5 price5"/>
+                                 tabindex="10">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net5 price5"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr5" value="#{purchaseController.five.corrPercent}" required="false"
                                  tabindex="71">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net5 price5"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net5 price5"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net5" value="#{purchaseController.getNetOf(purchaseController.five)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price5" value="#{purchaseController.getFormattedPriceOf(purchaseController.five)}Ft"/>
+                    <p:outputLabel id="price5"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.five)}Ft"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel id="prod6" value="#{purchaseController.six.product.id}"/></td>
                 <td><p:inputText id="unitPrice6" value="#{purchaseController.six.unitPrice}" required="false"
                                  tabindex="60">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net6 price6"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net6 price6"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="nquantity6" value="#{purchaseController.six.quantity}" required="false"
-                                 tabindex="66">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net6 price6"/>
+                                 tabindex="11">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net6 price6"/>
                 </p:inputText><br/></td>
                 <td><p:inputText id="corr6" value="#{purchaseController.six.corrPercent}" required="false"
                                  tabindex="72">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 net6 price6"/>
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg net6 price6"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="net6" value="#{purchaseController.getNetOf(purchaseController.six)}"/>
                 </td>
                 <td align="center">
-                    <p:outputLabel id="price6" value="#{purchaseController.getFormattedPriceOf(purchaseController.six)}Ft"/>
+                    <p:outputLabel id="price6"
+                                   value="#{purchaseController.getFormattedPriceOf(purchaseController.six)}Ft"/>
                 </td>
             </tr>
+            <tr>
+                <td><p:outputLabel value="Összesen:"/></td>
+                <td colspan="3"></td>
+                <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalNet"
+                                                  value="#{ purchaseController.getNetSum()} kg"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalPricePerProduct1"
+                                                  value="#{ purchaseController.getFormattedSixTotal()} HUF"/></td>
+            </tr>
 
+            <tr>
+                <td><p:outputLabel value="Átlagár br."/> </td>
+                <td></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="netAvgPrice"
+                                                  value="#{purchaseController.getFormattedNumber(purchaseController.netTotal)}"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="diff"
+                                                  value="#{ purchaseController.getFormattedNumber(purchaseController.diff)}"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="grossAvgPrice"
+                                                  value="#{ purchaseController.getFormattedNumber(purchaseController.getGrossAvgPrice())}"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="grossTotal"
+                                                  value="#{ purchaseController.getFormattedNumber(purchaseController.grossTotal)}"/></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="Átlagár net."/></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="netAvg"
+                                                  value="#{ purchaseController.getFormattedNumber(purchaseController.netAvgPrice)}"/></td>
+                <td></td>
+            </tr>
             </tbody>
         </table>
-        <p:outputLabel id="totalPricePerProduct1"
-                       value="Termékek részösszesített ára: #{purchaseController.getFormattedSixTotal()} HUF"/>
+
         <p/>
-        <h:commandButton value="Mentés"
+        <h:commandButton value="Mentés" id="saveButton" tabindex="12"
                          action="#{purchaseController.sixSave}"
                          style="width: 14em;height: 2.6em">
             <f:ajax execute="purchaseForm:fixProductPanel"
@@ -263,33 +310,32 @@
 
     </p:panel>
     <hr></hr>
-    <h:commandButton value="#{purchaseController.label}"
-                     action="#{purchaseController.uiSavePurchase}"
-                     style="width: 10em;height: 2.6em">
+    <p:panel id="buttonPanel">
+        <h:commandButton value="#{purchaseController.label}" tabindex="13"
+                         actionListener="#{purchaseController.uiSavePurchase}"
+                         style="width: 10em;height: 2.6em" id="newSaveButton">
+            <f:ajax execute="purchasePanel" render="productList purchaseList fixProductPanel purchasePanel"/>
+        </h:commandButton>
 
-        <f:ajax execute="purchaseForm:purchasePanel"
-                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
-    </h:commandButton>
 
-    <h:commandButton value="Új"
-                     action="#{purchaseController.newPurchase}"
-                     style="width: 10em;height: 2.6em">
-        <f:ajax execute="purchaseForm:purchasePanel"
-                render="purchaseList purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
-    </h:commandButton>
-    <h:commandButton value="Töröl"
-                     action="#{purchaseController.deletePurchase}"
-                     style="width: 10em;height: 2.6em">
-        <f:ajax execute="purchaseForm:PurchasePanel"
-                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:productList"/>
-    </h:commandButton>
-    <p/>
-    <p:commandButton value="Letöltés excelként" ajax="false"
-                     onclick="PrimeFaces.monitorDownload(start, stop);"
-                     icon="pi pi-arrow-down" styleClass="mr-2"
-                     actionListener="#{purchaseController.pdf()}">
-        <p:fileDownload value="#{purchaseController.file}"/>
-    </p:commandButton>
+        <h:commandButton value="Új" id="newButton"
+                         actionListener="#{purchaseController.newPurchase}"
+                         style="width: 10em;height: 2.6em">
+            <f:ajax render="productList purchaseList fixProductPanel purchasePanel"/>
+        </h:commandButton>
+        <h:commandButton value="Töröl" id="deleteButton"
+                         actionListener="#{purchaseController.deletePurchase}"
+                         style="width: 10em;height: 2.6em">
+            <f:ajax render="productList purchaseList fixProductPanel purchasePanel"/>
+        </h:commandButton>
+        <p/>
+        <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton"
+                         onclick="PrimeFaces.monitorDownload(start, stop);"
+                         icon="pi pi-arrow-down" styleClass="mr-2"
+                         actionListener="#{purchaseController.pdf()}">
+            <p:fileDownload value="#{purchaseController.file}"/>
+        </p:commandButton>
+    </p:panel>
 
 
     <p:dataTable var="product" value="#{purchaseController.dto.productList}" id="productList"
@@ -310,7 +356,7 @@
     </p:dataTable>
 
 
-    <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList"
+    <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList" paginatorPosition="top" rows="10" paginator="true" tableStyle="width: auto"
                  lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
                  scrollWidth="100%"
@@ -320,43 +366,49 @@
                 update="purchaseForm:purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
 
         <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
-                  width="5em">
+                  >
             <h:outputText value="#{purchase.id}" id="id"/>
         </p:column>
         <p:column headerText="Termelő neve" sortBy="#{purchase.vendor.vendorName}"
-                  filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains" width="5em">
+                  filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains" >
             <h:outputText value="#{purchase.vendor.vendorName}"/>
         </p:column>
-        <p:column headerText="Helység" sortBy="#{purchase.vendor.city}" filterBy="#{purchase.vendor.city}"
-                  filterMatchMode="contains" width="5em">
-            <h:outputText value="#{purchase.vendor.city}"/>
+        <p:column headerText="Szül.id" sortBy="#{purchase.vendor.birthDate}"
+                  filterBy="#{purchaseController.toDottedDate(purchase.vendor.birthDate) }"
+                  filterMatchMode="contains" >
+            <h:outputText value="#{purchase.vendor.birthDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
         </p:column>
         <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}" filterBy="#{purchase.site.siteName}"
-                  filterMatchMode="contains" width="5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.site.siteName}"/>
         </p:column>
-        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}" filterBy="#{purchase.receiptDate}"
-                  filterMatchMode="contains" width="4.5em">
+        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}"
+                  filterBy="#{purchaseController.toDottedDate(purchase.receiptDate) }"
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
         <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}"
-                  filterMatchMode="contains" width="5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.formattedTotalPrice} HUF"/>
         </p:column>
-        <p:column headerText="Fennm.Össz." sortBy="#{purchaseController.getRemaningPrice(purchase.id)}" filterBy="#{purchaseController.getRemaningPrice(purchase.id)}"
-                  filterMatchMode="contains" width="5em">
+        <p:column headerText="Fennm.Össz." sortBy="#{purchaseController.getRemaningPrice(purchase.id)}"
+                  filterBy="#{purchaseController.getRemaningPrice(purchase.id)}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchaseController.getFormattedRemainingPrice(purchase.id)} HUF"/>
         </p:column>
-        <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}" filterBy="#{purchase.bookedDate}"
-                  filterMatchMode="contains" width="4.5em">
+        <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}"
+                  filterBy="#{purchaseController.toDottedDate(purchase.bookedDate)}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.bookedDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
         <p:column headerText="Számla sorszáma" sortBy="#{purchase.receiptId}" filterBy="#{purchase.receiptId}"
-                  filterMatchMode="contains" width="4.5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.receiptId}"/>
         </p:column>
     </p:dataTable>

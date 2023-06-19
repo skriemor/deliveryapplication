@@ -11,12 +11,10 @@ import org.springframework.web.context.annotation.SessionScope;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @SessionScope
 @Controller("displayController")
@@ -64,6 +62,7 @@ public class DisplayController implements Serializable {
 
 
     private Date subOneDayFromDate(Date date) {
+
         LocalDate ld = date.toInstant().atZone(ZoneId.of("GMT+01")).toLocalDate();
         ld = ld.minusDays(1);
         return Date.from(ld.atStartOfDay().atZone(ZoneId.of("GMT+01")).toInstant());
@@ -71,39 +70,39 @@ public class DisplayController implements Serializable {
 
     private void doFilterDate() {
         if (filterDateFrom != null && filterDateTo != null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p -> (p.getBookedDate().after(filterDateFrom) || p.getBookedDate().after(subOneDayFromDate(filterDateFrom))) && p.getBookedDate().before(filterDateTo)).toList();
+            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom))) && p.getReceiptDate().before(filterDateTo)).toList();
         }
         if (filterDateFrom != null && filterDateTo == null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getBookedDate().after(filterDateFrom) || p.getBookedDate().after(subOneDayFromDate(filterDateFrom))).toList();
+            purchaseDTOS = purchaseDTOS.stream().filter(p ->( p.getReceiptDate() != null )&& (p.getReceiptDate().after(filterDateFrom) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom)))).toList();
         }
         if (filterDateFrom == null && filterDateTo != null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getBookedDate().before(filterDateTo)).toList();
+            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo)).toList();
         }
     }
 
     private void doFilterDate4() {
         if (filterDateFrom4 != null && filterDateTo4 != null) {
-            CPDTOS = CPDTOS.stream().filter(p -> (p.getBookedDate().after(filterDateFrom4) || p.getBookedDate().after(subOneDayFromDate(filterDateFrom4))) && p.getBookedDate().before(filterDateTo4)).toList();
+            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom4) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom4))) && p.getReceiptDate().before(filterDateTo4)).toList();
         }
         if (filterDateFrom4 != null && filterDateTo4 == null) {
-            CPDTOS = CPDTOS.stream().filter(p -> p.getBookedDate().after(filterDateFrom4) || p.getBookedDate().after(subOneDayFromDate(filterDateFrom4))).toList();
+            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().after(filterDateFrom4) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom4))).toList();
         }
         if (filterDateFrom4 == null && filterDateTo4 != null) {
-            CPDTOS = CPDTOS.stream().filter(p -> p.getBookedDate().before(filterDateTo4)).toList();
+            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo4)).toList();
         }
     }
 
     private void doFilterDate2() {
         if (filterDateFrom2 != null && filterDateTo2 != null) {
 
-            saleDTOS = saleDTOS.stream().filter(p -> (p.getBookingDate().after(filterDateFrom2) || p.getBookingDate().after(subOneDayFromDate(filterDateFrom2))) && p.getBookingDate().before(filterDateTo2)).toList();
+            saleDTOS = saleDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom2) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom2))) && p.getReceiptDate().before(filterDateTo2)).toList();
 
         }
         if (filterDateFrom2 != null && filterDateTo2 == null) {
-            saleDTOS = saleDTOS.stream().filter(p -> p.getBookingDate().after(filterDateFrom2) || p.getBookingDate().after(subOneDayFromDate(filterDateFrom2))).toList();
+            saleDTOS = saleDTOS.stream().filter(p -> (p.getReceiptDate() != null) && (p.getReceiptDate().after(filterDateFrom2) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom2)))).toList();
         }
         if (filterDateFrom2 == null && filterDateTo2 != null) {
-            saleDTOS = saleDTOS.stream().filter(p -> p.getBookingDate().before(filterDateTo2)).toList();
+            saleDTOS = saleDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo2)).toList();
         }
     }
 
@@ -213,8 +212,9 @@ public class DisplayController implements Serializable {
     CompletionRecordService recordService;
 
     public String getFormattedRemainingPrice(int id) {
-        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(","," ");
+        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(",", " ");
     }
+
     public int getRemaningPrice(int id) {
         var temp = purchaseService.getPurchaseById(id);
         var tempList = temp.getProductList();
@@ -232,7 +232,14 @@ public class DisplayController implements Serializable {
         return total.intValue();
     }
 
-    public String getFormattedNumber(int i) {
-        return NumberFormat.getNumberInstance(Locale.US).format(i).replaceAll(","," ");
+    public String toDottedDate(java.util.Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
+
+        return dt == null ? "0000.01.01" : sdf.format(dt);
+    }
+
+    public String getFormattedNumber(int num) {
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 }

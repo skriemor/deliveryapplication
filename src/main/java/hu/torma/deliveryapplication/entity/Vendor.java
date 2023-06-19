@@ -12,6 +12,8 @@ import java.util.Objects;
 @Entity
 @Data
 @Table(name = "vendor")
+@EqualsAndHashCode
+@ToString
 public class Vendor {
     @Id
     @Column(name = "tax_id", nullable = false)

@@ -19,9 +19,13 @@ import org.springframework.web.context.annotation.SessionScope;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.sql.Date;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 @SessionScope
@@ -47,7 +51,21 @@ public class SaleController implements Serializable {
 
     private List<SortMeta> sortBy;
 
+    public int getWeightSum() {
+        int sum = 0;
+        if (one.getQuantity() != null) sum += one.getQuantity();
+        if (two.getQuantity() != null) sum += two.getQuantity();
+        if (three.getQuantity() != null) sum += three.getQuantity();
+        if (four.getQuantity() != null) sum += four.getQuantity();
+        if (five.getQuantity() != null) sum += five.getQuantity();
+        if (six.getQuantity() != null) sum += six.getQuantity();
 
+
+        return sum;
+    }
+    public String getFormattedNumber(int num) {
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
+    }
     @Autowired
     StorageService sService;
     @Autowired
@@ -83,7 +101,7 @@ public class SaleController implements Serializable {
 
     public void updateAccountNum() {
         //if (this.dto.getBuyer() != null)
-            //this.dto.setAccountNumber(this.dto.getBuyer().getAccountNum());
+        //this.dto.setAccountNumber(this.dto.getBuyer().getAccountNum());
     }
 
     public void setProductDTO(PurchasedProductDTO productDTO) {
@@ -186,6 +204,13 @@ public class SaleController implements Serializable {
 
     }
 
+    public String toDottedDate(java.util.Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
+
+        return dt == null ? "0000.01.01" : sdf.format(dt);
+    }
+
     public void sixSave() {
 
         this.dto.setProductList(new ArrayList<>());
@@ -234,8 +259,18 @@ public class SaleController implements Serializable {
         this.setDto(new SaleDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.errorMessage = "";
+        nullQuants();
     }
 
+    private void nullQuants() {
+        this.one.setQuantity(null);
+        this.two.setQuantity(null);
+        this.three.setQuantity(null);
+        this.four.setQuantity(null);
+        this.five.setQuantity(null);
+        this.six.setQuantity(null);
+
+    }
 
     public void deleteSale() {
         if (this.dto != null) {
@@ -254,15 +289,16 @@ public class SaleController implements Serializable {
     }
 
     private void emptySix() {
-        one.setQuantity(0);
-        two.setQuantity(0);
-        three.setQuantity(0);
-        four.setQuantity(0);
-        five.setQuantity(0);
-        six.setQuantity(0);
+        one.setQuantity(null);
+        two.setQuantity(null);
+        three.setQuantity(null);
+        four.setQuantity(null);
+        five.setQuantity(null);
+        six.setQuantity(null);
     }
 
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
+        nullQuants();
         this.setLabel2("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
     }
@@ -271,6 +307,7 @@ public class SaleController implements Serializable {
         this.dto = new SaleDTO();
         this.setLabel("Hozzáadás");
         errorMessage = "";
+        nullQuants();
     }
 
     public void setLabel(String label) {

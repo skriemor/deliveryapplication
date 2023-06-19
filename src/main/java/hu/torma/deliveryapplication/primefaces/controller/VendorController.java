@@ -15,9 +15,13 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 @SessionScope
@@ -107,6 +111,12 @@ public class VendorController implements Serializable {
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
     }
 
+    public String toDottedDate(java.util.Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
+
+        return dt==null?"0000.01.01":sdf.format(dt);
+    }
     public void newVendor() {
         this.dto = new VendorDTO();
         this.setLabel("Hozzáadás");

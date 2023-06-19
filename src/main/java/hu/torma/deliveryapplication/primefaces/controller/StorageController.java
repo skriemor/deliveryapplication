@@ -9,8 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @SessionScope
 @Getter
@@ -32,7 +35,12 @@ public class StorageController {
     }
 
 
+    public String toDottedDate(java.util.Date dt) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
+        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
 
+        return dt==null?"0000.01.01":sdf.format(dt);
+    }
     public StorageService getService() {
         return service;
     }

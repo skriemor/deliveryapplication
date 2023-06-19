@@ -12,9 +12,12 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @SessionScope
 @Controller("buyerController")
@@ -114,4 +117,6 @@ public class BuyerController implements Serializable {
     public String getDateRange() {
         return dateRange;
     }
+
+
 }

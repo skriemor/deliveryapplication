@@ -14,10 +14,20 @@
                 event.preventDefault();
                 var $this = $(event.target);
                 var index = parseFloat($this.attr('tabindex'));
+                if (index == 13) {
+                    $('[tabindex=14]').click();
+                    index = 7;
+                }
                 $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+
             }
         });
 
+        function funSelectPurchaseSelectOneMenu() {
+            //PF('selectF').show();
+            //PF('excelButton').focus().select();
+            $('[tabindex=7]').select().focus();
+        }
         function funcForWindowPopup() {
             var popup = null;
             popup = window.open("vendors_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
@@ -46,7 +56,7 @@
                          styleClass="ui-panelgrid-blank ui-fluid "
                          style="border:0 none; padding: 0; width: 100%;">
                 <p:divider>
-                    <p:remoteCommand name="updateVendor" update="vendor v1 v2 v3 v4 v5 v6 v7 v8"/>
+                    <p:remoteCommand name="updateVendor" update="vendor v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14"/>
                     <p:remoteCommand name="updateSite" update="site"/>
 
                     <p:outputLabel for="vendor" value="Eladó neve: "/><p:commandButton
@@ -54,11 +64,11 @@
                         onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu id="vendor" value="#{completedPurchaseController.dto.vendor}" required="true" tabindex="1"
                                      converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
-                        <p:ajax event="change" update="v1 v2 v3 v4 v5 v6 v7 v8"/>
-                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor v1 v2 v3 v4 v5 v6 v7 v8" />
+                        <p:ajax event="change" update="v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14"/>
+                        <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14" />
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
-                                       itemLabel="#{vendorvar.vendorName}(#{vendorvar.city})" itemValue="#{vendorvar}"/>
+                                       itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})" itemValue="#{vendorvar}"/>
                     </p:selectOneMenu><br/>
 
                     <p:outputLabel for="site" value="Telephely: "/><p:commandButton
@@ -78,13 +88,15 @@
 
                 </p:divider>
                 <p:divider>
+                    <p:outputLabel for="serial" value="Felvásárlási jegy sorszáma:" /><br/>
+                    <p:inputText id="serial" value="#{completedPurchaseController.dto.serial}" tabindex="4"/> <br/>
                     <p:outputLabel for="receiptDate" value="Felvásárlási jegy dátuma:" /><br/>
-                    <p:inputMask mask="9999.99.99" id="receiptDate" tabindex="4"
+                    <p:inputMask mask="9999.99.99" id="receiptDate" tabindex="5"
                                  value="#{completedPurchaseController.dto.receiptDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
                     <p:outputLabel for="paymentDate" value="Fizetés dátuma:"/><br/>
-                    <p:inputMask mask="9999.99.99" id="paymentDate" tabindex="5"
+                    <p:inputMask mask="9999.99.99" id="paymentDate" tabindex="6"
                                  value="#{completedPurchaseController.dto.paymentDate}"><p/>
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
@@ -100,28 +112,47 @@
                 <tr>
                     <td><p:outputLabel value="Termelő neve: "/> </td>
                     <td><p:outputLabel id="v1" value="#{completedPurchaseController.dto.vendor.vendorName}"/></td>
-                    <td><p:outputLabel value="Szerődés: "/></td>
-                    <td><p:outputLabel id="v3" value="#{completedPurchaseController.dto.vendor.contract}"/></td>
+                    <td><p:outputLabel value="Anyja neve: "/> </td>
+                    <td><p:outputLabel id="v2" value="#{completedPurchaseController.dto.vendor.nameOfMother}"/></td>
                 </tr>
                 <tr>
-                    <td><p:outputLabel value="Születési ideje: "/></td>
-                    <td><p:outputLabel id="v2" value="#{completedPurchaseController.dto.vendor.birthDate}">
-                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                    </p:outputLabel></td>
+                    <td><p:outputLabel value="Leánykori: "/></td>
+                    <td><p:outputLabel id="v3" value="#{completedPurchaseController.dto.vendor.birthName}"/></td>
+                    <td><p:outputLabel value="TAJ: "/></td>
+                    <td><p:outputLabel id="v4" value="#{completedPurchaseController.dto.vendor.taj}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="Lakcíme: "/></td>
+                    <td><p:outputLabel id="v5" value="#{completedPurchaseController.dto.vendor.address}"/></td>
                     <td><p:outputLabel value="ÖCSG: "/></td>
-                    <td><p:outputLabel id="v8" value="#{completedPurchaseController.dto.vendor.fileNumber}"/></td>
+                    <td><p:outputLabel id="v6" value="#{completedPurchaseController.dto.vendor.fileNumber}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="FELIR: "/></td>
+                    <td><p:outputLabel id="v7" value="#{completedPurchaseController.dto.vendor.felir}"/></td>
+                    <td><p:outputLabel value="GGN: "/></td>
+                    <td><p:outputLabel id="v8" value="#{completedPurchaseController.dto.vendor.ggn}"/></td>
+                </tr>
+                <tr>
+                    <td><p:outputLabel value="Adóaz.jel: "/></td>
+                    <td><p:outputLabel id="v9" value="#{completedPurchaseController.dto.vendor.taxId}"/></td>
+                    <td><p:outputLabel value="Telefon: "/></td>
+                    <td><p:outputLabel id="v10" value="#{completedPurchaseController.dto.vendor.phone}"/></td>
                 </tr>
                 <tr>
                     <td><p:outputLabel value="Adószáma: "/></td>
-                    <td><p:outputLabel id="v5" value="#{completedPurchaseController.dto.vendor.taxNumber}"/></td>
+                    <td><p:outputLabel id="v11" value="#{completedPurchaseController.dto.vendor.taxNumber}"/></td>
                     <td><p:outputLabel value="Számlaszáma: "/></td>
-                    <td><p:outputLabel id="v6" value="#{completedPurchaseController.dto.vendor.accountNumber}"/></td>
+                    <td><p:outputLabel id="v12" value="#{completedPurchaseController.dto.vendor.accountNumber}"/></td>
                 </tr>
                 <tr>
-                    <td><p:outputLabel value="Telefon: "/></td>
-                    <td><p:outputLabel id="v4" value="#{completedPurchaseController.dto.vendor.phone}"/></td>
-                    <td><p:outputLabel value="NEBIH: "/></td>
-                    <td><p:outputLabel id="v7" value="#{completedPurchaseController.dto.vendor.activity}"/></td>
+                    <td><p:outputLabel value="Születési ideje: "/></td>
+                    <td><p:outputLabel id="v13" value="#{completedPurchaseController.dto.vendor.birthDate}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:outputLabel></td>
+
+                    <td><p:outputLabel value="SZERZ: "/></td>
+                    <td><p:outputLabel id="v14" value="#{completedPurchaseController.dto.vendor.contract}"/></td>
                 </tr>
             </table>
 
@@ -135,7 +166,7 @@
         <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
             <thead>
             <tr>
-                <th>
+                <th colspan="2">
                     <p:outputLabel value="Minősítés:"/>
                     <p/>
                 </th>
@@ -152,15 +183,15 @@
             </thead>
             <tbody>
             <tr>
-                <td><p:outputLabel id="prod1"
+                <td colspan="2"><p:outputLabel id="prod1"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(0).product.id}"/><br/>
                 </td>
                 <td><p:outputLabel id="maxQuant1"
                                    value="#{completedPurchaseController.getMaxQuantOf(0)}"/><br/>
                 </td>
                 <td><p:inputText id="nquantity1" value="#{completedPurchaseController.quantities.get(0).num}"
-                                 required="false" tabindex="61">
-                    <p:ajax event="keyup" update="totalPricePerProduct1 price1 "/>
+                                 required="false" tabindex="8">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 "/>
                 </p:inputText><br/></td>
 
 
@@ -169,110 +200,145 @@
                 </td>
             </tr>
             <tr>
-                <td><p:outputLabel id="prod2"
+                <td colspan="2"><p:outputLabel id="prod2"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(1).product.id}"/><br/>
                 </td>
-                <td><p:outputLabel id="maxQuant2"
+                <td ><p:outputLabel id="maxQuant2"
                                    value="#{completedPurchaseController.getMaxQuantOf(1)}"/>
                     <br/></td>
                 <td><p:inputText id="nquantity2" value="#{completedPurchaseController.quantities.get(1).num}"
-                                 required="false" tabindex="62">
-                    <p:ajax event="keyup" update="totalPricePerProduct1  price2"/>
+                                 required="false" tabindex="9">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price2"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="price2" value="#{completedPurchaseController.getFormattedPriceOf(1)}Ft"/>
                 </td>
             </tr>
             <tr>
-                <td><p:outputLabel id="prod3"
+                <td colspan="2"><p:outputLabel id="prod3"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(2).product.id}"/><br/>
                 </td>
                 <td><p:outputLabel id="maxQuant3"
                                    value="#{completedPurchaseController.getMaxQuantOf(2)}"/><br/>
                 </td>
                 <td><p:inputText id="nquantity3" value="#{completedPurchaseController.quantities.get(2).num}"
-                                 required="false" tabindex="63">
-                    <p:ajax event="keyup" update="totalPricePerProduct1  price3"/>
+                                 required="false" tabindex="10">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price3"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="price3" value="#{completedPurchaseController.getFormattedPriceOf(2)}Ft"/>
                 </td>
             </tr>
             <tr>
-                <td><p:outputLabel id="prod4"
+                <td colspan="2"><p:outputLabel id="prod4"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(3).product.id}"/><br/>
                 </td>
                 <td><p:outputLabel id="maxQuant4"
                                    value="#{completedPurchaseController.getMaxQuantOf(3)}"/><br/>
                 </td>
                 <td><p:inputText id="nquantity4" value="#{completedPurchaseController.quantities.get(3).num}"
-                                 required="false" tabindex="64">
-                    <p:ajax event="keyup" update="totalPricePerProduct1  price4"/>
+                                 required="false" tabindex="11">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price4"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="price4" value="#{completedPurchaseController.getFormattedPriceOf(3)}Ft"/>
                 </td>
             </tr>
             <tr>
-                <td><p:outputLabel id="prod5"
+                <td colspan="2"><p:outputLabel id="prod5"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(4).product.id}"/><br/>
                 </td>
                 <td><p:outputLabel id="maxQuant5"
                                    value="#{completedPurchaseController.getMaxQuantOf(4)}"/><br/>
                 </td>
                 <td><p:inputText id="nquantity5" value="#{completedPurchaseController.quantities.get(4).num}"
-                                 required="false" tabindex="65">
-                    <p:ajax event="keyup" update="totalPricePerProduct1  price5"/>
+                                 required="false" tabindex="12">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price5"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="price5" value="#{completedPurchaseController.getFormattedPriceOf(4)}Ft"/>
                 </td>
             </tr>
             <tr>
-                <td><p:outputLabel id="prod6"
+                <td colspan="2"><p:outputLabel id="prod6"
                                    value="#{completedPurchaseController.purchaseDTO.productList.get(5).product.id}"/>
                 </td>
                 <td><p:outputLabel id="maxQuant6"
                                    value="#{completedPurchaseController.getMaxQuantOf(5)}"/><br/>
                 </td>
                 <td><p:inputText id="nquantity6" value="#{completedPurchaseController.quantities.get(5).num}"
-                                 required="false" tabindex="66">
-                    <p:ajax event="keyup" update="totalPricePerProduct1  price6"/>
+                                 required="false" tabindex="13">
+                    <p:ajax event="keyup" update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price6"/>
                 </p:inputText><br/></td>
                 <td align="center">
                     <p:outputLabel id="price6" value="#{completedPurchaseController.getFormattedPriceOf(5)}Ft"/>
                 </td>
             </tr>
+            <tr>
+                <td><p:outputLabel value="Összesen:"/></td>
+                <td colspan="2"></td>
+                <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalNet"
+                                                  value="#{ completedPurchaseController.getNetSum()} kg"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalPricePerProduct1"
+                                                  value="#{completedPurchaseController.getFormattedSixTotal()} HUF"/></td>
+            </tr>
 
+            <tr>
+                <td><p:outputLabel value="Átlagár br."/> </td>
+
+                <td align="center"  ><p:outputLabel style="font-size: 1em" id="netAvgPrice"
+                                                  value="&nbsp;&nbsp;&nbsp;#{completedPurchaseController.getFormattedNumber(completedPurchaseController.netTotal)}&nbsp;&nbsp;&nbsp;"/></td>
+                <td align="center" ><p:outputLabel style="font-size: 1em" id="diff"
+                                                  value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.diff)}"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="grossAvgPrice"
+                                                  value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.getGrossAvgPrice())}"/></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="grossTotal"
+                                                  value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.grossTotal)}"/></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="Átlagár net."/></td>
+                <td></td>
+                <td></td>
+                <td align="center"><p:outputLabel style="font-size: 1em" id="netAvg"
+                                                  value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.netAvgPrice)}"/></td>
+
+            </tr>
             </tbody>
         </table>
 
-        <p:outputLabel  id="totalPricePerProduct1"
-                       value="Termékek részösszesített ára: #{ completedPurchaseController.getFormattedSixTotal()} HUF"/>
+
         <p/>
 
 
         <p/>
 
         <p:outputLabel for="pur" value="Mérlegelési jegy sorszáma: "/><br/>
-        <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" required="true"
+        <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" required="true" tabindex="7"
                          converter="#{purchaseConverter}" filter="true" filterMatchMode="startsWith">
             <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
             <p:ajax event="change"  update="fixProductPanel" />
             <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
             <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                           itemLabel="#{purchasevar.id} (#{completedPurchaseController.getFormattedRemainingPrice(purchasevar.id)} HUF)"
+                           itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName},#{completedPurchaseController.getFormattedRemainingPrice(purchasevar.id)} HUF)"
                            itemValue="#{purchasevar}"/>
         </p:selectOneMenu><br/>-
     </p:panel>
 
-    <h:commandButton value="Hozzáadás"
+    <p:commandButton value="Hozzáadás" tabindex="14" onclick="funSelectPurchaseSelectOneMenu()" widgetVar="selectF"
+                     action="#{completedPurchaseController.addRecord()}" oncomplete="funSelectPurchaseSelectOneMenu()"
+                     style="width: 10em;height: 2.6em" update="purchaseList  purchaseForm:fixProductPanel recordList">
+
+
+    </p:commandButton>
+    <!--<h:commandButton value="Hozzáadás" tabindex="14" onclick="funSelectPurchaseSelectOneMenu()"
                      action="#{completedPurchaseController.addRecord()}"
                      style="width: 10em;height: 2.6em">
 
         <f:ajax execute="purchaseForm:fixProdcutPanel"
-                render="purchaseList  purchaseForm:fixProductPanel recordList"/>
-    </h:commandButton>
+                render="purchaseList  purchaseForm:fixProductPanel recordList" />
+        <p:ajax oncomplete="funSelectPurchaseSelectOneMenu()"/>
+
+    </h:commandButton> -->
     <h:commandButton value="Utolsó törlése"
                      action="#{completedPurchaseController.removeRecord()}"
                      style="width: 10em;height: 2.6em">
@@ -305,7 +371,7 @@
                 render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:recordList "/>
     </h:commandButton>
     <p/>
-    <p:commandButton value="Letöltés excelként" ajax="false"
+    <p:commandButton value="Letöltés excelként" ajax="false" widgetVar="excelButton"
                      onclick="PrimeFaces.monitorDownload(start, stop);"
                      icon="pi pi-arrow-down" styleClass="mr-2"
                      actionListener="#{completedPurchaseController.pdf()}">
@@ -344,43 +410,46 @@
     </p:dataTable>
 
 
-    <p:dataTable var="purchase" value="#{completedPurchaseController.dtoList}" id="purchaseList"
+    <p:dataTable var="purchase" value="#{completedPurchaseController.dtoList}" id="purchaseList" paginator="true" rows="10" paginatorPosition="top" tableStyle="width: auto"
                  lazy="false" sortBy="#{completedPurchaseController.sortBy}" sortMode="single"
-                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
-                 scrollWidth="100%"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{completedPurchaseController.dto}" rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{completedPurchaseController.editPurchase}"
                 update="purchaseForm:purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
-        <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
-                  width="5em">
+        <p:column headerText="ID" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
+                  >
             <h:outputText value="#{purchase.id}" id="id"/>
         </p:column>
+        <p:column headerText="Sorszám" sortBy="#{purchase.serial}" filterBy="#{purchase.serial}" filterMatchMode="contains"
+                  >
+            <h:outputText value="#{purchase.serial}"/>
+        </p:column>
         <p:column headerText="Eladó neve" sortBy="#{purchase.vendor.vendorName}"
-                  filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains" width="5em">
+                  filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains" >
             <h:outputText value="#{purchase.vendor.vendorName}"/>
         </p:column>
         <p:column headerText="Helység" sortBy="#{purchase.vendor.city}" filterBy="#{purchase.vendor.city}"
-                  filterMatchMode="contains" width="5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.vendor.city}"/>
         </p:column>
         <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}" filterBy="#{purchase.site.siteName}"
-                  filterMatchMode="contains" width="5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.site.siteName}"/>
         </p:column>
 
         <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}"
-                  filterMatchMode="contains" width="5em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.getFormattedTotalPrice()} HUF"/>
         </p:column>
-        <p:column headerText="Fiz. dátum" sortBy="#{purchase.paymentDate}" filterBy="#{purchase.paymentDate}"
-                  filterMatchMode="contains" width="4.5em">
+        <p:column headerText="Fiz. dátum" sortBy="#{purchase.paymentDate}" filterBy="#{completedPurchaseController.toDottedDate(purchase.paymentDate)}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.paymentDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Felv.jegy dátuma" sortBy="#{purchase.receiptDate}" filterBy="#{purchase.receiptDate}"
-                  filterMatchMode="contains" width="4.5em">
+        <p:column headerText="Felv.jegy dátuma" sortBy="#{purchase.receiptDate}" filterBy="#{completedPurchaseController.toDottedDate(purchase.receiptDate)}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{purchase.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>

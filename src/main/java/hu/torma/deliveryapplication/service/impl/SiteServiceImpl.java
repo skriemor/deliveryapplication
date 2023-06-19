@@ -47,6 +47,7 @@ public class SiteServiceImpl implements SiteService {
 
     @Override
     public SiteDTO getSiteById(String s) {
+        if (repo.findSiteBySiteName(s)==null) return null;
         return mapper.map(repo.findSiteBySiteName(s), SiteDTO.class);
     }
 }

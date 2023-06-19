@@ -32,13 +32,28 @@
                 event.preventDefault();
                 var $this = $(event.target);
                 var index = parseFloat($this.attr('tabindex'));
+                if (index == 19) {
+                    $('[tabindex=20]').click();
+                }
                 $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
+
             }
         });
 
     </script>
 
     <style type="text/css">
+        .dTable {
+            overflow-x: scroll;  margin-bottom: 5em;
+        }
+        .dTable::-webkit-scrollbar {
+            position: fixed;
+            bottom: 0%;
+            width: 100%;
+            opacity: 1;
+        }
+
+
     </style>
     <p:panel header="Termelő" id="vendorPanel">
         <div class="card">
@@ -62,100 +77,113 @@
                                  requiredMessage="Kötelező kitölteni!" validatorMessage="Helytelen név">
 
                     </p:inputText><br/>
-                    <p:outputLabel for="mothersname" value="Anyja neve: " /> <h:message for="vendorForm:mothersname"
-                                                                                       style="color:red"/><br/>
-                    <p:inputText id="mothersname" value="#{vendorController.dto.nameOfMother}" required="true" tabindex="3"
-                                 requiredMessage="Kötelező kitölteni!" validatorMessage="Helytelen név">
-
-                    </p:inputText><br/>
-                    <p:outputLabel for="birthplace" value="Születési hely: "/><br/>
-                    <p:inputText id="birthplace" value="#{vendorController.dto.birthPlace}" required="true" tabindex="4"
-                                 requiredMessage="Kötelező kitölteni!"/><br/>
-
-                    <p:outputLabel for="birthdate" value="Születési idő: "/><br/>
-                    <p:inputMask mask="9999.99.99" id="birthdate" value="#{vendorController.dto.birthDate}" tabindex="5">
-                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                    </p:inputMask>
 
                     <p:outputLabel for="postal" value="Irányítószám: "/><br/>
-                    <p:inputText id="postal" value="#{vendorController.dto.postalCode}" required="true" tabindex="6"
+                    <p:inputText id="postal" value="#{vendorController.dto.postalCode}" required="true" tabindex="3"
                                  requiredMessage="Kötelező kitölteni!">
                         <p:ajax event="keyup" update="vendorForm:city" listener="#{vendorController.autoCity()}"/>
                     </p:inputText><br/>
                     <p:outputLabel for="city" value="Település: "/><br/>
                     <p:inputText id="city" value="#{vendorController.dto.city}" required="true"
                                  requiredMessage="Kötelező kitölteni!"/><br/>
-
                     <p:outputLabel for="address" value="Lakcím: "/><br/>
-                    <p:inputText id="address" value="#{vendorController.dto.address}" required="true" tabindex="7"
+                    <p:inputText id="address" value="#{vendorController.dto.address}" required="true" tabindex="4"
                                  requiredMessage="Kötelező kitölteni!"/><br/>
-                </p:divider>
-                <p:divider>
-                    <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="vendorForm:accountnumber"
-                                                                                        style="color:red"/><br/>
-                    <p:inputMask mask="99999999-99999999-99999999" id="accountnumber" tabindex="8"
-                                 value="#{vendorController.dto.accountNumber}" >
+                    <p:commandLink onclick="openFelir()"><p:outputLabel for="felir" value="FELIR azonosító:"/><p:message
+                            for="vendorForm:activity"
+                            style="color:red"/><br/>
+                    </p:commandLink>
+                    <p:inputMask mask="aa9999999" id="felir" value="#{vendorController.dto.felir}" tabindex="5">
+
                     </p:inputMask><br/>
-
-
                     <p:outputLabel for="taxid" value="Adóazonosító jel:"/><h:message for="vendorForm:taxid"
                                                                                      style="color:red"/><br/>
-                    <p:inputMask id="taxid" mask="9999999999" value="#{vendorController.dto.taxId}" required="true" tabindex="9"
+                    <p:inputMask id="taxid" mask="9999999999" value="#{vendorController.dto.taxId}" required="true" tabindex="6"
                                  requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
                         <f:validateRegex pattern="^\d{10}$"/>
                     </p:inputMask><br/>
+
                     <p:commandLink onclick="openNav()">
                         <p:outputLabel for="taxnum" value="Adószám: "/><h:message for="vendorForm:taxnum"
                                                                                   style="color:red"/><br/>
                     </p:commandLink>
-                    <p:inputMask mask="99999999-9-99" id="taxnum" value="#{vendorController.dto.taxNumber}" tabindex="10"
+                    <p:inputMask mask="99999999-9-99" id="taxnum" value="#{vendorController.dto.taxNumber}" tabindex="7"
                                  required="true" requiredMessage="Kötelező kitölteni!"
                                  validatorMessage="Rossz formátum">
                         <f:validateRegex pattern="^\d{8}-\d{1}-\d{2}$"/>
                     </p:inputMask><br/>
 
+
+                    <p:outputLabel for="birthplace" value="Születési hely: "/><br/>
+                    <p:inputText id="birthplace" value="#{vendorController.dto.birthPlace}" required="true" tabindex="8"
+                                 requiredMessage="Kötelező kitölteni!"/><br/>
+
+                </p:divider>
+                <p:divider>
+
+                    <p:outputLabel for="birthdate" value="Születési idő: "/><br/>
+                    <p:inputMask mask="9999.99.99" id="birthdate" value="#{vendorController.dto.birthDate}" tabindex="9">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:inputMask>
+
+                    <p:outputLabel for="mothersname" value="Anyja neve: " /> <h:message for="vendorForm:mothersname"
+                                                                                        style="color:red"/><br/>
+                    <p:inputText id="mothersname" value="#{vendorController.dto.nameOfMother}" required="true" tabindex="10"
+                                 requiredMessage="Kötelező kitölteni!" validatorMessage="Helytelen név">
+                    </p:inputText><br/>
+                    <p:outputLabel for="taj" value="TAJ szám: "/> <h:message for="vendorForm:taj"
+                                                                             style="color:red"/><br/>
+                    <p:inputMask mask="999 999 999" id="taj" value="#{vendorController.dto.taj}" required="true" tabindex="11"
+                                 requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
+                        <f:validateRegex pattern="^\d{3}\s\d{3}\s\d{3}$"/>
+                    </p:inputMask><br/>
+                    <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
+                    <p:inputText id="filenum" value="#{vendorController.dto.fileNumber}" tabindex="12"/><br/>
+
+                    <p:outputLabel for="ggn" value="GGN szám"/><br/>
+                    <p:inputText id="ggn" value="#{vendorController.dto.ggn}" required="false" tabindex="13"/><br/>
+
+                    <p:outputLabel for="phone" value="Telefonszám"/><br/>
+                    <p:inputMask mask="(99) 999 9999" id="phone" value="#{vendorController.dto.phone}" tabindex="14"
+                                 required="false"/><br/>
+
+                    <p:outputLabel for="accountnumber" value="Számlaszám: "/><h:message for="vendorForm:accountnumber"
+                                                                                        style="color:red"/><br/>
+                    <p:inputMask mask="99999999-99999999-99999999" id="accountnumber" tabindex="15"
+                                 value="#{vendorController.dto.accountNumber}" >
+                    </p:inputMask><br/>
+
+                    <p:outputLabel for="contract" value="Szerződés:"/><br/>
+                    <p:selectOneMenu id="contract" value="#{vendorController.dto.contract}" required="false" tabindex="16"
+                                     style="max-width: 240px"><br/>
+                        <f:selectItem itemLabel="Van" itemValue="Van"/>
+                        <f:selectItem itemLabel="Nincs" itemValue="Nincs"/>
+                    </p:selectOneMenu><br/>
+
                     <p:commandLink onclick="openFelir()">
                         <p:outputLabel for="activity" value="NEBIH azonosító: "/><p:message for="vendorForm:activity"
                                                                                             style="color:red"/><br/>
                     </p:commandLink>
-                    <p:inputMask required="false" mask="9999999999" id="activity" tabindex="11"
+                    <p:inputMask required="false" mask="9999999999" id="activity" tabindex="17"
                                  value="#{vendorController.dto.activity}">
                     </p:inputMask><br/>
-                    <p:outputLabel for="filenum" value="Őst.csaladi.gazd. nyilv. szám"/><br/>
-                    <p:inputText id="filenum" value="#{vendorController.dto.fileNumber}" tabindex="12"/><br/>
-                    <p:outputLabel for="phone" value="Telefonszám"/><br/>
-                    <p:inputMask mask="(99) 999 9999" id="phone" value="#{vendorController.dto.phone}" tabindex="13"
-                                 required="false"/><br/>
-                    <p:outputLabel for="ggn" value="GGN szám"/><br/>
-                    <p:inputText id="ggn" value="#{vendorController.dto.ggn}" required="false" tabindex="14"/><br/>
+
                 </p:divider>
                 <p:divider>
-                    <p:outputLabel for="taj" value="TAJ szám: "/> <h:message for="vendorForm:taj"
-                                                                             style="color:red"/><br/>
-                    <p:inputMask mask="999 999 999" id="taj" value="#{vendorController.dto.taj}" required="true" tabindex="15"
-                                 requiredMessage="Kötelező kitölteni!" validatorMessage="Rossz formátum">
-                        <f:validateRegex pattern="^\d{3}\s\d{3}\s\d{3}$"/>
-                    </p:inputMask><br/>
+
+
+
+
+
+
 
                     <p:outputLabel for="qualifier" value="Minősítés: "/><br/>
-                    <p:selectOneMenu id="qualifier" value="#{vendorController.dto.qualification}" tabindex="16"
+                    <p:selectOneMenu id="qualifier" value="#{vendorController.dto.qualification}" tabindex="18"
                                      style="max-width: 240px"><br/>
                         <f:selectItem itemLabel="Őstermelő" itemValue="Őstermelő"/>
                         <f:selectItem itemLabel="Átalány adózó őstermelő" itemValue="Átalány adózó őstermelő"/>
                     </p:selectOneMenu><br/>
-                    <p:commandLink onclick="openFelir()"><p:outputLabel for="felir" value="FELIR azonosító:"/><p:message
-                            for="vendorForm:activity"
-                            style="color:red"/><br/>
-                    </p:commandLink>
-                    <p:inputMask mask="aa9999999" id="felir" value="#{vendorController.dto.felir}" tabindex="17">
 
-                    </p:inputMask><br/>
-                    <p:outputLabel for="contract" value="Szerződés:"/><br/>
-                    <p:selectOneMenu id="contract" value="#{vendorController.dto.contract}" required="false" tabindex="18"
-                                     style="max-width: 240px"><br/>
-                        <f:selectItem itemLabel="Van" itemValue="Van"/>
-                        <f:selectItem itemLabel="Nincs" itemValue="Nincs"/>
-                    </p:selectOneMenu><br/><br/>
 
 
                     <p:outputLabel for="mediator" value="Közvetítő:"/><br/>
@@ -165,10 +193,10 @@
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{mediatorServiceImpl.allMediators}" var="mediator"
                                        itemLabel="#{mediator.id}" itemValue="#{mediator}"/>
-                    </p:selectOneMenu><br/>
+                    </p:selectOneMenu><br/><p/>
 
 
-                    <h:commandButton value="#{vendorController.label}"
+                    <h:commandButton value="#{vendorController.label}" tabindex="20"
                                      action="#{vendorController.uiSaveVendor}"
                                      style="width: 10em;height: 2.6em">
                         <f:ajax execute="vendorForm" render="vendorList vendorPanel"/>
@@ -191,60 +219,75 @@
 
         </div>
     </p:panel>
-    <p:dataTable var="vendor" value="#{vendorController.dtoList}" id="vendorList"
+    <p:dataTable paginatorPosition="top" paginator="true" rows="10"  tableStyle="width:  auto;"
+            var="vendor" value="#{vendorController.dtoList}" id="vendorList"
                  lazy="false" sortBy="#{vendorController.sortBy}" sortMode="single"
-                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
-                 scrollWidth="100%"
-                 selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                 allowUnsorting="true" resizableColumns="true"
+                 selectionMode="single" emptyMessage="Nincs találat"
                  selection="#{vendorController.dto}" rowKey="#{vendor.taxId}">
         <p:ajax event="rowSelect" listener="#{vendorController.editVendor}" update="vendorForm:vendorPanel"/>
 
         <p:column headerText="Neve" sortBy="#{vendor.vendorName}" filterBy="#{vendor.vendorName}"
-                  filterMatchMode="contains" width="11em">
+                  filterMatchMode="contains">
             <h:outputText value="#{vendor.vendorName}"/>
         </p:column>
-        <p:column headerText="Ir.sz." sortBy="#{vendor.postalCode}" filterBy="#{vendor.postalCode}"
-                  filterMatchMode="contains" width="4em">
-            <h:outputText value="#{vendor.postalCode}"/>
-        </p:column>
-        <p:column headerText="Helység" sortBy="#{vendor.city}" filterBy="#{vendor.city}" filterMatchMode="contains"
-                  width="5em">
+        <p:column headerText="Város" sortBy="#{vendor.city}" filterBy="#{vendor.city}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{vendor.city}"/>
         </p:column>
-        <p:column headerText="Min." sortBy="#{vendor.qualification}" filterBy="#{vendor.qualification}"
-                  filterMatchMode="contains" width="3em">
-            <h:outputText value="#{vendor.qualification.charAt(0)}"/>
+        <p:column headerText="Lakcím" sortBy="#{vendor.address}" filterBy="#{vendor.address}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.address}"/>
         </p:column>
-        <p:column headerText="Adóazonosító" sortBy="#{vendor.taxId}" filterBy="#{vendor.taxId}"
-                  filterMatchMode="contains" width="5.5em">
-            <h:outputText value="#{vendor.taxId}" id="taxId"/>
+        <p:column headerText="FELIR" sortBy="#{vendor.felir}" filterBy="#{vendor.felir}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.felir}"/>
         </p:column>
-        <p:column headerText="Adószám" sortBy="#{vendor.taxNumber}" filterBy="#{vendor.taxNumber}"
-                  filterMatchMode="contains" width="6em">
+        <p:column headerText="Adó.jel" sortBy="#{vendor.taxId}" filterBy="#{vendor.taxId}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.taxId}"/>
+        </p:column>
+        <p:column headerText="Adószám" sortBy="#{vendor.taxNumber}" filterBy="#{vendor.taxNumber}" filterMatchMode="contains">
             <h:outputText value="#{vendor.taxNumber}"/>
         </p:column>
-        <p:column headerText="TAJ" sortBy="#{vendor.taj}" filterBy="#{vendor.taj}" filterMatchMode="contains"
-                  width="6em">
-            <h:outputText value="#{vendor.taj}"/>
-        </p:column>
-        <p:column headerText="NEBIH az." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}"
-                  filterMatchMode="contains" width="6em">
-            <h:outputText value="#{vendor.activity}"/>
-        </p:column>
-        <p:column headerText="Szül.hely" sortBy="#{vendor.birthPlace}" filterBy="#{vendor.birthPlace}"
-                  filterMatchMode="contains" width="5em">
-            <h:outputText value="#{vendor.birthPlace}"/>
-        </p:column>
-        <p:column headerText="Szül.idő" sortBy="#{vendor.birthDate}" filterBy="#{vendor.birthDate}"
-                  filterMatchMode="contains" width="4.5em">
+        <p:column headerText="Szül.idő" sortBy="#{vendor.birthDate}" filterBy="#{vendorController.toDottedDate(vendor.birthDate)}"
+                  filterMatchMode="contains" >
             <h:outputText value="#{vendor.birthDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
+        <p:column headerText="TAJ" sortBy="#{vendor.taj}" filterBy="#{vendor.taj}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.taj}"/>
+        </p:column>
+        <p:column headerText="ÖCSG" sortBy="#{vendor.fileNumber}" filterBy="#{vendor.fileNumber}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.fileNumber}"/>
+        </p:column>
+        <p:column headerText="GGN" sortBy="#{vendor.ggn}" filterBy="#{vendor.ggn}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.ggn}"/>
+        </p:column>
+        <p:column headerText="Tel" sortBy="#{vendor.phone}" filterBy="#{vendor.phone}" filterMatchMode="contains">
+            <h:outputText value="#{vendor.phone}"/>
+        </p:column>
         <p:column headerText="Bankszámla szám" sortBy="#{vendor.accountNumber}" filterBy="#{vendor.accountNumber}"
-                  filterMatchMode="contains" width="14em">
+                  filterMatchMode="contains" >
             <h:outputText value="#{vendor.accountNumber}"/>
         </p:column>
+        <p:column headerText="Szerz." sortBy="#{vendor.contract}" filterBy="#{vendor.contract}"
+                  filterMatchMode="contains" >
+            <h:outputText value="#{vendor.contract}"/>
+        </p:column>
+        <p:column headerText="NEBIH az." sortBy="#{vendor.activity}" filterBy="#{vendor.activity}"
+                  filterMatchMode="contains" >
+            <h:outputText value="#{vendor.activity}"/>
+        </p:column>
+        <p:column headerText="Adóazonosító" sortBy="#{vendor.taxId}" filterBy="#{vendor.taxId}"
+                  filterMatchMode="contains" >
+            <h:outputText value="#{vendor.taxId}" id="taxId"/>
+        </p:column>
+
+        <p:column headerText="Szül.hely" sortBy="#{vendor.birthPlace}" filterBy="#{vendor.birthPlace}"
+                  filterMatchMode="contains" >
+            <h:outputText value="#{vendor.birthPlace}"/>
+        </p:column>
+
+
 
     </p:dataTable>
 

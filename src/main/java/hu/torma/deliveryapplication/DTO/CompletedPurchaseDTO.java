@@ -19,6 +19,7 @@ public class CompletedPurchaseDTO implements Serializable {
     int four;
     int five;
     int six;
+    Integer serial;
     Date receiptDate;
     SiteDTO site;
     String notes;

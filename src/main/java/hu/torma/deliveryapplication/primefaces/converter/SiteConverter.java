@@ -29,8 +29,9 @@ public class SiteConverter implements Converter {
             SiteDTO site = (SiteDTO) o;
             return site.getSiteName();
         } else {
+            if (o==null) return "Válasszon";
             String error =
-                    "The object is not an instance of VendorDTO";
+                    "The object is not an instance of SiteDTO";
             throw new ClassCastException(error);
         }
     }
