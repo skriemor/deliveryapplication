@@ -211,13 +211,21 @@
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
+        <p:column headerText="Számla sorszáma" sortBy="#{sale.receiptId}" filterBy="#{sale.receiptId}" filterMatchMode="contains"  >
+            <h:outputText value="#{sale.receiptId}" />
+        </p:column>
+        <p:column headerText="Számla dátuma" sortBy="#{sale.receiptDate}" filterBy="#{saleController.toDottedDate(sale.receiptDate)}" filterMatchMode="contains">
+            <h:outputText value="#{sale.receiptDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
         <p:column headerText="Vevő neve" sortBy="#{sale.buyer.name}" filterBy="#{sale.buyer.name}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.buyer.name}"/>
         </p:column>
 
 
-        <p:column headerText="Számla kelt" sortBy="#{sale.bookingDate}" filterBy="#{saleController.toDottedDate(sale.bookingDate)}" filterMatchMode="contains"  >
-            <h:outputText value="#{sale.bookingDate}">
+        <p:column headerText="Fizetési határ" sortBy="#{sale.deadLine}" filterBy="#{saleController.toDottedDate(sale.deadLine)}" filterMatchMode="contains"  >
+            <h:outputText value="#{sale.deadLine}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
@@ -228,20 +236,11 @@
             <h:outputText value="#{sale.currency}"/>
         </p:column>
 
-        <p:column headerText="Fiz. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
+        <p:column headerText="Fizetés. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
             <h:outputText value="#{sale.completionDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
-        <p:column headerText="Telj.Dát." sortBy="#{sale.receiptDate}" filterBy="#{saleController.toDottedDate(sale.receiptDate)}" filterMatchMode="contains">
-            <h:outputText value="#{sale.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
     </p:dataTable>
 </h:form>
 </html>
-
-
-
-

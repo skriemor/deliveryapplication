@@ -327,7 +327,7 @@
     <p:commandButton value="Hozzáadás" tabindex="14" onclick="funSelectPurchaseSelectOneMenu()" widgetVar="selectF"
                      action="#{completedPurchaseController.addRecord()}" oncomplete="funSelectPurchaseSelectOneMenu()"
                      style="width: 10em;height: 2.6em" update="purchaseList  purchaseForm:fixProductPanel recordList">
-
+        <p:ajax update="recordList" />
 
     </p:commandButton>
     <!--<h:commandButton value="Hozzáadás" tabindex="14" onclick="funSelectPurchaseSelectOneMenu()"

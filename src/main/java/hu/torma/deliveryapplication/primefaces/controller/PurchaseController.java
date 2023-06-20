@@ -352,6 +352,7 @@ public class PurchaseController implements Serializable {
     }
 
     public void uiSavePurchase() {
+        sixSave();
         logger.warning("uiSaveCalled");
         if (this.dto.getProductList() == null) {
             logger.info("plist was null");
@@ -395,12 +396,22 @@ public class PurchaseController implements Serializable {
     }
 
     public void editPurchase(SelectEvent<PurchaseDTO> _dto) {
-        emptySix();
+
         this.setLabel("Módosítás");
         this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
+        editSix();
     }
+    private void editSix() {
+        BeanUtils.copyProperties(dto.getProductList().get(0), one);
+        BeanUtils.copyProperties(dto.getProductList().get(1), two);
+        BeanUtils.copyProperties(dto.getProductList().get(2), three);
+        BeanUtils.copyProperties(dto.getProductList().get(3), four);
+        BeanUtils.copyProperties(dto.getProductList().get(4), five);
+        BeanUtils.copyProperties(dto.getProductList().get(5), six);
 
+
+    }
     private void emptySix() {
         one.setQuantity(null);
         two.setQuantity(null);

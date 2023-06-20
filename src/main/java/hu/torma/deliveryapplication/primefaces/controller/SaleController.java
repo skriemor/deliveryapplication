@@ -250,7 +250,7 @@ public class SaleController implements Serializable {
 
 
     public void uiSaveSale() {
-        if (!validateStorage()) return;
+        //if (!validateStorage()) return;  kiszedve, hogy lehessen negatív
         if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
         java.sql.Date date = new Date(System.currentTimeMillis());
         this.dto.setBookingDate(date);
