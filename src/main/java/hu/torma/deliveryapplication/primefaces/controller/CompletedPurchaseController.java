@@ -506,8 +506,8 @@ public class CompletedPurchaseController implements Serializable {
 
     public void removeRecord() {
         logger.warning("REMOVING RECORD");
-        if (this.dto.getRecords().size() < 1) return;
-        dto.getRecords().remove(dto.getRecords().size() - 1);
+        if (tempRecords.size() < 1) return;
+       tempRecords.remove(tempRecords.size() - 1);
         updateAvailablePurchases();
         //T3
     }

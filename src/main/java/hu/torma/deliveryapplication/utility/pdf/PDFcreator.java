@@ -183,6 +183,7 @@ public class PDFcreator {
 
             // Create the file object
             File modifiedFile = new File(filePath);
+            log.info("Filepaths of excel are: \n" + filePath+"\n"+currentDirectory );
             //FileOutputStream fos = new FileOutputStream(modifiedFile);
             FileOutputStream fos = new FileOutputStream(modifiedFile);
             workbook.write(fos);
