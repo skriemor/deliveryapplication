@@ -171,27 +171,28 @@ public class PDFcreator {
         populateExcel(pur);
 
         try {
-            // create a new file with a modified name
+           /*
             String modifiedFileName = "merlegelesi_jegy_" + pur.getId() + ".xlsx";
-            File modifiedFile = new File(modifiedFileName);
+            var modifiedPath = new ClassPathResource(modifiedFileName, this.getClass().getClassLoader());
+            File modifiedFile = new File(modifiedPath.getPath());
+*/
 
-            // write the workbook to the modified file
+            String currentDirectory = System.getProperty("user.dir");
+            String modifiedFileName = "merlegelesi_jegy_" + pur.getId() + ".xlsx";
+            String filePath = currentDirectory + File.separator + modifiedFileName;
 
+            // Create the file object
+            File modifiedFile = new File(filePath);
+            //FileOutputStream fos = new FileOutputStream(modifiedFile);
             FileOutputStream fos = new FileOutputStream(modifiedFile);
-
             workbook.write(fos);
+
             fos.close();
 
             // create the StreamedContent object
             InputStream stream = new FileInputStream(modifiedFile);
             StreamedContent file = DefaultStreamedContent.builder()
-                    .stream(() -> {
-                        try {
-                            return new FileInputStream(modifiedFile);
-                        } catch (FileNotFoundException e) {
-                            throw new RuntimeException(e);
-                        }
-                    })
+                    .stream(()-> stream)
                     .contentType("application/vnd.ms-excel")
                     .name(modifiedFileName)
                     .build();

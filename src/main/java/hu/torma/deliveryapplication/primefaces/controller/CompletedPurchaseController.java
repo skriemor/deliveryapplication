@@ -26,6 +26,7 @@ import java.util.logging.Logger;
 @Controller("completedPurchaseController")
 public class CompletedPurchaseController implements Serializable {
 
+    List<CompletionRecordDTO> tempRecords;
 
     List<CompletionRecordDTO> validRecords;
 
@@ -107,6 +108,10 @@ public class CompletedPurchaseController implements Serializable {
 
     @Autowired
     PurchaseController purchaseController;
+
+    public List<CompletionRecordDTO> getTempRecords() {
+        return tempRecords;
+    }
 
     public void updateRemainingPrice(int id) {
         logger.info("updating remaining price of " + id);
@@ -202,6 +207,7 @@ public class CompletedPurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
+        tempRecords = new ArrayList<>();
         this.purchaseDTO = new PurchaseDTO();
         newCP();
         pdfdisabled = true;
@@ -255,6 +261,7 @@ public class CompletedPurchaseController implements Serializable {
     public void uiSaveCompletedPurchase() {
         //if (true)return;
         if (this.dto == null) return;
+        dto.setRecords(tempRecords);
         getSixTotal();
         logger.warning("uiSaveCalled");
         Date date = new Date(System.currentTimeMillis());
@@ -271,7 +278,7 @@ public class CompletedPurchaseController implements Serializable {
 
 
         newCP();
-
+        tempRecords.clear();
 
         this.setPurchaseDTO(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
@@ -301,6 +308,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
         //emptySix();
+        tempRecords = _dto.getObject().getRecords();
         beforeEditList = _dto.getObject().getRecords();
         this.setLabel("Felv.jegy Módosítása");
         this.pdfdisabled = false;
@@ -326,7 +334,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void newPurchase() {
-
+        tempRecords.clear();
         emptySix();
         newCP();
         this.purchaseDTO = new PurchaseDTO();
@@ -339,10 +347,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public CompletedPurchaseDTO getDto() {
-        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-        StackTraceElement e = stacktrace[2];
-        String methodName = e.getMethodName();
-        logger.info("getDto called by:  " + methodName);
+
         if (this.dto == null) {
             newCP();
         }
@@ -459,22 +464,17 @@ public class CompletedPurchaseController implements Serializable {
 
     }
 
-    CompletionRecordDTO tmpRecord;
 
-    CompletionRecordDTO recordDTO;
     public void addRecord() {
-
-
         if (this.purchaseDTO.getId() == null) {
             //logger.info("purchasedto id was null");
             return;
         }
-
         if (this.dto.getRecords() == null) {
             logger.info("records were null");
             this.dto.setRecords(new ArrayList<CompletionRecordDTO>());
         }
-         recordDTO= new CompletionRecordDTO();
+        var recordDTO= new CompletionRecordDTO();
         for (int i = 0; i < 6; i++) {
             if (quantities.get(i).getNum() > getMaxQuantOf(i)) {
                 logger.info(i + "th/rd element " + quantities.get(i).getNum() + " was greater than" + getMaxQuantOf(i));
@@ -490,16 +490,11 @@ public class CompletedPurchaseController implements Serializable {
         recordDTO.setPurchaseId(purchaseDTO.getId());
 
         recordDTO.setPrice(getSixTotal());
-
-        tmpRecord = new CompletionRecordDTO();
-        BeanUtils.copyProperties(recordDTO, tmpRecord);
-        dto.getRecords().add(tmpRecord);
-
-        logger.info("Added record" + recordDTO.toString());
+        tempRecords.add(recordDTO);
+        logger.info("Added record" + recordDTO);
         this.purchaseDTO = new PurchaseDTO();
         emptySix();
         updateAvailablePurchases();
-
     }
 
     public String toDottedDate(java.util.Date dt) {
@@ -540,8 +535,8 @@ public class CompletedPurchaseController implements Serializable {
     public ArrayList<PurchaseDTO> updateAvailablePurchases() {
         logger.info("Getting available purchases");
         ArrayList<Integer> usedIDs = new ArrayList<>();
-        if (dto.getRecords() != null)
-            usedIDs.addAll(dto.getRecords().stream().map(v -> v.getPurchaseId()).toList());
+        if (tempRecords != null)
+            usedIDs.addAll(tempRecords.stream().map(CompletionRecordDTO::getPurchaseId).toList());
         availablePurchases = new ArrayList<>(OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId()))
                 .filter(v -> v.getRemainingPrice() != 0).toList());
         return availablePurchases;

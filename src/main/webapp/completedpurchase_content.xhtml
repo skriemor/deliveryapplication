@@ -402,7 +402,7 @@
                      actionListener="#{completedPurchaseController.pdf()}">
         <p:fileDownload value="#{completedPurchaseController.file}"/>
     </p:commandButton>
-    <p:dataTable var="record" value="#{completedPurchaseController.dto.records}" id="recordList"
+    <p:dataTable var="record" value="#{completedPurchaseController.tempRecords}" id="recordList"
                  lazy="false"
                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
                  emptyMessage="Nincs rekord" resizableColumns="true">
