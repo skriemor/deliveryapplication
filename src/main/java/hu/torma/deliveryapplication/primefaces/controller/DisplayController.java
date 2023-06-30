@@ -31,11 +31,12 @@ public class DisplayController implements Serializable {
     private Date filterDateFrom, filterDateFrom2, filterDateFrom3, filterDateFrom4;
 
     private Date filterDateTo, filterDateTo2, filterDateTo3, filterDateTo4;
-    private List<PurchaseDTO> purchaseDTOS;
 
+    private List<PurchaseDTO> purchaseDTOS;
     private List<CompletedPurchaseDTO> CPDTOS;
     private List<SaleDTO> saleDTOS;
     private List<MediatorDisplay> mediatorDisplays;
+
     @Autowired
     StorageService storageService;
     @Autowired
@@ -55,9 +56,26 @@ public class DisplayController implements Serializable {
     SaleService saleService;
 
 
+    public void refreshPurchases(){
+        purchaseDTOS = purchaseService.getAllPurchases();
+    }
+    public void refreshSales(){
+        saleDTOS = saleService.getAllSales();
+    }
+    public void refreshCompletedpurchases(){
+        CPDTOS = CPService.getAllCompletedPurchases();
+    }
+    public void refreshMediators(){
+        mediatorDTOS = mediatorService.getAllMediators();    }
+    public void dtoListRefresh() {
+        refreshPurchases();
+        refreshMediators();
+        refreshCompletedpurchases();
+        refreshSales();
+    }
     @PostConstruct
     public void init() {
-
+        dtoListRefresh();
     }
 
 
@@ -140,14 +158,15 @@ public class DisplayController implements Serializable {
 
     }
 
-    public List<PurchaseDTO> getPurchaseDTOS() {
+
+    public List<PurchaseDTO> refreshPurchaseDTOS() {
         purchaseDTOS = new ArrayList<>(purchaseService.getAllPurchases());
         doFilterName();
         doFilterDate();
         return new ArrayList<>(purchaseDTOS);
     }
 
-    public ArrayList<SaleDTO> getSaleDTOS() {
+    public ArrayList<SaleDTO> refreshSaleDTOS() {
         saleDTOS = saleService.getAllSales();
         doFilterName2();
         doFilterDate2();
@@ -155,7 +174,7 @@ public class DisplayController implements Serializable {
 
     }
 
-    public ArrayList<CompletedPurchaseDTO> getCPDTOS() {
+    public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
         CPDTOS = CPService.getAllCompletedPurchases();
         doFilterName4();
         doFilterDate4();
@@ -163,7 +182,7 @@ public class DisplayController implements Serializable {
         return new ArrayList<>(CPDTOS);
     }
 
-    public ArrayList<MediatorDisplay> getMediatorDisplays() {
+    public ArrayList<MediatorDisplay> refreshMediatorDisplays() {
         var tmp = new ArrayList<MediatorDisplay>();
         mediatorDTOS = mediatorService.getAllMediators();
         doFilterMediator();

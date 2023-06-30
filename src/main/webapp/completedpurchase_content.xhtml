@@ -23,11 +23,7 @@
             }
         });
 
-        function funSelectPurchaseSelectOneMenu() {
-            //PF('selectF').show();
-            //PF('excelButton').focus().select();
-            $('[tabindex=7]').select().focus();
-        }
+
         function funcForWindowPopup() {
             var popup = null;
             popup = window.open("vendors_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
@@ -161,6 +157,16 @@
 
         </div>
     </p:panel>
+    <p:outputLabel for="pur" value="Mérlegelési jegy sorszáma: "/><br/>
+    <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" required="true" tabindex="7"
+                     converter="#{purchaseConverter}" filter="true" filterMatchMode="startsWith" >
+        <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
+        <p:ajax event="change"  update="fixProductPanel" />
+        <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+        <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
+                       itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName},#{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
+                       itemValue="#{purchasevar}"/>
+    </p:selectOneMenu><br/>
     <p:panel header="Termékek" id="fixProductPanel" toggleable="true" collapsed="false">
 
         <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
@@ -312,20 +318,11 @@
 
         <p/>
 
-        <p:outputLabel for="pur" value="Mérlegelési jegy sorszáma: "/><br/>
-        <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" required="true" tabindex="7"
-                         converter="#{purchaseConverter}" filter="true" filterMatchMode="startsWith">
-            <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
-            <p:ajax event="change"  update="fixProductPanel" />
-            <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
-            <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                           itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName},#{completedPurchaseController.getFormattedRemainingPrice(purchasevar.id)} HUF)"
-                           itemValue="#{purchasevar}"/>
-        </p:selectOneMenu><br/>-
+
     </p:panel>
 
-    <p:commandButton value="Hozzáadás" tabindex="14" onclick="funSelectPurchaseSelectOneMenu()" widgetVar="selectF"
-                     action="#{completedPurchaseController.addRecord()}" oncomplete="funSelectPurchaseSelectOneMenu()"
+    <p:commandButton value="Hozzáadás"
+                     action="#{completedPurchaseController.addRecord()}"
                      style="width: 10em;height: 2.6em" update="purchaseList  purchaseForm:fixProductPanel recordList">
         <p:ajax update="recordList" />
 
@@ -355,20 +352,20 @@
                      style="width: 10em;height: 2.6em">
 
         <f:ajax execute="purchaseForm:purchasePanel"
-                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
+                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList purchaseForm:pur"/>
     </h:commandButton>
 
     <h:commandButton value="Új"
                      action="#{completedPurchaseController.newPurchase}"
                      style="width: 10em;height: 2.6em">
         <f:ajax execute="purchaseForm:purchasePanel"
-                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
+                render="purchaseList purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList purchaseForm:pur"/>
     </h:commandButton>
     <h:commandButton value="Töröl"
                      action="#{completedPurchaseController.deletePurchase}"
                      style="width: 10em;height: 2.6em">
         <f:ajax execute="purchaseForm:PurchasePanel"
-                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:recordList "/>
+                render="purchaseList purchasePanel purchaseForm:fixProductPanel purchaseForm:recordList purchaseForm:pur"/>
     </h:commandButton>
     <p/>
     <p:commandButton value="Letöltés excelként" ajax="false" widgetVar="excelButton"
@@ -380,11 +377,8 @@
     <p:dataTable var="record" value="#{completedPurchaseController.recordDTOS}" id="recordList"
                  lazy="false"
                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
-                 scrollWidth="100%"
-                 selectionMode="single" emptyMessage="Nincs rekord" resizableColumns="true"
-                 selection="#{completedPurchaseController.recordDTO}" rowKey="#{record.id}">
-        <p:ajax event="rowSelect" listener="#{completedPurchaseController.editRecord}"
-                update="purchaseForm:fixProductPanel"/>
+                 emptyMessage="Nincs rekord" resizableColumns="true">
+
         <p:column headerText="Sorszám" sortBy="#{record.id}"
                   width="5em">
             <h:outputText value="#{record.id}" id="record_id"/>
@@ -416,7 +410,7 @@
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{completedPurchaseController.dto}" rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{completedPurchaseController.editPurchase}"
-                update="purchaseForm:purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList"/>
+                update="purchaseForm:purchasePanel  purchaseForm:fixProductPanel purchaseForm:recordList purchaseForm:pur"/>
         <p:column headerText="ID" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
                   >
             <h:outputText value="#{purchase.id}" id="id"/>
@@ -438,8 +432,8 @@
             <h:outputText value="#{purchase.site.siteName}"/>
         </p:column>
 
-        <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.totalPrice}"
-                  filterMatchMode="contains" >
+        <p:column headerText="Vételár"  sortBy="#{purchase.totalPrice}" filterBy="#{purchase.intedTotalPrice}"
+                  filterMatchMode="startsWith" >
             <h:outputText value="#{purchase.getFormattedTotalPrice()} HUF"/>
         </p:column>
         <p:column headerText="Fiz. dátum" sortBy="#{purchase.paymentDate}" filterBy="#{completedPurchaseController.toDottedDate(purchase.paymentDate)}"

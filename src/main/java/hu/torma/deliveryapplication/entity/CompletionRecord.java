@@ -13,7 +13,7 @@ public class CompletionRecord {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private Integer id;
 
     @Column(name = "one", nullable = false)
     private int one;
@@ -32,7 +32,7 @@ public class CompletionRecord {
     private int price;
 
     @Column(name = "purchase_id")
-    private Long purchaseId;
+    private Integer purchaseId;
 
     @ManyToOne
     @JoinColumn(name = "completed_id", referencedColumnName = "id")

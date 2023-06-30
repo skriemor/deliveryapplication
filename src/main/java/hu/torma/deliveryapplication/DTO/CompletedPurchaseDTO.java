@@ -29,7 +29,9 @@ public class CompletedPurchaseDTO implements Serializable {
     String paymentMethod;
 
     Date paymentDate;
-    private List<CompletionRecordDTO> records;
+    public List<CompletionRecordDTO> records;
+
+
 
     @Override
     public boolean equals(Object o) {
@@ -47,5 +49,9 @@ public class CompletedPurchaseDTO implements Serializable {
 
     public String getFormattedTotalPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(","," ");
+    }
+    public String getIntedTotalPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
+
     }
 }

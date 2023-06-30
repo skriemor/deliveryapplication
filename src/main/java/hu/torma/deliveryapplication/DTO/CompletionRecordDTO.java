@@ -11,14 +11,14 @@ import java.util.Objects;
  */
 @Data
 public class CompletionRecordDTO implements Serializable {
-    private Long id;
+    private Integer id;
     private int one;
     private int two;
     private int three;
     private int four;
     private int five;
     private int six;
-    private Long purchaseId;
+    private Integer purchaseId;
     private CompletedPurchaseDTO completedPurchase;
 
     private int price;
@@ -27,6 +27,7 @@ public class CompletionRecordDTO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompletionRecordDTO that = (CompletionRecordDTO) o;
+        if (that.id ==null || this.id == null) return false;
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 

@@ -32,6 +32,8 @@ public class PurchaseDTO implements Serializable {
     private String receiptId;
 
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -51,5 +53,10 @@ public class PurchaseDTO implements Serializable {
 
     public String getFormattedRemainingPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(this.remainingPrice).replaceAll(","," ");
+    }
+
+    public String getIntedTotalPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
+
     }
 }

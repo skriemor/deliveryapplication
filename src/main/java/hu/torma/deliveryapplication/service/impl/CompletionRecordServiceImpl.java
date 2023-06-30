@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CompletionRecordServiceImpl implements CompletionRecordService {
@@ -44,4 +45,9 @@ public class CompletionRecordServiceImpl implements CompletionRecordService {
         repo.deleteById(CompletionRecordDTO.getId());
     }
 
+    @Override
+    @Transactional
+    public List<CompletionRecordDTO> findAllByPurchaseId(Integer idd) {
+        return repo.findAllByPurchaseId(idd).stream().map((element) -> mapper.map(element, CompletionRecordDTO.class)).collect(Collectors.toList());
+    }
 }

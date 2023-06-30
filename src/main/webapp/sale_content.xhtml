@@ -229,7 +229,7 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.price}" filterMatchMode="contains"  >
+        <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.intedPrice}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.formattedPrice}"/>
         </p:column>
         <p:column headerText="Fiz. valuta" sortBy="#{sale.currency}" filterBy="#{sale.currency}" filterMatchMode="contains"  >

@@ -30,4 +30,7 @@ public class SaleDTO implements Serializable {
     public String getFormattedPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(","," ");
     }
+    public String getIntedPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(",","");
+    }
 }

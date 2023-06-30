@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -119,8 +120,46 @@ public class PurchaseController implements Serializable {
         return temp;
     }
 
+    public void forceUpdateRemainingPrices() {
+        for (var c : dtoList) {
+
+                c.setRemainingPrice(getRemaningDoublePrice(c));
+                service.savePurchase(c);
+
+
+        }
+    }
+
+    private void updateRemainingPrices() {
+
+        for (var c : dtoList) {
+            if (c.getRemainingPrice() == null) {
+                c.setRemainingPrice(getRemaningDoublePrice(c));
+                service.savePurchase(c);
+            }
+
+        }
+    }
+
     @Autowired
     CompletionRecordService recordService;
+
+    public double getRemaningDoublePrice(PurchaseDTO pc) {
+        var temp = pc;
+        var tempList = temp.getProductList();
+        var total = temp.getTotalPrice();
+        var records = recordService.getAllCompletionRecords().stream().filter(r -> r.getPurchaseId().intValue() == pc.getId().intValue()).toList();
+        for (var r : records) {
+            total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
+            total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
+        }
+
+        return total;
+    }
 
     public int getRemaningPrice(int id) {
         var temp = service.getPurchaseById(id);
@@ -143,6 +182,14 @@ public class PurchaseController implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(",", " ");
     }
 
+    public String getIntedRemainingPrice(int id) {
+        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(",", "");
+
+    }
+
+    public String getIntedNum(double d) {
+        return NumberFormat.getNumberInstance(Locale.US).format(d).replaceAll(",", "");
+    }
 
     public String toDottedDate(java.util.Date dt) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
@@ -214,10 +261,7 @@ public class PurchaseController implements Serializable {
         setUpFive();
         pdfdisabled = true;
         sortBy = new ArrayList<>();
-        sortBy.add(SortMeta.builder()
-                .field("id")
-                .order(SortOrder.ASCENDING)
-                .build());
+        sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
         dateRange = (LocalDate.now().getYear() - 50) + ":" + (LocalDate.now().getYear() + 5);
     }
 
@@ -262,6 +306,7 @@ public class PurchaseController implements Serializable {
     @PostConstruct
     public void getAllPurchases() {
         this.dtoList = service.getAllPurchases();
+        updateRemainingPrices();
         this.setLabel("Hozzáadás");
         this.setLabel2("Termék hozzáadása");
     }
@@ -281,35 +326,54 @@ public class PurchaseController implements Serializable {
 
     public void sixSave() {
         this.dto.setProductList(new ArrayList<>());
+        if (one == null) one = new PurchasedProductDTO();
         if (one.getUnitPrice() == null) one.setUnitPrice(0);
         if (one.getQuantity() == null) one.setQuantity(0);
+        if (one.getTotalPrice() == null) {
+            one.setTotalPrice(getPriceOf(one) == null ? 0 : getPriceOf(one));
+        }
         this.setProductDTO(one);
         uiSaveProduct();
 
 
         if (two.getUnitPrice() == null) two.setUnitPrice(0);
         if (two.getQuantity() == null) two.setQuantity(0);
+        if (two.getTotalPrice() == null) {
+            two.setTotalPrice(getPriceOf(two) == null ? 0 : getPriceOf(two));
+        }
         this.setProductDTO(two);
         uiSaveProduct();
 
         if (three.getUnitPrice() == null) three.setUnitPrice(0);
         if (three.getQuantity() == null) three.setQuantity(0);
+        if (three.getTotalPrice() == null) {
+            three.setTotalPrice(getPriceOf(three) == null ? 0 : getPriceOf(three));
+        }
         this.setProductDTO(three);
         uiSaveProduct();
 
         if (four.getUnitPrice() == null) four.setUnitPrice(0);
         if (four.getQuantity() == null) four.setQuantity(0);
+        if (four.getTotalPrice() == null) {
+            four.setTotalPrice(getPriceOf(four) == null ? 0 : getPriceOf(four));
+        }
         this.setProductDTO(four);
         uiSaveProduct();
 
 
         if (five.getUnitPrice() == null) five.setUnitPrice(0);
         if (five.getQuantity() == null) five.setQuantity(0);
+        if (five.getTotalPrice() == null) {
+            five.setTotalPrice(getPriceOf(five) == null ? 0 : getPriceOf(five));
+        }
         this.setProductDTO(five);
         uiSaveProduct();
 
         if (six.getUnitPrice() == null) six.setUnitPrice(0);
         if (six.getQuantity() == null) six.setQuantity(0);
+        if (six.getTotalPrice() == null) {
+            six.setTotalPrice(getPriceOf(six) == null ? 0 : getPriceOf(six));
+        }
         this.setProductDTO(six);
         uiSaveProduct();
 
@@ -342,8 +406,9 @@ public class PurchaseController implements Serializable {
 
     @Autowired
     SiteService siteService;
+
     private void checkNullSite() {
-        if (siteService.getSiteById("-")==null) {
+        if (siteService.getSiteById("-") == null) {
             SiteDTO siteDTO = new SiteDTO();
             siteDTO.setId(0L);
             siteDTO.setSiteName("-");
@@ -353,9 +418,7 @@ public class PurchaseController implements Serializable {
 
     public void uiSavePurchase() {
         sixSave();
-        logger.warning("uiSaveCalled");
         if (this.dto.getProductList() == null) {
-            logger.info("plist was null");
             return;
         }
         //if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
@@ -367,15 +430,15 @@ public class PurchaseController implements Serializable {
             checkNullSite();
             dto.setSite(siteService.getSiteById("-"));
         }
-        logger.info("purchase id was" + dto.getReceiptId());
+        this.dto.setRemainingPrice(getRemaningDoublePrice(this.dto));
         service.savePurchase(this.dto);
-
 
         getAllPurchases();
         emptySix();
         this.setDto(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.pdfdisabled = true;
+        setUpFive();
 
     }
 
@@ -384,7 +447,7 @@ public class PurchaseController implements Serializable {
         if (this.dto.getProductList() == null) {
             this.dto.setTotalPrice(0.0);
         } else {
-            this.dto.setTotalPrice((double) this.dto.getProductList().stream().map(c -> c.getTotalPrice()).collect(Collectors.summingInt(Integer::intValue)));
+            this.dto.setTotalPrice((double) this.dto.getProductList().stream().map(PurchasedProductDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
         }
     }
 
@@ -393,6 +456,7 @@ public class PurchaseController implements Serializable {
         this.getAllPurchases();
         this.dto = new PurchaseDTO();
         this.pdfdisabled = true;
+        emptySix();
     }
 
     public void editPurchase(SelectEvent<PurchaseDTO> _dto) {
@@ -402,6 +466,7 @@ public class PurchaseController implements Serializable {
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
         editSix();
     }
+
     private void editSix() {
         BeanUtils.copyProperties(dto.getProductList().get(0), one);
         BeanUtils.copyProperties(dto.getProductList().get(1), two);
@@ -412,7 +477,9 @@ public class PurchaseController implements Serializable {
 
 
     }
+
     private void emptySix() {
+        setUpFive();
         one.setQuantity(null);
         two.setQuantity(null);
         three.setQuantity(null);
@@ -620,12 +687,14 @@ public class PurchaseController implements Serializable {
     public String getFormattedSixTotal() {
         return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
     }
+
     public String getFormattedNumber(double num) {
-        if (num - (int) num == 0.0){
+        if (num - (int) num == 0.0) {
             return NumberFormat.getNumberInstance(Locale.US).format((int) num).replaceAll(",", " ");
         }
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
+
     public int getNetSum() {
         int sum = 0;
         sum += getNetOf(one);
