@@ -29,6 +29,12 @@ public class Sale {
     @Column(nullable = false, name = "price")
     private int price;
 
+    @Column(nullable = true, name = "letai")
+    private Boolean letai;
+
+    @Column(nullable = true, name = "globalgap")
+    private Boolean globalgap;
+
     @Column(name = "booking_date", nullable = false)
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date bookingDate;

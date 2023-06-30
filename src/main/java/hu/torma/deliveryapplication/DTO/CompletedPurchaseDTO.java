@@ -29,7 +29,7 @@ public class CompletedPurchaseDTO implements Serializable {
     String paymentMethod;
 
     Date paymentDate;
-    public List<CompletionRecordDTO> records;
+    private List<CompletionRecordDTO> records;
 
 
 

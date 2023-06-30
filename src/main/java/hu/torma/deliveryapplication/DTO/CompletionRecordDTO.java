@@ -31,8 +31,5 @@ public class CompletionRecordDTO implements Serializable {
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, one, two, three, four, five, six, purchaseId, completedPurchase);
-    }
+
 }

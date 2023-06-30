@@ -430,7 +430,7 @@ public class PurchaseController implements Serializable {
             checkNullSite();
             dto.setSite(siteService.getSiteById("-"));
         }
-        this.dto.setRemainingPrice(getRemaningDoublePrice(this.dto));
+
         service.savePurchase(this.dto);
 
         getAllPurchases();

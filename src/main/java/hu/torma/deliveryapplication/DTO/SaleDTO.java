@@ -26,6 +26,8 @@ public class SaleDTO implements Serializable {
     private Date deadLine;
     private Date completionDate;
     private Date receiptDate;
+    private Boolean letai;
+    private Boolean globalgap;
 
     public String getFormattedPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(","," ");

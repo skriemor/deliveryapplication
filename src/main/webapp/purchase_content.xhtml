@@ -388,7 +388,7 @@
     <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList" paginatorPosition="top"
                  rows="10" paginator="true" tableStyle="width: auto"
                  lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
-                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{purchaseController.dto}" rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{purchaseController.editPurchase}"
