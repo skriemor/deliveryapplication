@@ -4,6 +4,8 @@ import hu.torma.deliveryapplication.entity.CompletionRecord;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.text.NumberFormat;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -22,12 +24,18 @@ public class CompletionRecordDTO implements Serializable {
     private CompletedPurchaseDTO completedPurchase;
 
     private int price;
+
+    public String getFormattedPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.price).replaceAll(","," ");
+
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompletionRecordDTO that = (CompletionRecordDTO) o;
-        if (that.id ==null || this.id == null) return false;
+        if (that.id == null || this.id == null) return false;
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 

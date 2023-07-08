@@ -133,6 +133,7 @@ public class VendorController implements Serializable {
         return this.dto;
     }
 
+
     public String getLabel() {
         return label;
     }
@@ -164,4 +165,10 @@ public class VendorController implements Serializable {
         dto.setFileNumber(filen);
     }
 
+    public String getPopupMessage() {
+        if (dto == null || dto.getTaxId() == null) return "Töltse ki megfelelően!";
+        var b = vService.getVendorById(dto.getTaxId());
+
+        return b==null?"Biztosan hozzáadja?":"Ez az adóazonosító jel már szerepel az adatbázisban, folytatja?";
+    }
 }

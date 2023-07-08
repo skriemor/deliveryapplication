@@ -285,6 +285,7 @@ public class SaleController implements Serializable {
         emptySix();
         this.setLabel("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
+        setQuants();
         errorMessage = "";
     }
 
@@ -297,10 +298,22 @@ public class SaleController implements Serializable {
         six.setQuantity(null);
     }
 
+    private void setQuants(){
+        for (var c: dto.getProductList()) {
+            if (c.getProduct().getId().equals("I.OSZTÁLYÚ")) one.setQuantity(c.getQuantity());
+            if (c.getProduct().getId().equals("II.OSZTÁLYÚ")) two.setQuantity(c.getQuantity());
+            if (c.getProduct().getId().equals("III.OSZTÁLYÚ")) three.setQuantity(c.getQuantity());
+            if (c.getProduct().getId().equals("IV.OSZTÁLYÚ")) four.setQuantity(c.getQuantity());
+            if (c.getProduct().getId().equals("GYÖKÉR")) five.setQuantity(c.getQuantity());
+            if (c.getProduct().getId().equals("IPARI")) six.setQuantity(c.getQuantity());
+        }
+
+
+    }
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
-        nullQuants();
         this.setLabel2("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
+
     }
 
     public void newSale() {

@@ -14,6 +14,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -82,6 +84,11 @@ public class CompletedPurchaseController implements Serializable {
     public String getFormattedSixTotal() {
         return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
 
+    }
+
+    public String getDtoTotal(){
+        var nuum = tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
+        return NumberFormat.getNumberInstance(Locale.US).format(nuum).replaceAll(",", " ");
     }
 
     public Integer getSixTotal() {
@@ -205,8 +212,23 @@ public class CompletedPurchaseController implements Serializable {
         dto.setRecords(recordse);
     }
 
+    private void copySerials(List<CompletedPurchaseDTO> list) {
+
+        if (list != null && list.size() > 0 && (list.get(0).getNewSerial() == null || list.get(0).getNewSerial().equals(""))) {
+            for (var g : list) {
+                if (g.getSerial() != null && g.getSerial() != 0) {
+                    String v = String.valueOf(g.getSerial());
+                    if (v.charAt(0) != '0') v = 0 + v;
+                    g.setNewSerial(v);
+                    cService.saveCompletedPurchase(g);
+                }
+            }
+        }
+    }
+
     @PostConstruct
     public void init() {
+
         tempRecords = new ArrayList<>();
         this.purchaseDTO = new PurchaseDTO();
         newCP();
@@ -334,6 +356,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void newPurchase() {
+
         tempRecords.clear();
         emptySix();
         newCP();
@@ -367,6 +390,7 @@ public class CompletedPurchaseController implements Serializable {
     @PostConstruct
     public void getAllPurchases() {
         this.dtoList = cService.getAllCompletedPurchases();
+        copySerials(this.dtoList);
         this.setLabel("Hozzáadás");
         this.setLabel2("Termék hozzáadása");
     }
@@ -447,6 +471,13 @@ public class CompletedPurchaseController implements Serializable {
 
     public void setQuants() {
         if (dto.getRecords() == null) return;
+        quantities.get(0).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum());
+        quantities.get(1).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum());
+        quantities.get(2).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum());
+        quantities.get(3).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum());
+        quantities.get(4).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum());
+        quantities.get(5).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum());
+
         /*
         var records = new ArrayList<>(recordService.getAllCompletionRecords().stream().filter(c -> c.getPurchaseId() == (long) purchaseDTO.getId()).toList());
         if (dto.getRecords() != null) for (var a : dto.getRecords()) {
@@ -474,9 +505,10 @@ public class CompletedPurchaseController implements Serializable {
             logger.info("records were null");
             this.dto.setRecords(new ArrayList<CompletionRecordDTO>());
         }
-        var recordDTO= new CompletionRecordDTO();
+        var recordDTO = new CompletionRecordDTO();
         for (int i = 0; i < 6; i++) {
             if (quantities.get(i).getNum() > getMaxQuantOf(i)) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Helytelen mennyiség"));
                 logger.info(i + "th/rd element " + quantities.get(i).getNum() + " was greater than" + getMaxQuantOf(i));
                 return;
             }
@@ -507,7 +539,7 @@ public class CompletedPurchaseController implements Serializable {
     public void removeRecord() {
         logger.warning("REMOVING RECORD");
         if (tempRecords.size() < 1) return;
-       tempRecords.remove(tempRecords.size() - 1);
+        tempRecords.remove(tempRecords.size() - 1);
         updateAvailablePurchases();
         //T3
     }

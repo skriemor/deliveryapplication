@@ -203,23 +203,19 @@
 
 
 
-    <p:dataTable var="sale" value="#{saleController.dtoList}" id="saleList" rows="10" paginatorPosition="top" tableStyle="width: auto;" paginator="true"
+    <p:dataTable var="sale" value="#{saleController.dtoList}" id="saleList" tableStyle="width: auto;"
                  lazy="false" sortBy="#{saleController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{saleController.dto}" rowKey="#{sale.id}">
-        <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel saleForm:productList saleForm:fixProductPanel"/>
+        <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel saleForm:productList saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
         <p:column headerText="Számla sorszáma" sortBy="#{sale.receiptId}" filterBy="#{sale.receiptId}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.receiptId}" />
         </p:column>
-        <p:column headerText="Számla dátuma" sortBy="#{sale.receiptDate}" filterBy="#{saleController.toDottedDate(sale.receiptDate)}" filterMatchMode="contains">
-            <h:outputText value="#{sale.receiptDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
+
         <p:column headerText="Vevő neve" sortBy="#{sale.buyer.name}" filterBy="#{sale.buyer.name}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.buyer.name}"/>
         </p:column>
@@ -230,18 +226,23 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
+        <p:column headerText="Fizetés. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
+            <h:outputText value="#{sale.completionDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
         <p:column headerText="Vételár" sortBy="#{sale.price}" filterBy="#{sale.intedPrice}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.formattedPrice}"/>
         </p:column>
         <p:column headerText="Fiz. valuta" sortBy="#{sale.currency}" filterBy="#{sale.currency}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.currency}"/>
         </p:column>
-
-        <p:column headerText="Fizetés. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
-            <h:outputText value="#{sale.completionDate}">
+        <p:column headerText="Számla dátuma" sortBy="#{sale.receiptDate}" filterBy="#{saleController.toDottedDate(sale.receiptDate)}" filterMatchMode="contains">
+            <h:outputText value="#{sale.receiptDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
+
     </p:dataTable>
 </h:form>
 </html>

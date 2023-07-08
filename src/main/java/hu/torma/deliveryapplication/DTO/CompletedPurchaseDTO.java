@@ -20,6 +20,7 @@ public class CompletedPurchaseDTO implements Serializable {
     int five;
     int six;
     Integer serial;
+    String newSerial;
     Date receiptDate;
     SiteDTO site;
     String notes;
@@ -30,7 +31,6 @@ public class CompletedPurchaseDTO implements Serializable {
 
     Date paymentDate;
     private List<CompletionRecordDTO> records;
-
 
 
     @Override
@@ -48,10 +48,11 @@ public class CompletedPurchaseDTO implements Serializable {
 
 
     public String getFormattedTotalPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(","," ");
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",", " ");
     }
+
     public String getIntedTotalPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",", "");
 
     }
 }

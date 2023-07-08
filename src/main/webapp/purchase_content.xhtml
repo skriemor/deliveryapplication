@@ -385,8 +385,8 @@
     </p:dataTable>
 
 
-    <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList" paginatorPosition="top"
-                 rows="10" paginator="true" tableStyle="width: auto"
+    <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList"
+                  tableStyle="width: auto"
                  lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
@@ -397,6 +397,13 @@
         <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
         >
             <h:outputText value="#{purchase.id}" id="id"/>
+        </p:column>
+        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}"
+                  filterBy="#{purchaseController.toDottedDate(purchase.receiptDate) }"
+                  filterMatchMode="contains">
+            <h:outputText value="#{purchase.receiptDate}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
         </p:column>
         <p:column headerText="Termelő neve" sortBy="#{purchase.vendor.vendorName}"
                   filterBy="#{purchase.vendor.vendorName}" filterMatchMode="contains">
@@ -409,25 +416,22 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}" filterBy="#{purchase.site.siteName}"
-                  filterMatchMode="contains">
-            <h:outputText value="#{purchase.site.siteName}"/>
-        </p:column>
-        <p:column headerText="Mérlegelés dátuma" sortBy="#{purchase.receiptDate}"
-                  filterBy="#{purchaseController.toDottedDate(purchase.receiptDate) }"
-                  filterMatchMode="contains">
-            <h:outputText value="#{purchase.receiptDate}">
-                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-            </h:outputText>
-        </p:column>
         <p:column headerText="Vételár" sortBy="#{purchase.totalPrice}" filterBy="#{purchase.intedTotalPrice}"
                   filterMatchMode="startsWith">
             <h:outputText value="#{purchase.formattedTotalPrice} HUF"/>
         </p:column>
-        <p:column headerText="Fennm.Össz." sortBy="#{purchase.remainingPrice}"
+        <p:column headerText="Papírozatlan" sortBy="#{purchase.remainingPrice}"
                   filterBy="#{purchaseController.getIntedNum(purchase.remainingPrice)}"
                   filterMatchMode="startsWith">
             <h:outputText value="#{purchaseController.getFormattedNumber(purchase.remainingPrice)} HUF"/>
+        </p:column>
+        <p:column headerText="Számla sorszáma" sortBy="#{purchase.receiptId}" filterBy="#{purchase.receiptId}"
+                  filterMatchMode="contains">
+            <h:outputText value="#{purchase.receiptId}"/>
+        </p:column>
+        <p:column headerText="Telephely" sortBy="#{purchase.site.siteName}" filterBy="#{purchase.site.siteName}"
+                  filterMatchMode="contains">
+            <h:outputText value="#{purchase.site.siteName}"/>
         </p:column>
         <p:column headerText="Rögz. dátum" sortBy="#{purchase.bookedDate}"
                   filterBy="#{purchaseController.toDottedDate(purchase.bookedDate)}"
@@ -436,10 +440,7 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Számla sorszáma" sortBy="#{purchase.receiptId}" filterBy="#{purchase.receiptId}"
-                  filterMatchMode="contains">
-            <h:outputText value="#{purchase.receiptId}"/>
-        </p:column>
+
     </p:dataTable>
 </h:form>
 </html>

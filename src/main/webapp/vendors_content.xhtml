@@ -196,18 +196,36 @@
                     </p:selectOneMenu><br/><p/>
 
 
-                    <h:commandButton value="#{vendorController.label}" tabindex="20"
-                                     action="#{vendorController.uiSaveVendor}"
-                                     style="width: 10em;height: 2.6em">
-                        <f:ajax execute="vendorForm" render="vendorList vendorPanel"/>
-                    </h:commandButton>
 
-                    <h:commandButton value="Új"
+
+
+                    <p:confirmDialog id="conf" global="true" showEffect="fade" hideEffect="fade" widgetVar="confirmVar">
+
+                        <p:commandButton value="Igen" update="vendorPanel vendorList" action="#{vendorController.uiSaveVendor()}" styleClass="ui-confirmdialog-yes" icon="ui-icon-check" oncomplete="PF('confirmVar').hide()"/>
+                        <p:commandButton value="Nem" styleClass="ui-confirmdialog-no" icon="ui-icon-close" oncomplete="PF('confirmVar').hide()"/>
+
+                        <f:facet name="message">
+                            <p:outputPanel>
+                                <h:outputFormat value="#{vendorController.popupMessage}" escape="false"/>
+                            </p:outputPanel>
+                        </f:facet>
+                    </p:confirmDialog>
+
+
+                    <p:commandButton value="#{vendorController.label}" tabindex="20"
+                                     update="conf vendorPanel vendorList"
+                                     oncomplete="PF('confirmVar').show()"
+                                     style="width: 10em;height: 2.6em">
+
+                    </p:commandButton>
+
+
+
+                    <p:commandButton value="Új"
                                      action="#{vendorController.newVendor}"
                                      style="width: 10em;height: 2.6em">
-                        <!--<f:ajax execute="vendorForm" render="vendorList vendorPanel"/>-->
-                        <p:ajax update="vendorForm:vendorPanel"/>
-                    </h:commandButton>
+                        <f:ajax render="vendorForm:vendorPanel" />
+                    </p:commandButton>
                     <h:commandButton value="Töröl"
                                      action="#{vendorController.deleteVendor}"
                                      style="width: 10em;height: 2.6em">
@@ -219,7 +237,7 @@
 
         </div>
     </p:panel>
-    <p:dataTable paginatorPosition="top" paginator="true" rows="10"  tableStyle="width:  auto;"
+    <p:dataTable  tableStyle="width:  auto;"
             var="vendor" value="#{vendorController.dtoList}" id="vendorList"
                  lazy="false" sortBy="#{vendorController.sortBy}" sortMode="single"
                  allowUnsorting="true" resizableColumns="true"
@@ -230,6 +248,10 @@
         <p:column headerText="Neve" sortBy="#{vendor.vendorName}" filterBy="#{vendor.vendorName}"
                   filterMatchMode="contains">
             <h:outputText value="#{vendor.vendorName}"/>
+        </p:column>
+        <p:column headerText="Közvetítő" sortBy="#{vendor.mediator.id}" filterBy="#{vendor.mediator.id}"
+                  filterMatchMode="contains">
+            <h:outputText value="#{vendor.mediator.id}"/>
         </p:column>
         <p:column headerText="Város" sortBy="#{vendor.city}" filterBy="#{vendor.city}"
                   filterMatchMode="contains" >

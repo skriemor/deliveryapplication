@@ -44,6 +44,9 @@ public class CompletedPurchase {
     @Column(name = "serial")
     private Integer serial;
 
+    @Column(name = "new_serial")
+    private String newSerial;
+
     @Column(name = "receipt_date")
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date receiptDate;

@@ -39,7 +39,7 @@
                 <p:commandButton id="doFilterButton4" value="SZŰRÉS" actionListener="#{displayController.refreshCPDTOS()}" update="CPList"/>
             </p:panel>
 
-            <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList" paginatorPosition="top" paginator="true" rows="10" tableStyle="width: auto"
+            <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList"  tableStyle="width: auto"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em;"
                          emptyMessage="Nincs találat" resizableColumns="true">
@@ -112,7 +112,7 @@
                 </table>
                 <p:commandButton id="doFilterButton2" value="SZŰRÉS" actionListener="#{displayController.refreshSaleDTOS()}" update="saleList"/>
             </p:panel>
-            <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList" paginator="true" paginatorPosition="top" tableStyle="width: auto" rows="10"
+            <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList"  tableStyle="width: auto"
                          lazy="false"
                         style="overflow-x: scroll; margin-bottom: 5em"
                           emptyMessage="Nincs találat" resizableColumns="true">
@@ -163,7 +163,7 @@
                 </table>
             <p:commandButton id="doFilterButton" actionListener="#{displayController.refreshPurchaseDTOS()}" value="SZŰRÉS" update="purchaseList"/>
             </p:panel>
-            <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList" tableStyle="width: auto" paginatorPosition="top" paginator="true" rows="10"
+            <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList" tableStyle="width: auto"
                          lazy="false"
                           style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
@@ -195,7 +195,7 @@
                 <p:column headerText="Vételár"   width="5em" >
                     <h:outputText value="#{purchase.formattedTotalPrice} HUF"/>
                 </p:column>
-                <p:column headerText="Fennm. összeg"   width="5em" >
+                <p:column headerText="Papírozatlan"   width="5em" >
                     <h:outputText value="#{displayController.getFormattedNumber(purchase.remainingPrice)} HUF"/>
                 </p:column>
                 <p:column headerText="Rögz. dátum"   width="4.5em" >
@@ -212,7 +212,7 @@
         </p:tab>
         <p:tab title="Készlet">
 
-            <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T" rows="10" paginator="true" paginatorPosition="top" tableStyle="width: auto"
+            <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T" tableStyle="width: auto"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
@@ -257,7 +257,7 @@
                 </table>
                 <p:commandButton id="doFilterButton3" actionListener="#{displayController.refreshMediatorDisplays()}" value="SZŰRÉS" update="mediatorList"/>
             </p:panel>
-            <p:dataTable var="mediatorDisp" value="#{displayController.mediatorDisplays}" id="mediatorList" stickyHeader="T" tableStyle="width: auto" paginatorPosition="top" paginator="true" rows="10"
+            <p:dataTable var="mediatorDisp" value="#{displayController.mediatorDisplays}" id="mediatorList" stickyHeader="T" tableStyle="width: auto"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">

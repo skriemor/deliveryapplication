@@ -105,6 +105,10 @@ public class PDFcreator {
         createRowCol(18, 5, pur.getVendor().getPhone());
         createRowCol(19, 5, pur.getVendor().getAccountNumber());
         createRowCol(20, 5, pur.getVendor().getContract());
+
+        //date
+        String datee = dateFormat.format(pur.getReceiptDate());
+        createRowCol(5, 1, datee);
         //prices
 
         createRowCol(24, 5, pur.getProductList().get(0).getTotalPrice());
