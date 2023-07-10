@@ -361,12 +361,12 @@
         </p:commandButton>
     </p:panel>
     <hr/>
-    <p:divider>
-        <p:commandButton value="Tábla Frissítése" id="refreshTable" style="margin-bottom: 10em;position: absolute;left: 50%; border: black 1px solid ">
+    <p:divider style="height: 3em" >
+        <p:commandButton value="Tábla Frissítése" id="refreshTable" style="position: absolute;left: 50%; border: black 1px solid ">
             <p:ajax  listener="#{purchaseController.getAllPurchases()}" update="purchaseList" />
         </p:commandButton>
     </p:divider>
-
+<p:divider>
     <p:dataTable var="product" value="#{purchaseController.dto.productList}" id="productList" rendered="false"
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
                  selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
@@ -442,6 +442,7 @@
         </p:column>
 
     </p:dataTable>
+</p:divider>
 </h:form>
 </html>
 

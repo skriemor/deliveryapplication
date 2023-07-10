@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
+import antlr.collections.impl.IntRange;
 import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
@@ -23,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.logging.Logger;
+import java.util.stream.IntStream;
 
 @SessionScope
 @Controller("completedPurchaseController")
@@ -57,6 +59,10 @@ public class CompletedPurchaseController implements Serializable {
 
     public Integer getNetSum() {
         return quantities.stream().mapToInt(Quant::getNum).sum();
+    }
+
+    public Integer getDtoWeight(){
+        return IntStream.range(0,6).map(a->getTotalAmountOf(a)).sum();
     }
 
     @Autowired
@@ -279,6 +285,10 @@ public class CompletedPurchaseController implements Serializable {
             updateRemainingPrice(c.getPurchaseId());
         }
     }
+    public String getSumOfRecordPrices() {
+        return NumberFormat.getNumberInstance(Locale.US).format(tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum()).replaceAll(",", " ");
+
+    }
 
     public void uiSaveCompletedPurchase() {
         //if (true)return;
@@ -484,7 +494,7 @@ public class CompletedPurchaseController implements Serializable {
             if (a.getPurchaseId() == purchaseDTO.getId().longValue() && !records.contains(a)) records.add(a);
         }
         */
-
+/*
         logger.warning("dto one is: " + dto.getRecords().stream().map(CompletionRecordDTO::getOne).mapToInt(Integer::intValue).sum() + "before save");
         dto.setOne(dto.getRecords().stream().map(CompletionRecordDTO::getOne).mapToInt(Integer::intValue).sum());
         dto.setTwo(dto.getRecords().stream().map(CompletionRecordDTO::getTwo).mapToInt(Integer::intValue).sum());
@@ -492,10 +502,24 @@ public class CompletedPurchaseController implements Serializable {
         dto.setFour(dto.getRecords().stream().map(CompletionRecordDTO::getFour).mapToInt(Integer::intValue).sum());
         dto.setFive(dto.getRecords().stream().map(CompletionRecordDTO::getFive).mapToInt(Integer::intValue).sum());
         dto.setSix(dto.getRecords().stream().map(CompletionRecordDTO::getSix).mapToInt(Integer::intValue).sum());
-
+*/
     }
 
 
+    public Integer getTotalAmountOf(int i) {
+        switch (i) {
+            case 0: return tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1: return tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2: return tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3: return tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4: return tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5: return tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+
+        }
+        return 0;
+    }
+
+    List tempNamesList = new ArrayList(Arrays.asList("I.OSZTÁLYÚ","II.OSZTÁLYÚ","III.OSZTÁLYÚ","IV.OSZTÁLYÚ","GYÖKÉR","IPARI"));
     public void addRecord() {
         if (this.purchaseDTO.getId() == null) {
             //logger.info("purchasedto id was null");
@@ -506,13 +530,20 @@ public class CompletedPurchaseController implements Serializable {
             this.dto.setRecords(new ArrayList<CompletionRecordDTO>());
         }
         var recordDTO = new CompletionRecordDTO();
+        StringBuffer sB = new StringBuffer();
+
+        boolean wasWrong = false;
         for (int i = 0; i < 6; i++) {
             if (quantities.get(i).getNum() > getMaxQuantOf(i)) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Helytelen mennyiség"));
-                logger.info(i + "th/rd element " + quantities.get(i).getNum() + " was greater than" + getMaxQuantOf(i));
-                return;
+                wasWrong = true;
+                sB.append(tempNamesList.get(i)+", ");
             }
         }
+        if (sB.length()>1 || wasWrong) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Helytelen mennyiség: " + sB.substring(0,sB.length()-2)));
+            return;
+        }
+
         recordDTO.setOne(quantities.get(0).getNum());
         recordDTO.setTwo(quantities.get(1).getNum());
         recordDTO.setThree(quantities.get(2).getNum());

@@ -161,7 +161,7 @@
                     <h:commandButton value="Mentés" tabindex="14"
                                      action="#{saleController.sixSave}"
                                      style="width: 14em;height: 2.6em">
-                        <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel saleForm:productList" />
+                        <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel     " />
                     </h:commandButton>
 
     </p:panel>
@@ -171,35 +171,21 @@
     <h:commandButton value="#{saleController.label}" tabindex="15"
                      action="#{saleController.uiSaveSale}"
                      style="width: 10em;height: 2.6em">
-        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel saleForm:productList saleForm:fixProductPanel" />
+        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel       saleForm:fixProductPanel" />
     </h:commandButton>
 
     <h:commandButton value="Új"
                      action="#{saleController.newSale}"
                      style="width: 10em;height: 2.6em">
         <p:resetInput target="saleForm:salePanel"/>
-        <f:ajax execute="saleForm:salePanel" render="saleList saleForm:productList saleForm:fixProductPanel" />
+        <f:ajax execute="saleForm:salePanel" render="saleList    saleForm:fixProductPanel" />
         <p:ajax update="saleForm:salePanel"/>
     </h:commandButton>
     <h:commandButton value="Töröl"
                      action="#{saleController.deleteSale}"
                      style="width: 10em;height: 2.6em">
-        <f:ajax execute="saleForm:SalePanel" render="saleList salePanel saleForm:fixProductPanel saleForm:productList" />
+        <f:ajax execute="saleForm:SalePanel" render="saleList salePanel saleForm:fixProductPanel    " />
     </h:commandButton><p/>
-    <p:dataTable var="product" value="#{saleController.dto.productList}" id="productList" tableStyle="width: auto;"
-                 lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
-                 selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
-                 selection="#{saleController.productDTO}" rowKey="#{product.id}">
-        <p:ajax event="rowSelect"  listener="#{saleController.editProduct}" />
-        <p:column headerText="Termék neve" filterBy="#{product.product.id}" filterMatchMode="contains" width="5em" >
-            <h:outputText value="#{product.product.id}" id="did"/>
-        </p:column>
-        <p:column headerText="Mennyiség"  filterBy="#{product.quantity}" filterMatchMode="contains" width="5em" >
-            <h:outputText value="#{product.quantity}"/>
-        </p:column>
-
-    </p:dataTable>
-
 
 
 
@@ -208,7 +194,7 @@
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{saleController.dto}" rowKey="#{sale.id}">
-        <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel saleForm:productList saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
+        <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel      saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
