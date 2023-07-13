@@ -64,6 +64,26 @@ public class CompletedPurchaseController implements Serializable {
     public Integer getDtoWeight(){
         return IntStream.range(0,6).map(a->getTotalAmountOf(a)).sum();
     }
+    public Integer getDtoTotalV() {
+        return tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
+    }
+    public Double getNetTotalV() {
+        return (double) Math.round(getGrossTotalV() / 1.12);
+    }
+    public Double getGrossTotalV() {
+        return (double) Math.round(getGrossAvgPriceV() * getDtoWeight());
+    }
+    public Double getGrossAvgPriceV() {
+        return (double) Math.round(getDtoTotalV() / (double) getDtoWeight() * 100) / 100;
+    }
+    public Double getNetAvgPriceV() {
+        return (double) Math.round(getGrossAvgPriceV() / 1.12 * 100) / 100;
+    }
+
+    public Double getDiffV() {
+        return getGrossTotalV() - getNetTotalV();
+    }
+
 
     @Autowired
     private CompletionRecordService recordService;
@@ -91,6 +111,7 @@ public class CompletedPurchaseController implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
 
     }
+
 
     public String getDtoTotal(){
         var nuum = tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();

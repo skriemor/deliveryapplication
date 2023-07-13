@@ -36,6 +36,17 @@
 
     </script>
     <style type="text/css">
+
+        body .ui-datatable .ui-datatable-data > tr > td {
+            padding: 0.3rem 0.3rem;
+            border: 1px solid rgba(0,0,0,.08);
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-width: 0 0 1px 0;
+        }
+
     </style>
     <p:panel header="Vásárlások" id="salePanel" toggleable="true"   >
         <div class="card">
@@ -228,7 +239,12 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-
+        <p:column headerText="GLGAP" sortBy="#{sale.globalgap}" filterBy="#{sale.globalAsString}" filterMatchMode="contains">
+            <h:outputText value="#{sale.globalAsString}"/>
+        </p:column>
+        <p:column headerText="LÉTAI" sortBy="#{sale.letai}" filterBy="#{sale.letaiAsString}" filterMatchMode="contains">
+            <h:outputText value="#{sale.letaiAsString}"/>
+        </p:column>
     </p:dataTable>
 </h:form>
 </html>

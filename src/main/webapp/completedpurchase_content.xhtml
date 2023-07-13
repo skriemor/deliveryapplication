@@ -42,13 +42,235 @@
 
     </script>
     <style type="text/css">
+
+        body .ui-datatable .ui-datatable-data > tr > td {
+            padding: 0.3rem 0.3rem;
+            border: 1px solid rgba(0,0,0,.08);
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-width: 0 0 1px 0;
+        }
+
     </style>
 
     <p:tabView id="cPTabs">
 
-        <p:tab menuTitle="Felvásárlási jegy adatai" title="Felvásárlási jegy adatai">
+        <p:tab menuTitle="Felvásárlási jegyek" title="Felvásárlási jegyek">
+
+            <p:panel header="Felvásárlási jegyek" id="purchasePanelV" toggleable="true">
+            <div class="card">
+
+                <p:panelGrid columns="3" contentStyle="margin: 0; padding: 0; line-height: 21px;"
+                             columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                             layout="grid"
+                             styleClass="ui-panelgrid-blank ui-fluid "
+                             style="border:0 none; padding: 0; width: 100%;">
+                    <p:divider>
+                        <p:outputLabel for="vendorv" value="Eladó neve: " style="font-weight: bold;"/>
+                        <p:outputLabel id="vendorv" value="#{completedPurchaseController.dto.vendor.vendorName}"/>
+                        <p/>
+
+                        <p:outputLabel for="sitev" value="Telephely: " style="font-weight: bold;"/>
+                        <p:outputLabel id="sitev" value="#{completedPurchaseController.dto.site.siteName}" />
+                           <p/>
+                        <p:outputLabel for="paymentMethodv" value="Fizetési mód: " style="font-weight: bold;"/>
+                        <p:outputLabel id="paymentMethodv" value="#{completedPurchaseController.dto.paymentMethod}"/>
+
+                    </p:divider>
+                    <p:divider>
+                        <p:outputLabel for="serialv" value="Felvásárlási jegy sorszáma: " style="font-weight: bold;"/>
+                        <p:outputLabel id="serialv" value="#{completedPurchaseController.dto.newSerial}"/> <p/>
+                        <p:outputLabel for="receiptDatev" value="Felvásárlási jegy dátuma: " style="font-weight: bold;"/>
+                        <p:outputLabel mask="9999.99.99" id="receiptDatev"
+                                       value="#{completedPurchaseController.toDottedDate(completedPurchaseController.dto.receiptDate)}"/><p/>
 
 
+                        <p:outputLabel for="paymentDatev" value="Fizetés dátuma: " style="font-weight: bold;"/>
+                        <p:outputLabel mask="9999.99.99" id="paymentDatev"
+                                     value="#{completedPurchaseController.toDottedDate(completedPurchaseController.dto.paymentDate)}"/><p/>
+
+                    </p:divider>
+
+                </p:panelGrid>
+
+            </div>
+
+            </p:panel>
+
+
+            <hr></hr>
+
+            <p/>
+
+            <p:panel header="Felvásárlási jegy" id="cPPanel" toggleable="true" collapsed="false">
+
+                <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
+                    <thead>
+                    <tr>
+                        <th colspan="3">
+                            <p:outputLabel value="Minősítés:"/>
+                            <p/>
+                        </th>
+                        <th>
+                            <p:outputLabel value="Súly(kg):"/><br/>
+                        </th>
+                        <th>
+                            <p:outputLabel value="Kifizetendő bruttó:"/><br/>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod1"  value="I.OSZTÁLYÚ"/><br/>
+                        </td>
+                        <td>
+                            <p:outputLabel id="snquantity1" value="#{completedPurchaseController.getTotalAmountOf(0)}"/><br/>
+                        </td>
+                        <td align="center" rowspan="7" style="vertical-align: bottom">
+                            <p:outputLabel style="font-size: 1.5em" id="stotalPricePerProduct1"
+                                           value="#{completedPurchaseController.sumOfRecordPrices} HUF"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod2" value="II.OSZTÁLYÚ"/><br/>
+                        </td>
+
+
+                        <td>
+                            <p:outputLabel id="snquantity2" value="#{completedPurchaseController.getTotalAmountOf(1)}"/><br/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod3" value="III.OSZTÁLYÚ"/><br/>
+                        </td>
+                        <td>
+                            <p:outputLabel id="snquantity3" value="#{completedPurchaseController.getTotalAmountOf(2)}"/><br/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod4" value="IV.OSZTÁLYÚ"/><br/>
+                        </td>
+                        <td>
+                            <p:outputLabel id="snquantity4" value="#{completedPurchaseController.getTotalAmountOf(3)}"/><br/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod5" value="GYÖKÉR"/><br/>
+                        </td>
+
+                        <td>
+                            <p:outputLabel id="snquantity5" value="#{completedPurchaseController.getTotalAmountOf(4)}"/><br/>
+                        </td>
+
+                    </tr>
+                    <tr>
+                        <td colspan="3">
+                            <p:outputLabel id="sprod6" value="IPARI"/>
+                        </td>
+                        <td><p:outputLabel id="snquantity6" value="#{completedPurchaseController.getTotalAmountOf(5)}">
+                        </p:outputLabel><br/></td>
+                    </tr>
+                    <tr>
+                        <td colspan="3"><p:outputLabel value="Összesen:"/></td>
+
+                        <td align="center"><p:outputLabel style="font-size: 1.5em" id="stotalNet"
+                                                          value="#{ completedPurchaseController.getDtoWeight()} kg"/></td>
+
+                    </tr>
+                    <tr>
+                        <td><p:outputLabel value="Átlagár br."/></td>
+
+                        <td align="center"><p:outputLabel style="font-size: 1em" id="netAvgPriceV"
+                                                          value="&nbsp;&nbsp;&nbsp;#{completedPurchaseController.getFormattedNumber(completedPurchaseController.netTotalV)}&nbsp;&nbsp;&nbsp;"/>
+                        </td>
+                        <td align="center"><p:outputLabel style="font-size: 1em" id="diffV"
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.diffV)}"/>
+                        </td>
+                        <td align="center"><p:outputLabel style="font-size: 1em" id="grossAvgPriceV"
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.getGrossAvgPriceV())}"/>
+                        </td>
+                        <td align="center"><p:outputLabel style="font-size: 1em" id="grossTotalV"
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.grossTotalV)}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><p:outputLabel value="Átlagár net."/></td>
+                        <td></td>
+                        <td></td>
+                        <td align="center"><p:outputLabel style="font-size: 1em" id="netAvgV"
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.netAvgPriceV)}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+                <p/>
+            </p:panel>
+            <p:dataTable var="record" value="#{completedPurchaseController.tempRecords}" id="recordList2"
+                         lazy="false" tableStyle="width: auto"
+                         style="overflow-x: scroll; margin-bottom: 5em"
+                         emptyMessage="Nincs rekord" resizableColumns="true">
+
+                <p:column headerText="Mérlegelés sorszáma">
+                    <h:outputText value="#{record.purchaseId}"/>
+                </p:column>
+                <p:column headerText="Ár">
+                    <h:outputText value="#{record.formattedPrice} HUF"/>
+                </p:column>
+                <p:column headerText="I.OSZT">
+                    <h:outputText value="#{record.one}"/>
+                </p:column>
+                <p:column headerText="II.OSZT">
+                    <h:outputText value="#{record.two}"/>
+                </p:column>
+                <p:column headerText="III.OSZT">
+                    <h:outputText value="#{record.three}"/>
+                </p:column>
+                <p:column headerText="IV.OSZT">
+                    <h:outputText value="#{record.four}"/>
+                </p:column>
+                <p:column headerText="GYÖKÉR">
+                    <h:outputText value="#{record.five}"/>
+                </p:column>
+                <p:column headerText="IPARI">
+                    <h:outputText value="#{record.six}"/>
+                </p:column>
+            </p:dataTable>
+
+            <p:panel id="buttonPanel2">
+                <h:commandButton value="Kiválasztott törlése"
+                                 action="#{completedPurchaseController.deletePurchase}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="purchaseForm:cPTabs:PurchasePanel purchaseForm:cPTabs:purchasePanelV"
+                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 totalDisplay purchaseForm:cPTabs:pur"/>
+                </h:commandButton>
+                <p/>
+
+            </p:panel>
+
+
+        </p:tab>
+        <p:tab title="Új felvásárlási jegy">
+            <p:outputLabel for="pur" value="Felhasználható mérlegelési jegyek:"/><br/>
+            <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1"
+                             converter="#{purchaseConverter}" filter="true" filterMatchMode="contains">
+                <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
+                <p:ajax event="change" update="fixProductPanel"
+                        listener="#{completedPurchaseController.logRecordList()}"/>
+                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+                <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
+                               itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName}, #{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
+                               itemValue="#{purchasevar}"/>
+            </p:selectOneMenu><br/>
             <p:panel header="Felvásárlási jegyek" id="purchasePanel" toggleable="true">
                 <div class="card">
 
@@ -69,9 +291,9 @@
                             <p:selectOneMenu id="vendor" value="#{completedPurchaseController.dto.vendor}"
                                              required="true" tabindex="2"
                                              converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
-                                <p:ajax event="change" update="v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15 v16"/>
+                                <p:ajax event="change" update="purchaseForm:cPTabs:purchasePanelV v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15 v16"/>
                                 <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}"
-                                        update="vendor v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15 v16"/>
+                                        update="purchaseForm:cPTabs:purchasePanelV vendor v1 v2 v3 v4 v5 v6 v7 v8 v9 v10 v11 v12 v13 v14 v15 v16"/>
                                 <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                                 <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
                                                itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})"
@@ -84,6 +306,8 @@
                             <p:selectOneMenu id="site" value="#{completedPurchaseController.dto.site}" required="true"
                                              tabindex="3"
                                              converter="#{siteConverter}" filter="true" filterMatchMode="contains">
+                                <p:ajax event="change" update="purchaseForm:cPTabs:purchasePanelV"/>
+                                <p:ajax event="select" update="purchaseForm:cPTabs:purchasePanelV"/>
                                 <f:selectItems value="#{siteController.dtoList}" var="sitevar"
                                                itemLabel="#{sitevar.siteName}"
                                                itemValue="#{sitevar}"/>
@@ -92,6 +316,8 @@
                             <br/>
                             <p:selectOneMenu id="paymentMethod" value="#{completedPurchaseController.dto.paymentMethod}"
                                              required="true" tabindex="4">
+                                <p:ajax event="change" update="purchaseForm:cPTabs:purchasePanelV"/>
+                                <p:ajax event="select" update="purchaseForm:cPTabs:purchasePanelV"/>
                                 <f:selectItem itemValue="Készpénz" itemLabel="Készpénz"/>
                                 <f:selectItem itemValue="Átutalás" itemLabel="Átutalás"/>
                             </p:selectOneMenu><br/>
@@ -100,16 +326,18 @@
                         <p:divider>
                             <p:outputLabel for="serial" value="Felvásárlási jegy sorszáma:"/><br/>
                             <p:inputText id="serial" value="#{completedPurchaseController.dto.newSerial}" tabindex="5"
-                                         inputmode="text"/> <br/>
+                                         inputmode="text"><p:ajax event="keyup" update="purchaseForm:cPTabs:purchasePanelV"/> </p:inputText> <br/>
                             <p:outputLabel for="receiptDate" value="Felvásárlási jegy dátuma:"/><br/>
                             <p:inputMask mask="9999.99.99" id="receiptDate" tabindex="6"
                                          value="#{completedPurchaseController.dto.receiptDate}"><p/>
                                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                                <p:ajax event="keyup" update="purchaseForm:cPTabs:purchasePanelV"/>
                             </p:inputMask>
                             <p:outputLabel for="paymentDate" value="Fizetés dátuma:"/><br/>
                             <p:inputMask mask="9999.99.99" id="paymentDate" tabindex="7"
                                          value="#{completedPurchaseController.dto.paymentDate}"><p/>
                                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                                <p:ajax event="keyup" update="purchaseForm:cPTabs:purchasePanelV"/>
                             </p:inputMask>
 
                         </p:divider>
@@ -187,139 +415,6 @@
 
                 </div>
             </p:panel>
-
-
-            <hr></hr>
-
-            <p/>
-            <p:panel id="buttonPanel2">
-                <h:commandButton value="#{completedPurchaseController.label}"
-                                 action="#{completedPurchaseController.uiSaveCompletedPurchase()}"
-                                 style="width: 10em;height: 2.6em">
-
-                    <f:ajax execute="purchaseForm:cPTabs:purchasePanel"
-                            render="purchaseList purchasePanel  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList totalDisplay purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
-
-                <h:commandButton value="Új"
-                                 action="#{completedPurchaseController.newPurchase}"
-                                 style="width: 10em;height: 2.6em">
-                    <f:ajax execute="purchaseForm:cPTabs:purchasePanel"
-                            render="purchaseList purchasePanel  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList totalDisplay purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
-                <h:commandButton value="Töröl"
-                                 action="#{completedPurchaseController.deletePurchase}"
-                                 style="width: 10em;height: 2.6em">
-                    <f:ajax execute="purchaseForm:cPTabs:PurchasePanel"
-                            render="purchaseList purchasePanel  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList totalDisplay purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
-                <p/>
-
-            </p:panel>
-            <p:panel header="Felvásárlási jegy" id="cPPanel" toggleable="true" collapsed="false">
-
-                <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
-                    <thead>
-                    <tr>
-                        <th>
-                            <p:outputLabel value="Minősítés:"/>
-                            <p/>
-                        </th>
-                        <th>
-                            <p:outputLabel value="Súly(kg):"/><br/>
-                        </th>
-                        <th>
-                            <p:outputLabel value="Kifizetendő bruttó:"/><br/>
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr>
-                        <td>
-                            <p:outputLabel id="sprod1"  value="I.OSZTÁLYÚ"/><br/>
-                        </td>
-                        <td>
-                            <p:outputLabel id="snquantity1" value="#{completedPurchaseController.getTotalAmountOf(0)}"/><br/>
-                        </td>
-                        <td align="center" rowspan="7">
-                            <p:outputLabel style="font-size: 1.5em" id="stotalPricePerProduct1"
-                                           value="#{completedPurchaseController.sumOfRecordPrices} HUF"/>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><p:outputLabel id="sprod2" value="II.OSZTÁLYÚ"/><br/>
-                        </td>
-
-
-                        <td>
-                            <p:outputLabel id="snquantity2" value="#{completedPurchaseController.getTotalAmountOf(1)}"/><br/>
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            <p:outputLabel id="sprod3" value="III.OSZTÁLYÚ"/><br/>
-                        </td>
-                        <td>
-                            <p:outputLabel id="snquantity3" value="#{completedPurchaseController.getTotalAmountOf(2)}"/><br/>
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            <p:outputLabel id="sprod4" value="IV.OSZTÁLYÚ"/><br/>
-                        </td>
-                        <td>
-                            <p:outputLabel id="snquantity4" value="#{completedPurchaseController.getTotalAmountOf(3)}"/><br/>
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td>
-                            <p:outputLabel id="sprod5" value="GYÖKÉR"/><br/>
-                        </td>
-
-                        <td>
-                            <p:outputLabel id="snquantity5" value="#{completedPurchaseController.getTotalAmountOf(4)}"/><br/>
-                        </td>
-
-                    </tr>
-                    <tr>
-                        <td><p:outputLabel id="sprod6" value="IPARI"/>
-                        </td>
-                        <td><p:outputLabel id="snquantity6" value="#{completedPurchaseController.getTotalAmountOf(5)}">
-                        </p:outputLabel><br/></td>
-                    </tr>
-                    <tr>
-                        <td><p:outputLabel value="Összesen:"/></td>
-
-                        <td align="center"><p:outputLabel style="font-size: 1.5em" id="stotalNet"
-                                                          value="#{ completedPurchaseController.getDtoWeight()} kg"/></td>
-
-                    </tr>
-                    </tbody>
-                </table>
-                <p/>
-            </p:panel>
-            <p:outputLabel id="totalDisplay"
-                           value="Felvásárlási jegyen összeg: #{completedPurchaseController.dtoTotal} HUF"/>
-
-            <p/>
-
-
-        </p:tab>
-        <p:tab title="Mérlegjegyek kezelése">
-            <p:outputLabel for="pur" value="Felhasználható mérlegelési jegyek:"/><br/>
-            <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1"
-                             converter="#{purchaseConverter}" filter="true" filterMatchMode="contains">
-                <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
-                <p:ajax event="change" update="fixProductPanel"
-                        listener="#{completedPurchaseController.logRecordList()}"/>
-                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
-                <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                               itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName}, #{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
-                               itemValue="#{purchasevar}"/>
-            </p:selectOneMenu><br/>
             <p:panel header="Termékek" id="fixProductPanel" toggleable="true" collapsed="false">
 
                 <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
@@ -517,7 +612,7 @@
                                  style="width: 10em;height: 2.6em">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
-                            render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel recordList totalDisplay pur"/>
+                            render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2  pur"/>
                 </h:commandButton>
 
                 <h:commandButton value="Utolsó törlése"
@@ -525,7 +620,7 @@
                                  style="width: 10em;height: 2.6em">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
-                            render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel recordList totalDisplay pur"/>
+                            render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 pur"/>
                 </h:commandButton>
             </p:panel>
             <p:dataTable var="record" value="#{completedPurchaseController.tempRecords}" id="recordList"
@@ -558,6 +653,30 @@
                     <h:outputText value="#{record.six}"/>
                 </p:column>
             </p:dataTable>
+            <p:panel id="buttonPanel9">
+                <h:commandButton value="Mentés"
+                                 action="#{completedPurchaseController.uiSaveCompletedPurchase()}"
+                                 style="width: 10em;height: 2.6em">
+
+                    <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
+                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
+                </h:commandButton>
+
+                <h:commandButton value="Új"
+                                 action="#{completedPurchaseController.newPurchase}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
+                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
+                </h:commandButton>
+                <h:commandButton value="Töröl"
+                                 action="#{completedPurchaseController.deletePurchase}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="purchaseForm:cPTabs:PurchasePanel purchaseForm:cPTabs:purchasePanelV"
+                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2  purchaseForm:cPTabs:pur"/>
+                </h:commandButton>
+                <p/>
+
+            </p:panel>
         </p:tab>
     </p:tabView>
 
@@ -568,7 +687,7 @@
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{completedPurchaseController.dto}" rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{completedPurchaseController.editPurchase}"
-                update="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:pur purchaseForm:cPTabs:totalDisplay"/>
+                update="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
         <p:column headerText="ID" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
         >
             <h:outputText value="#{purchase.id}" id="id"/>

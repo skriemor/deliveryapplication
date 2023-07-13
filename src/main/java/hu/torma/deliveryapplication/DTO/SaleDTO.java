@@ -29,6 +29,14 @@ public class SaleDTO implements Serializable {
     private Boolean letai;
     private Boolean globalgap;
 
+    public String getGlobalAsString() {
+        if (globalgap == null) return "-";
+        return globalgap?"+":"-";
+    }
+    public String getLetaiAsString() {
+        if (letai == null) return "-";
+        return letai?"+":"-";
+    }
     public String getFormattedPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(","," ");
     }

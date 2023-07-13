@@ -88,23 +88,44 @@ public class PDFcreator {
 
 
     }
-
+    private void createRowCol(int row, int cell, Double s, Boolean b) {
+        if (sheet.getRow(row) == null) sheet.createRow(row);
+        if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
+        sheet.getRow(row).getCell(cell).removeFormula();
+        sheet.getRow(row).getCell(cell).removeCellComment();
+        sheet.getRow(row).getCell(cell).removeHyperlink();
+        sheet.getRow(row).getCell(cell).setCellValue(s);
+        var st = sheet.getRow(row).getCell(cell).getCellStyle();
+        st.setWrapText(true);
+        sheet.getRow(row).getCell(cell).setCellStyle(st);
+    }
+    private void createRowCol(int row, int cell, String s, Boolean b) {
+        if (sheet.getRow(row) == null) sheet.createRow(row);
+        if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
+        sheet.getRow(row).getCell(cell).removeFormula();
+        sheet.getRow(row).getCell(cell).removeCellComment();
+        sheet.getRow(row).getCell(cell).removeHyperlink();
+        sheet.getRow(row).getCell(cell).setCellValue(s);
+        var st = sheet.getRow(row).getCell(cell).getCellStyle();
+        st.setWrapText(true);
+        sheet.getRow(row).getCell(cell).setCellStyle(st);
+    }
     private void populateExcel(PurchaseDTO pur) {
-        createRowCol(6, 5, pur.getVendor().getVendorName());
-        createRowCol(7, 5, pur.getVendor().getBirthName());
-        createRowCol(8, 5, pur.getVendor().getAddress());
-        createRowCol(9, 5, pur.getVendor().getFelir());
-        createRowCol(10, 5, pur.getVendor().getTaxId());
-        createRowCol(11, 5, pur.getVendor().getTaxNumber());
-        createRowCol(12, 5, pur.getVendor().getBirthPlace());
-        createRowCol(13, 5, dateFormat.format(pur.getVendor().getBirthDate()));
-        createRowCol(14, 5, pur.getVendor().getNameOfMother());
-        createRowCol(15, 5, pur.getVendor().getTaj());
-        createRowCol(16, 5, pur.getVendor().getFileNumber());
-        createRowCol(17, 5, pur.getVendor().getGgn());
-        createRowCol(18, 5, pur.getVendor().getPhone());
-        createRowCol(19, 5, pur.getVendor().getAccountNumber());
-        createRowCol(20, 5, pur.getVendor().getContract());
+        createRowCol(6, 5, pur.getVendor().getVendorName(),true);
+        createRowCol(7, 5, pur.getVendor().getBirthName(),true);
+        createRowCol(8, 5, pur.getVendor().getCity()+", "+pur.getVendor().getAddress(),true);
+        createRowCol(9, 5, pur.getVendor().getFelir(),true);
+        createRowCol(10, 5, pur.getVendor().getTaxId(),true);
+        createRowCol(11, 5, pur.getVendor().getTaxNumber(),true);
+        createRowCol(12, 5, pur.getVendor().getBirthPlace(),true);
+        createRowCol(13, 5, dateFormat.format(pur.getVendor().getBirthDate()),true);
+        createRowCol(14, 5, pur.getVendor().getNameOfMother(),true);
+        createRowCol(15, 5, pur.getVendor().getTaj(),true);
+        createRowCol(16, 5, pur.getVendor().getFileNumber(),true);
+        createRowCol(17, 5, pur.getVendor().getActivity(),true);
+        createRowCol(18, 5, pur.getVendor().getPhone(),true);
+        createRowCol(19, 5, pur.getVendor().getAccountNumber(),true);
+        createRowCol(20, 5, pur.getVendor().getContract(),true);
 
         //date
         String datee = dateFormat.format(pur.getReceiptDate());

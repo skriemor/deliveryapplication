@@ -43,16 +43,16 @@
     </script>
 
     <style type="text/css">
-        .dTable {
-            overflow-x: scroll;  margin-bottom: 5em;
-        }
-        .dTable::-webkit-scrollbar {
-            position: fixed;
-            bottom: 0%;
-            width: 100%;
-            opacity: 1;
-        }
 
+        body .ui-datatable .ui-datatable-data > tr > td {
+            padding: 0.3rem 0.3rem;
+            border: 1px solid rgba(0,0,0,.08);
+            border-top-width: 1px;
+            border-right-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-width: 0 0 1px 0;
+        }
 
     </style>
     <p:panel header="Termelő" id="vendorPanel">
@@ -244,6 +244,11 @@
                  selectionMode="single" emptyMessage="Nincs találat"
                  selection="#{vendorController.dto}" rowKey="#{vendor.taxId}">
         <p:ajax event="rowSelect" listener="#{vendorController.editVendor}" update="vendorForm:vendorPanel"/>
+
+        <f:facet name="header">
+            #{vendorController.dtoList.size()} Termelő
+        </f:facet>
+
 
         <p:column headerText="Neve" sortBy="#{vendor.vendorName}" filterBy="#{vendor.vendorName}"
                   filterMatchMode="contains">
