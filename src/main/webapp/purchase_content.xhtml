@@ -49,7 +49,59 @@
 
     </script>
     <style type="text/css">
-
+        body .ui-inputfield {
+            color: #495057;
+            background: #fff;
+            padding: .2rem .2rem;
+            border: 1px solid #ced4da;
+            outline: 0 none;
+            font-size: 1rem;
+            border-radius: 4px;
+            transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .ui-fluid .ui-inputmask {
+            width: 100%;
+            padding: 0.2em 0.1em;
+        }
+        body .ui-fluid .ui-selectonemenu-label {
+            width: calc(100% - 2.357rem);
+            padding: .2rem 0.2rem;
+        }
+        body .ui-button.ui-button-text-only .ui-button-text {
+            padding: .1rem 0.2rem;
+        }
+        .ui-fluid .ui-inputtext {
+            width: 100%;
+            padding: 0.2em;
+        }
+        .ui-grid .ui-grid-row {
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            clear: both;
+            margin: 0;
+            padding: 0;
+        }
+        body .ui-panelgrid .ui-panelgrid-cell {
+            border: 1px solid #dee2e6;
+            background: #fff;
+            color: #495057;
+            padding: 0rem;
+        }
+        body .ui-panel .ui-panel-content {
+            border: 1px solid #dee2e6;
+            border-top-color: rgb(222, 226, 230);
+            border-top-style: solid;
+            border-top-width: 1px;
+            background: #fff;
+            color: #495057;
+            padding: 0;
+            margin: 0;
+        }
         body .ui-datatable .ui-datatable-data > tr > td {
             padding: 0.3rem 0.3rem;
             border: 1px solid rgba(0,0,0,.08);
@@ -61,7 +113,7 @@
         }
 
     </style>
-    <a href="#top1"></a>
+
     <p:panel header="Vásárlások" id="purchasePanel" toggleable="true">
         <div class="card">
 
@@ -75,7 +127,7 @@
                     <p:remoteCommand name="updateSite" update="site"/>
 
                     <p:outputLabel for="vendor" value="Termelő neve: "/><p:commandButton
-                        style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
+                        style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0" value="Új"
                         onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}" required="true" tabindex="1"
                                      converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
@@ -88,7 +140,7 @@
                     </p:selectOneMenu><br/>
 
                     <p:outputLabel for="site" value="Telephely: "/><p:commandButton
-                        style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
+                        style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0" value="Új"
                         onclick="funcForWindowPopup2()"/><br/>
                     <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="false" tabindex="2"
                                      converter="#{siteConverter}" filter="true" filterMatchMode="contains">
@@ -105,8 +157,9 @@
                 </p:divider>
                 <p:divider>
                     <p:outputLabel for="paymentdate" value="Mérlegelési jegy dátuma:"/><br/>
+
                     <p:inputMask mask="9999.99.99" id="paymentdate" value="#{purchaseController.dto.receiptDate}"
-                                 tabindex="4"><p/>
+                                 tabindex="4">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
                     <p:outputLabel for="receiptId" value="Számla sorszáma:"/><br/>
@@ -362,13 +415,13 @@
             <f:ajax render="productList purchaseList fixProductPanel purchasePanel"/>
         </h:commandButton>
         <p/>
-        <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton"
+        <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton" style="padding: 0; height: 2.5em"
                          onclick="PrimeFaces.monitorDownload(start, stop);"
                          icon="pi pi-arrow-down" styleClass="mr-2"
                          actionListener="#{purchaseController.pdf()}">
             <p:fileDownload value="#{purchaseController.file}"/>
         </p:commandButton>
-        <p:commandButton value="Maradék összegek frissítése" id="refreshRemains">
+        <p:commandButton value="Maradék összegek frissítése" id="refreshRemains" style="padding: 0; height: 2.5em">
             <p:ajax  listener="#{purchaseController.forceUpdateRemainingPrices()}" update="purchaseList" />
         </p:commandButton>
     </p:panel>

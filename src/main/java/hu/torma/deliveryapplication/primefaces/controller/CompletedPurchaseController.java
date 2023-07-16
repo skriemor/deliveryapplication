@@ -1,6 +1,5 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
-import antlr.collections.impl.IntRange;
 import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
@@ -61,21 +60,26 @@ public class CompletedPurchaseController implements Serializable {
         return quantities.stream().mapToInt(Quant::getNum).sum();
     }
 
-    public Integer getDtoWeight(){
-        return IntStream.range(0,6).map(a->getTotalAmountOf(a)).sum();
+    public Integer getDtoWeight() {
+        return IntStream.range(0, 6).map(a -> getTotalAmountOf(a)).sum();
     }
+
     public Integer getDtoTotalV() {
         return tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
     }
+
     public Double getNetTotalV() {
         return (double) Math.round(getGrossTotalV() / 1.12);
     }
+
     public Double getGrossTotalV() {
         return (double) Math.round(getGrossAvgPriceV() * getDtoWeight());
     }
+
     public Double getGrossAvgPriceV() {
         return (double) Math.round(getDtoTotalV() / (double) getDtoWeight() * 100) / 100;
     }
+
     public Double getNetAvgPriceV() {
         return (double) Math.round(getGrossAvgPriceV() / 1.12 * 100) / 100;
     }
@@ -113,7 +117,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
 
-    public String getDtoTotal(){
+    public String getDtoTotal() {
         var nuum = tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
         return NumberFormat.getNumberInstance(Locale.US).format(nuum).replaceAll(",", " ");
     }
@@ -281,31 +285,31 @@ public class CompletedPurchaseController implements Serializable {
     }
 
 
-    public void pdf() {
-        //file = pdFcreator.createDownload(this.dto);
-        /*
-        file = DefaultStreamedContent.builder()
-                .name("modified.xlsx")
-                .contentType("application/vnd.ms-excel")
-                .stream(() -> FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/demo/excel/modified.xlsx"))
-                .build();
-        */
-    }
-
     public StreamedContent getFile() {
         return file;
     }
 
+    /**
+     * Also updates serials
+     */
     private void updateRemainingPrices() {
 
         if (beforeEditList != null) for (var c : beforeEditList) {
             updateRemainingPrice(c.getPurchaseId());
+            var purc = purchaseService.getPurchaseById(c.getPurchaseId());
+            purc.setReceiptId(purc.getReceiptId().replaceAll(dto.getNewSerial() + ", ", ""));
+            purchaseService.savePurchase(purc);
+
         }
 
         if (dto.getRecords() != null) for (var c : dto.getRecords()) {
             updateRemainingPrice(c.getPurchaseId());
+            var purc = purchaseService.getPurchaseById(c.getPurchaseId());
+            purc.setReceiptId(purc.getReceiptId() + dto.getNewSerial() + ", ");
+            purchaseService.savePurchase(purc);
         }
     }
+
     public String getSumOfRecordPrices() {
         return NumberFormat.getNumberInstance(Locale.US).format(tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum()).replaceAll(",", " ");
 
@@ -529,18 +533,25 @@ public class CompletedPurchaseController implements Serializable {
 
     public Integer getTotalAmountOf(int i) {
         switch (i) {
-            case 0: return tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
-            case 1: return tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
-            case 2: return tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
-            case 3: return tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
-            case 4: return tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
-            case 5: return tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+            case 0:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5:
+                return tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
 
         }
         return 0;
     }
 
-    List tempNamesList = new ArrayList(Arrays.asList("I.OSZTÁLYÚ","II.OSZTÁLYÚ","III.OSZTÁLYÚ","IV.OSZTÁLYÚ","GYÖKÉR","IPARI"));
+    List tempNamesList = new ArrayList(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
+
     public void addRecord() {
         if (this.purchaseDTO.getId() == null) {
             //logger.info("purchasedto id was null");
@@ -557,11 +568,11 @@ public class CompletedPurchaseController implements Serializable {
         for (int i = 0; i < 6; i++) {
             if (quantities.get(i).getNum() > getMaxQuantOf(i)) {
                 wasWrong = true;
-                sB.append(tempNamesList.get(i)+", ");
+                sB.append(tempNamesList.get(i) + ", ");
             }
         }
-        if (sB.length()>1 || wasWrong) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Helytelen mennyiség: " + sB.substring(0,sB.length()-2)));
+        if (sB.length() > 1 || wasWrong) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Helytelen mennyiség: " + sB.substring(0, sB.length() - 2)));
             return;
         }
 
