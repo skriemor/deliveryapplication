@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html
+        xmlns:h="http://java.sun.com/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui">
+
+
+<h:form id="loginForm" >
+    <p:panel header="Login" id="loginPanel">
+
+        <h:panelGrid columns="2">
+            <p:outputLabel for="username" value="Username:"/>
+            <p:inputText id="username" value="#{loginController.username}"/>
+
+            <p:outputLabel for="password" value="Password:"/>
+            <p:password id="password" value="#{loginController.password}">
+                <p:ajax update="username"  event="keyup"/>
+            </p:password>
+        </h:panelGrid>
+
+
+    </p:panel>
+    <h:commandButton value="fos" label="fos" id="fos" >
+        <f:ajax execute="loginForm loginPanel" render="loginPanel"/>
+    </h:commandButton>
+    <p:button value="Login" outcome="#{loginController.login()}">
+        <f:ajax execute="loginForm:loginPanel" event="click"/>
+    </p:button>
+
+</h:form>
+
+
+</html>
