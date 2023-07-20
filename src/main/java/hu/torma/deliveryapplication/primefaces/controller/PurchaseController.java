@@ -10,6 +10,7 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +27,7 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@SessionScope
+@RequestScope
 @Controller("purchaseController")
 public class PurchaseController implements Serializable {
 

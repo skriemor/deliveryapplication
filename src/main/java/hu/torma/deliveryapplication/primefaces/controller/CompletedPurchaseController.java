@@ -11,11 +11,13 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -25,7 +27,7 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-@SessionScope
+@RequestScope
 @Controller("completedPurchaseController")
 public class CompletedPurchaseController implements Serializable {
 
@@ -327,8 +329,11 @@ public class CompletedPurchaseController implements Serializable {
         calculateTotalPrice();
         logger.info("DTO's ONE IS: " + dto.getOne());
 
-        if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0)
-            this.dto.setTotalPrice(dto.getRecords().stream().mapToInt(CompletionRecordDTO::getPrice).sum());
+        if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0){
+            this.dto.setTotalPrice(getGrossTotalV().intValue());
+
+        }
+
         var b = cService.saveCompletedPurchase(dto);
         updateRemainingPrices();
         getAllPurchases();
