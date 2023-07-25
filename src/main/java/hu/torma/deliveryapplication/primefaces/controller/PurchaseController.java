@@ -14,7 +14,8 @@ import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ViewScoped;
+import javax.el.MethodExpression;
+import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -27,7 +28,7 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@RequestScope
+@ViewScoped
 @Controller("purchaseController")
 public class PurchaseController implements Serializable {
 
@@ -123,11 +124,8 @@ public class PurchaseController implements Serializable {
 
     public void forceUpdateRemainingPrices() {
         for (var c : dtoList) {
-
-                c.setRemainingPrice(getRemaningDoublePrice(c));
-                service.savePurchase(c);
-
-
+            c.setRemainingPrice(getRemaningDoublePrice(c));
+            service.savePurchase(c);
         }
     }
 
@@ -709,4 +707,29 @@ public class PurchaseController implements Serializable {
     }
 
 
+    public void refreshReceipts() {
+        getAllPurchases();
+        for (var c : dtoList) {
+            var id = c.getId();
+            var temp = c;
+            var tempList = temp.getProductList();
+            var total = temp.getTotalPrice();
+            var records = recordService.findAllByPurchaseId(id);
+            var tempstring = "";
+            for (var r : records) {
+                total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
+                total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
+                total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
+                total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
+                total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
+                total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
+                tempstring += r.getCompletedPurchase().getNewSerial() + " ";
+            }
+
+            temp.setReceiptId(tempstring);
+            temp.setRemainingPrice(total);
+            service.savePurchase(temp);
+        }
+
+    }
 }

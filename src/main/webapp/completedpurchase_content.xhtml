@@ -109,17 +109,20 @@
 
 
         <p:tab title="Új felvásárlási jegy">
-            <p:outputLabel for="pur" value="Felhasználható mérlegelési jegyek:"/><br/>
-            <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1"
-                             converter="#{purchaseConverter}" filter="true" filterMatchMode="contains" style="">
-                <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
-                <p:ajax event="change" update="fixProductPanel"
-                        listener="#{completedPurchaseController.logRecordList()}"/>
-                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
-                <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
-                               itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName}, #{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
-                               itemValue="#{purchasevar}"/>
-            </p:selectOneMenu><br/>
+
+                <p:outputLabel for="pur" value="Felhasználható mérlegelési jegyek:"/><br/>
+                <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1" required="false" requiredMessage="Válasszon 1 jegyet"
+                                 converter="#{purchaseConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
+                    <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
+                    <p:ajax event="change" update="fixProductPanel"
+                            listener="#{completedPurchaseController.logRecordList()}"/>
+                    <f:selectItem itemValue="#{purchaseServiceImpl.allPurchases.get(0)}" itemLabel="Válasszon" noSelectionOption="true"/>
+                    <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
+                                   itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName}, #{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
+                                   itemValue="#{purchasevar}"/>
+                </p:selectOneMenu>
+
+
             <p:panel header="Felvásárlási jegyek" id="purchasePanel" toggleable="true">
                 <div class="card">
 
@@ -153,7 +156,7 @@
                                 style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"
                                 onclick="funcForWindowPopup2()"/><br/>
                             <p:selectOneMenu id="site" value="#{completedPurchaseController.dto.site}" required="true"
-                                             tabindex="3"
+                                             tabindex="3" panelStyle="overflow: scroll; left: 0;  position: static"
                                              converter="#{siteConverter}" filter="true" filterMatchMode="contains">
                                 <p:ajax event="change" update="purchaseForm:cPTabs:purchasePanelV"/>
                                 <p:ajax event="select" update="purchaseForm:cPTabs:purchasePanelV"/>
@@ -416,9 +419,9 @@
                         <td><p:outputLabel value="Összesen:"/></td>
                         <td colspan="2"></td>
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalNet"
-                                                          value="#{ completedPurchaseController.getDtoWeight()} kg"/></td>
+                                                          value="#{ completedPurchaseController.netSum} kg"/></td>
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalPricePerProduct1"
-                                                          value="#{completedPurchaseController.getFormattedNumber(completedPurchaseController.getDtoTotalV())} HUF"/>
+                                                          value="#{completedPurchaseController.formattedSixTotal} HUF"/>
                         </td>
                     </tr>
 
@@ -426,16 +429,16 @@
                         <td><p:outputLabel value="Átlagár br."/></td>
 
                         <td align="center"><p:outputLabel style="font-size: 1em" id="netAvgPrice"
-                                                          value="&nbsp;&nbsp;&nbsp;#{completedPurchaseController.getFormattedNumber(completedPurchaseController.netTotalV)}&nbsp;&nbsp;&nbsp;"/>
+                                                          value="&nbsp;&nbsp;&nbsp;#{completedPurchaseController.getFormattedNumber(completedPurchaseController.netTotal)}&nbsp;&nbsp;&nbsp;"/>
                         </td>
                         <td align="center"><p:outputLabel style="font-size: 1em" id="diff"
-                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.diffV)}"/>
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.diff)}"/>
                         </td>
                         <td align="center"><p:outputLabel style="font-size: 1em" id="grossAvgPrice"
-                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.getGrossAvgPriceV())}"/>
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.getGrossAvgPrice())}"/>
                         </td>
                         <td align="center"><p:outputLabel style="font-size: 1em" id="grossTotal"
-                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.grossTotalV)}"/>
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.grossTotal)}"/>
                         </td>
                     </tr>
                     <tr>
@@ -443,7 +446,7 @@
                         <td></td>
                         <td></td>
                         <td align="center"><p:outputLabel style="font-size: 1em" id="netAvg"
-                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.netAvgPriceV)}"/>
+                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.netAvgPrice)}"/>
                         </td>
                     </tr>
                     </tbody>
@@ -503,26 +506,27 @@
                 </p:column>
             </p:dataTable>
             <p:panel id="buttonPanel9" header="Felvásárlási jegy műveletek">
-                <h:commandButton value="Mentés"
-                                 action="#{completedPurchaseController.uiSaveCompletedPurchase()}"
-                                 style="width: 10em;height: 2.6em">
+                <p:commandButton value="Mentés" id="saviorButton" style="width: 4em; color: black; background-color: aqua"
+                                 actionListener="#{completedPurchaseController.uiSaveCompletedPurchase()}"
+                                 update="purchaseForm:cPTabs:recordList purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
 
+                </p:commandButton>
+
+                <p:commandButton value="Új" id="newCPButton" style="width: 4em; color: black; background-color: aqua"
+                                 actionListener="#{completedPurchaseController.newPurchase()}" immediate="true"
+                                 update="purchaseForm:purchaseList">
                     <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
                             render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
 
-                <h:commandButton value="Új"
-                                 action="#{completedPurchaseController.newPurchase}"
-                                 style="width: 10em;height: 2.6em">
+                </p:commandButton>
+                <p:commandButton value="Törlés" id="deleteCPButton" style="width: 4em; color: black; background-color: aqua"
+                                 actionListener="#{completedPurchaseController.deletePurchase()}" immediate="true"
+                                    update="purchaseForm:purchaseList purchaseForm:cPTabs:recordList">
                     <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
                             render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
-                <h:commandButton value="Töröl"
-                                 action="#{completedPurchaseController.deletePurchase}"
-                                 style="width: 10em;height: 2.6em">
-                    <f:ajax execute="purchaseForm:cPTabs:PurchasePanel purchaseForm:cPTabs:purchasePanelV"
-                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2  purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
+
+                </p:commandButton>
+
                 <p/>
 
             </p:panel>

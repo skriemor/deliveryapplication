@@ -4,6 +4,8 @@ import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
+import org.primefaces.component.datatable.DataTable;
+import org.primefaces.context.PrimeFacesContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -11,8 +13,6 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -27,9 +27,11 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-@RequestScope
+@ViewScoped
 @Controller("completedPurchaseController")
 public class CompletedPurchaseController implements Serializable {
+
+
 
     List<CompletionRecordDTO> tempRecords;
 
@@ -159,6 +161,7 @@ public class CompletedPurchaseController implements Serializable {
         var tempList = temp.getProductList();
         var total = temp.getTotalPrice();
         var records = recordService.findAllByPurchaseId(id);
+        var tempstring = "";
         for (var r : records) {
             total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
             total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
@@ -166,8 +169,22 @@ public class CompletedPurchaseController implements Serializable {
             total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
             total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
             total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
+            tempstring += r.getCompletedPurchase().getNewSerial() + " ";
+        }
+/*
+        var tmpstring = "";
+        for (var cp: dtoList) {
+            for (var rec: cp.getRecords()) {
+                if (rec.getPurchaseId().equals(temp.getId())) {
+                    tmpstring += cp.getNewSerial() + " ";
+                }
+            }
         }
 
+        temp.setReceiptId(tmpstring);
+*/
+
+        temp.setReceiptId(tempstring);
         temp.setRemainingPrice(total);
         purchaseService.savePurchase(temp);
     }
@@ -243,6 +260,7 @@ public class CompletedPurchaseController implements Serializable {
         this.dto = new CompletedPurchaseDTO();
         var recordse = new ArrayList<CompletionRecordDTO>();
         dto.setRecords(recordse);
+        tempRecords.clear();
     }
 
     private void copySerials(List<CompletedPurchaseDTO> list) {
@@ -265,6 +283,7 @@ public class CompletedPurchaseController implements Serializable {
         tempRecords = new ArrayList<>();
         this.purchaseDTO = new PurchaseDTO();
         newCP();
+
         pdfdisabled = true;
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder()
@@ -298,17 +317,13 @@ public class CompletedPurchaseController implements Serializable {
 
         if (beforeEditList != null) for (var c : beforeEditList) {
             updateRemainingPrice(c.getPurchaseId());
-            var purc = purchaseService.getPurchaseById(c.getPurchaseId());
-            purc.setReceiptId(purc.getReceiptId().replaceAll(dto.getNewSerial() + ", ", ""));
-            purchaseService.savePurchase(purc);
+
 
         }
 
         if (dto.getRecords() != null) for (var c : dto.getRecords()) {
             updateRemainingPrice(c.getPurchaseId());
-            var purc = purchaseService.getPurchaseById(c.getPurchaseId());
-            purc.setReceiptId(purc.getReceiptId() + dto.getNewSerial() + ", ");
-            purchaseService.savePurchase(purc);
+
         }
     }
 
@@ -317,9 +332,17 @@ public class CompletedPurchaseController implements Serializable {
 
     }
 
+    @Autowired
+    SiteService siteService;
+
     public void uiSaveCompletedPurchase() {
         //if (true)return;
         if (this.dto == null) return;
+        if (this.dto.getSite() == null) {
+            var sites = siteService.getAllSites();
+            if (sites != null && sites.size() > 0)
+                this.dto.setSite(siteService.getAllSites().get(0));
+        }
         dto.setRecords(tempRecords);
         getSixTotal();
         logger.warning("uiSaveCalled");
@@ -329,7 +352,10 @@ public class CompletedPurchaseController implements Serializable {
         calculateTotalPrice();
         logger.info("DTO's ONE IS: " + dto.getOne());
 
-        if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0){
+        if (this.dto.getRecords() == null || this.dto.getRecords().size()<1) {
+            this.dto.setTotalPrice(0);
+        }
+        if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0) {
             this.dto.setTotalPrice(getGrossTotalV().intValue());
 
         }
@@ -340,7 +366,7 @@ public class CompletedPurchaseController implements Serializable {
 
 
         newCP();
-        tempRecords.clear();
+
 
         this.setPurchaseDTO(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
@@ -358,11 +384,13 @@ public class CompletedPurchaseController implements Serializable {
 
 
         cService.deleteCompletedPurchase(dto);
+
+        updateRemainingPrices();
         this.getAllPurchases();
         newCP();
         this.purchaseDTO = new PurchaseDTO();
         this.pdfdisabled = true;
-        updateRemainingPrices();
+
         updateAvailablePurchases();
     }
 
@@ -372,12 +400,14 @@ public class CompletedPurchaseController implements Serializable {
         //emptySix();
         tempRecords = _dto.getObject().getRecords();
         beforeEditList = _dto.getObject().getRecords();
+        if (beforeEditList != null && beforeEditList.size() > 0)
+            this.setPurchaseDTO(purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId()));
         this.setLabel("Felv.jegy Módosítása");
         this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
         acquireQuants();
         updateAvailablePurchases();
-
+        this.purchaseDTO = new PurchaseDTO();
         logger.info(_dto.getObject().getRecords().getClass().getName());
     }
 
@@ -397,7 +427,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public void newPurchase() {
 
-        tempRecords.clear();
+
         emptySix();
         newCP();
         this.purchaseDTO = new PurchaseDTO();

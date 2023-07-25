@@ -424,7 +424,7 @@
     <hr/>
     <p:divider style="height: 3em" >
         <p:commandButton value="Tábla Frissítése" id="refreshTable" style="position: absolute;left: 50%; border: black 1px solid ">
-            <p:ajax  listener="#{purchaseController.getAllPurchases()}" update="purchaseList" />
+            <p:ajax  listener="#{purchaseController.refreshReceipts()}" update="purchaseList" />
         </p:commandButton>
     </p:divider>
 <p:divider>
@@ -432,6 +432,7 @@
                  lazy="false" style="overflow-x: scroll; margin-bottom: 5em" scrollable="true"
                  selectionMode="single" emptyMessage="Nincs termék" resizableColumns="true"
                  selection="#{purchaseController.productDTO}" rowKey="#{product.id}">
+        <f:event type="preRenderView" listener="#{purchaseController.getAllPurchases()}" />
         <p:ajax event="rowSelect" listener="#{purchaseController.editProduct}"/>
         <p:column headerText="Termék neve" filterBy="#{product.product.id}" filterMatchMode="contains" width="5em">
             <h:outputText value="#{product.product.id}" id="did"/>

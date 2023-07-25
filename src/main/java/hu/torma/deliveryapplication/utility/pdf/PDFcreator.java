@@ -110,7 +110,11 @@ public class PDFcreator {
         st.setWrapText(true);
         sheet.getRow(row).getCell(cell).setCellStyle(st);
     }
+    public void setNullToEmpty(PurchaseDTO pur) {
+
+    }
     private void populateExcel(PurchaseDTO pur) {
+        setNullToEmpty(pur);
         createRowCol(6, 5, pur.getVendor().getVendorName(),true);
         createRowCol(7, 5, pur.getVendor().getBirthName(),true);
         createRowCol(8, 5, pur.getVendor().getCity()+", "+pur.getVendor().getAddress(),true);
