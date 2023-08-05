@@ -260,7 +260,7 @@ public class CompletedPurchaseController implements Serializable {
         this.dto = new CompletedPurchaseDTO();
         var recordse = new ArrayList<CompletionRecordDTO>();
         dto.setRecords(recordse);
-        tempRecords.clear();
+
     }
 
     private void copySerials(List<CompletedPurchaseDTO> list) {
@@ -361,12 +361,12 @@ public class CompletedPurchaseController implements Serializable {
         }
 
         var b = cService.saveCompletedPurchase(dto);
-        updateRemainingPrices();
-        getAllPurchases();
 
+        getAllPurchases();
+        updateRemainingPrices();
 
         newCP();
-
+        tempRecords.clear();
 
         this.setPurchaseDTO(new PurchaseDTO());
         this.setProductDTO(new PurchasedProductDTO());
@@ -390,7 +390,7 @@ public class CompletedPurchaseController implements Serializable {
         newCP();
         this.purchaseDTO = new PurchaseDTO();
         this.pdfdisabled = true;
-
+        tempRecords.clear();
         updateAvailablePurchases();
     }
 
@@ -427,7 +427,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public void newPurchase() {
 
-
+        tempRecords.clear();
         emptySix();
         newCP();
         this.purchaseDTO = new PurchaseDTO();
