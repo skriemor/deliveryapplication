@@ -13,11 +13,13 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @Service
 public class PDFcreator {
@@ -36,14 +38,10 @@ public class PDFcreator {
             res = new ClassPathResource("form.xlsx", this.getClass().getClassLoader());
 
 
-
             //file = new File(this.getClass().getClassLoader().getResource("form.xlsx"));
             //file = new File(res.getURI());
             workbook = new XSSFWorkbook(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream("form.xlsx")));
-           // workbook = new XSSFWorkbook(file);
-
-
-
+            // workbook = new XSSFWorkbook(file);
 
 
             sheet = workbook.getSheetAt(0);
@@ -88,6 +86,7 @@ public class PDFcreator {
 
 
     }
+
     private void createRowCol(int row, int cell, Double s, Boolean b) {
         if (sheet.getRow(row) == null) sheet.createRow(row);
         if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
@@ -99,6 +98,7 @@ public class PDFcreator {
         st.setWrapText(true);
         sheet.getRow(row).getCell(cell).setCellStyle(st);
     }
+
     private void createRowCol(int row, int cell, String s, Boolean b) {
         if (sheet.getRow(row) == null) sheet.createRow(row);
         if (sheet.getRow(row).getCell(cell) == null) sheet.getRow(row).createCell(cell);
@@ -110,66 +110,71 @@ public class PDFcreator {
         st.setWrapText(true);
         sheet.getRow(row).getCell(cell).setCellStyle(st);
     }
-    public void setNullToEmpty(PurchaseDTO pur) {
 
-    }
     private void populateExcel(PurchaseDTO pur) {
-        setNullToEmpty(pur);
-        createRowCol(6, 5, pur.getVendor().getVendorName(),true);
-        createRowCol(7, 5, pur.getVendor().getBirthName(),true);
-        createRowCol(8, 5, pur.getVendor().getCity()+", "+pur.getVendor().getAddress(),true);
-        createRowCol(9, 5, pur.getVendor().getFelir(),true);
-        createRowCol(10, 5, pur.getVendor().getTaxId(),true);
-        createRowCol(11, 5, pur.getVendor().getTaxNumber(),true);
-        createRowCol(12, 5, pur.getVendor().getBirthPlace(),true);
-        createRowCol(13, 5, dateFormat.format(pur.getVendor().getBirthDate()),true);
-        createRowCol(14, 5, pur.getVendor().getNameOfMother(),true);
-        createRowCol(15, 5, pur.getVendor().getTaj(),true);
-        createRowCol(16, 5, pur.getVendor().getFileNumber(),true);
-        createRowCol(17, 5, pur.getVendor().getActivity(),true);
-        createRowCol(18, 5, pur.getVendor().getPhone(),true);
-        createRowCol(19, 5, pur.getVendor().getAccountNumber(),true);
-        createRowCol(20, 5, pur.getVendor().getContract(),true);
+        if (pur.getVendor() == null) return;
+
+        createRowCol(6, 5, pur.getVendor().getVendorName(), true);
+        createRowCol(7, 5, pur.getVendor().getBirthName(), true);
+        createRowCol(8, 5, pur.getVendor().getCity() + ", " + pur.getVendor().getAddress(), true);
+        createRowCol(9, 5, pur.getVendor().getFelir(), true);
+        createRowCol(10, 5, pur.getVendor().getTaxId(), true);
+        createRowCol(11, 5, pur.getVendor().getTaxNumber(), true);
+        createRowCol(12, 5, pur.getVendor().getBirthPlace(), true);
+        createRowCol(13, 5, dateFormat.format(pur.getVendor().getBirthDate()), true);
+        createRowCol(14, 5, pur.getVendor().getNameOfMother(), true);
+        createRowCol(15, 5, pur.getVendor().getTaj(), true);
+        createRowCol(16, 5, pur.getVendor().getFileNumber(), true);
+        createRowCol(17, 5, pur.getVendor().getActivity(), true);
+        createRowCol(18, 5, pur.getVendor().getPhone(), true);
+        createRowCol(19, 5, pur.getVendor().getAccountNumber(), true);
+        createRowCol(20, 5, pur.getVendor().getContract(), true);
 
         //date
-        String datee = dateFormat.format(pur.getReceiptDate());
+        String datee = "";
+        if (pur.getReceiptDate() != null) {
+            datee = dateFormat.format(pur.getReceiptDate());
+        }
         createRowCol(5, 1, datee);
         //prices
 
-        createRowCol(24, 5, pur.getProductList().get(0).getTotalPrice());
-        createRowCol(25, 5, pur.getProductList().get(1).getTotalPrice());
-        createRowCol(26, 5, pur.getProductList().get(2).getTotalPrice());
-        createRowCol(27, 5, pur.getProductList().get(3).getTotalPrice());
-        createRowCol(28, 5, pur.getProductList().get(4).getTotalPrice());
-        createRowCol(29, 5, pur.getProductList().get(5).getTotalPrice());
-        //unitprics
-        createRowCol(24, 1, pur.getProductList().get(0).getUnitPrice());
-        createRowCol(25, 1, pur.getProductList().get(1).getUnitPrice());
-        createRowCol(26, 1, pur.getProductList().get(2).getUnitPrice());
-        createRowCol(27, 1, pur.getProductList().get(3).getUnitPrice());
-        createRowCol(28, 1, pur.getProductList().get(4).getUnitPrice());
-        createRowCol(29, 1, pur.getProductList().get(5).getUnitPrice());
-        //gross weigt
-        createRowCol(24, 2, pur.getProductList().get(0).getQuantity());
-        createRowCol(25, 2, pur.getProductList().get(1).getQuantity());
-        createRowCol(26, 2, pur.getProductList().get(2).getQuantity());
-        createRowCol(27, 2, pur.getProductList().get(3).getQuantity());
-        createRowCol(28, 2, pur.getProductList().get(4).getQuantity());
-        createRowCol(29, 2, pur.getProductList().get(5).getQuantity());
-        //correction
-        createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent() + "%");
-        createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent() + "%");
-        createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent() + "%");
-        createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent() + "%");
-        createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent() + "%");
-        createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent() + "%");
-        //net w
-        createRowCol(24, 4, pur.getProductList().get(0).getQuantity2());
-        createRowCol(25, 4, pur.getProductList().get(1).getQuantity2());
-        createRowCol(26, 4, pur.getProductList().get(2).getQuantity2());
-        createRowCol(27, 4, pur.getProductList().get(3).getQuantity2());
-        createRowCol(28, 4, pur.getProductList().get(4).getQuantity2());
-        createRowCol(29, 4, pur.getProductList().get(5).getQuantity2());
+
+            createRowCol(24, 5, pur.getProductList().get(0).getTotalPrice());
+
+            createRowCol(25, 5, pur.getProductList().get(1).getTotalPrice());
+            createRowCol(26, 5, pur.getProductList().get(2).getTotalPrice());
+            createRowCol(27, 5, pur.getProductList().get(3).getTotalPrice());
+            createRowCol(28, 5, pur.getProductList().get(4).getTotalPrice());
+            createRowCol(29, 5, pur.getProductList().get(5).getTotalPrice());
+            //unitprics
+            createRowCol(24, 1, pur.getProductList().get(0).getUnitPrice());
+            createRowCol(25, 1, pur.getProductList().get(1).getUnitPrice());
+            createRowCol(26, 1, pur.getProductList().get(2).getUnitPrice());
+            createRowCol(27, 1, pur.getProductList().get(3).getUnitPrice());
+            createRowCol(28, 1, pur.getProductList().get(4).getUnitPrice());
+            createRowCol(29, 1, pur.getProductList().get(5).getUnitPrice());
+            //gross weigt
+            createRowCol(24, 2, pur.getProductList().get(0).getQuantity());
+            createRowCol(25, 2, pur.getProductList().get(1).getQuantity());
+            createRowCol(26, 2, pur.getProductList().get(2).getQuantity());
+            createRowCol(27, 2, pur.getProductList().get(3).getQuantity());
+            createRowCol(28, 2, pur.getProductList().get(4).getQuantity());
+            createRowCol(29, 2, pur.getProductList().get(5).getQuantity());
+            //correction
+            createRowCol(24, 3, pur.getProductList().get(0).getCorrPercent() + "%");
+            createRowCol(25, 3, pur.getProductList().get(1).getCorrPercent() + "%");
+            createRowCol(26, 3, pur.getProductList().get(2).getCorrPercent() + "%");
+            createRowCol(27, 3, pur.getProductList().get(3).getCorrPercent() + "%");
+            createRowCol(28, 3, pur.getProductList().get(4).getCorrPercent() + "%");
+            createRowCol(29, 3, pur.getProductList().get(5).getCorrPercent() + "%");
+            //net w
+            createRowCol(24, 4, pur.getProductList().get(0).getQuantity2());
+            createRowCol(25, 4, pur.getProductList().get(1).getQuantity2());
+            createRowCol(26, 4, pur.getProductList().get(2).getQuantity2());
+            createRowCol(27, 4, pur.getProductList().get(3).getQuantity2());
+            createRowCol(28, 4, pur.getProductList().get(4).getQuantity2());
+            createRowCol(29, 4, pur.getProductList().get(5).getQuantity2());
+
         //total
         var totalp = pur.getTotalPrice().intValue();
         createRowCol(30, 5, totalp);
@@ -179,7 +184,7 @@ public class PDFcreator {
 
         //avg price e40
 
-        Double avgprice = (double)Math.round((totalp / (double) totalw * 100)) /100 ;
+        Double avgprice = (double) Math.round((totalp / (double) totalw * 100)) / 100;
         log.info(avgprice + "");
         createRowCol(39, 4, avgprice);
         //f40
@@ -212,7 +217,7 @@ public class PDFcreator {
 
             // Create the file object
             File modifiedFile = new File(filePath);
-            log.info("Filepaths of excel are: \n" + filePath+"\n"+currentDirectory );
+            log.info("Filepaths of excel are: \n" + filePath + "\n" + currentDirectory);
             //FileOutputStream fos = new FileOutputStream(modifiedFile);
             FileOutputStream fos = new FileOutputStream(modifiedFile);
             workbook.write(fos);
@@ -222,7 +227,7 @@ public class PDFcreator {
             // create the StreamedContent object
             InputStream stream = new FileInputStream(modifiedFile);
             StreamedContent file = DefaultStreamedContent.builder()
-                    .stream(()-> stream)
+                    .stream(() -> stream)
                     .contentType("application/vnd.ms-excel")
                     .name(modifiedFileName)
                     .build();

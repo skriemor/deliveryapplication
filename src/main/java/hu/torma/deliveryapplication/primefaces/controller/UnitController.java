@@ -12,13 +12,17 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 @SessionScope
 @Controller("unitController")
 public class UnitController implements Serializable {
+
+
 
     private List<SortMeta> sortBy;
     @Autowired
@@ -104,5 +108,11 @@ public class UnitController implements Serializable {
 
     public UnitService getService() {
         return service;
+    }
+
+    Logger log = Logger.getLogger("BeanRemoval");
+    public void removeCPBean(){
+        log.info("REMOVING BEAN");
+        FacesContext.getCurrentInstance().getViewRoot().getViewMap().remove("completedPurchaseController");
     }
 }

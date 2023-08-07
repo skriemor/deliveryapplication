@@ -4,6 +4,7 @@ import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
+import org.primefaces.PrimeFaces;
 import org.primefaces.component.datatable.DataTable;
 import org.primefaces.context.PrimeFacesContext;
 import org.primefaces.event.SelectEvent;
@@ -13,7 +14,9 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.context.annotation.SessionScope;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -27,10 +30,27 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-@ViewScoped
-@Controller("completedPurchaseController")
+
+@Controller
 public class CompletedPurchaseController implements Serializable {
 
+    private void initPItem() {
+        this.pItemForSelectOneMenu = new PurchaseDTO();
+        pItemForSelectOneMenu.setId(0);
+        pItemForSelectOneMenu.setRemainingPrice(0.0);
+        VendorDTO vend = new VendorDTO();
+        vend.setVendorName("");
+        pItemForSelectOneMenu.setVendor(vend);
+    }
+    public PurchaseDTO getpItemForSelectOneMenu() {
+        return pItemForSelectOneMenu;
+    }
+
+    public void setpItemForSelectOneMenu(PurchaseDTO pItemForSelectOneMenu) {
+        this.pItemForSelectOneMenu = pItemForSelectOneMenu;
+    }
+
+    PurchaseDTO pItemForSelectOneMenu;
 
 
     List<CompletionRecordDTO> tempRecords;
@@ -148,8 +168,7 @@ public class CompletedPurchaseController implements Serializable {
     PurchaseService purchaseService;
 
 
-    @Autowired
-    PurchaseController purchaseController;
+
 
     public List<CompletionRecordDTO> getTempRecords() {
         return tempRecords;
@@ -250,16 +269,17 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private void newCP() {
-        StackTraceElement[] stacktrace = Thread.currentThread().getStackTrace();
-        StackTraceElement e = stacktrace[2];
-        String methodName = e.getMethodName();
-        logger.info("newCP called by " + methodName);
+        var stacktrace = Thread.currentThread().getStackTrace()[2].getMethodName();
+
+
+        logger.info("newCP called by " + stacktrace);
 
 
         logger.info("new CP created");
         this.dto = new CompletedPurchaseDTO();
         var recordse = new ArrayList<CompletionRecordDTO>();
         dto.setRecords(recordse);
+        updateAvailablePurchases();
 
     }
 
@@ -279,7 +299,7 @@ public class CompletedPurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
-
+        initPItem();
         tempRecords = new ArrayList<>();
         this.purchaseDTO = new PurchaseDTO();
         newCP();
@@ -348,8 +368,7 @@ public class CompletedPurchaseController implements Serializable {
         logger.warning("uiSaveCalled");
         Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
-        setQuants();
-        calculateTotalPrice();
+        //setQuants();
         logger.info("DTO's ONE IS: " + dto.getOne());
 
         if (this.dto.getRecords() == null || this.dto.getRecords().size()<1) {
@@ -391,6 +410,7 @@ public class CompletedPurchaseController implements Serializable {
         this.purchaseDTO = new PurchaseDTO();
         this.pdfdisabled = true;
         tempRecords.clear();
+        emptySix();
         updateAvailablePurchases();
     }
 
@@ -400,24 +420,32 @@ public class CompletedPurchaseController implements Serializable {
         //emptySix();
         tempRecords = _dto.getObject().getRecords();
         beforeEditList = _dto.getObject().getRecords();
-        if (beforeEditList != null && beforeEditList.size() > 0)
+        if (beforeEditList != null && beforeEditList.size() > 0){
+            var fdo =purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId());
             this.setPurchaseDTO(purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId()));
+            acquireQuants();
+            this.pItemForSelectOneMenu = fdo;
+        }
+
         this.setLabel("Felv.jegy Módosítása");
         this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
-        acquireQuants();
+
         updateAvailablePurchases();
         this.purchaseDTO = new PurchaseDTO();
         logger.info(_dto.getObject().getRecords().getClass().getName());
+
+
     }
 
     private void acquireQuants() {
-        quantities.get(0).setNum(dto.getOne());
-        quantities.get(1).setNum(dto.getTwo());
-        quantities.get(2).setNum(dto.getThree());
-        quantities.get(3).setNum(dto.getFour());
-        quantities.get(4).setNum(dto.getFive());
-        quantities.get(5).setNum(dto.getSix());
+        var acq = beforeEditList.get(0);
+        quantities.get(0).setNum(acq.getOne());
+        quantities.get(1).setNum(acq.getTwo());
+        quantities.get(2).setNum(acq.getThree());
+        quantities.get(3).setNum(acq.getFour());
+        quantities.get(4).setNum(acq.getFive());
+        quantities.get(5).setNum(acq.getSix());
 
     }
 
@@ -635,9 +663,12 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void removeRecord() {
+
         logger.warning("REMOVING RECORD");
         if (tempRecords.size() < 1) return;
         tempRecords.remove(tempRecords.size() - 1);
+        this.purchaseDTO = new PurchaseDTO();
+        for (var q: quantities) q.setNum(0);
         updateAvailablePurchases();
         //T3
     }

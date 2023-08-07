@@ -13,8 +13,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.RequestScope;
 import org.springframework.web.context.annotation.SessionScope;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.el.MethodExpression;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.sql.Date;
@@ -28,8 +31,8 @@ import java.util.TimeZone;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-@ViewScoped
-@Controller("purchaseController")
+
+@Controller
 public class PurchaseController implements Serializable {
 
     public Double getNetAvgPrice() {
@@ -388,6 +391,10 @@ public class PurchaseController implements Serializable {
     }
 
     public void pdf() {
+        if (this.dto.getProductList() == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA","Mentse a jegyet dátummal együtt, mielőtt letölti!"));
+            return;
+        }
         file = pdFcreator.createDownload(this.dto);
         /*
         file = DefaultStreamedContent.builder()
@@ -415,6 +422,8 @@ public class PurchaseController implements Serializable {
         }
     }
 
+    @Autowired
+    CompletedPurchaseController completedPurchaseController;
     public void uiSavePurchase() {
         sixSave();
         if (this.dto.getProductList() == null) {
@@ -438,6 +447,7 @@ public class PurchaseController implements Serializable {
         this.setProductDTO(new PurchasedProductDTO());
         this.pdfdisabled = true;
         setUpFive();
+        completedPurchaseController.updateAvailablePurchases();
 
     }
 
@@ -456,6 +466,7 @@ public class PurchaseController implements Serializable {
         this.dto = new PurchaseDTO();
         this.pdfdisabled = true;
         emptySix();
+        completedPurchaseController.updateAvailablePurchases();
     }
 
     public void editPurchase(SelectEvent<PurchaseDTO> _dto) {
