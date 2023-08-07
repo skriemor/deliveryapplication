@@ -56,7 +56,7 @@ public class StorageServiceImpl implements StorageService {
         return amount;
     }
 
-    private List<String> prodList = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "IPARI", "GYÖKÉR");
+    private List<String> prodList = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ","GYÖKÉR", "IPARI");
     List<CompletionRecord> records;
 
     @Transactional
@@ -99,9 +99,9 @@ public class StorageServiceImpl implements StorageService {
                         verifiedAmount += records.stream().map(CompletionRecord::getThree).mapToInt(Integer::intValue).sum();
                 case "IV.OSZTÁLYÚ" ->
                         verifiedAmount += records.stream().map(CompletionRecord::getFour).mapToInt(Integer::intValue).sum();
-                case "IPARI" ->
-                        verifiedAmount += records.stream().map(CompletionRecord::getFive).mapToInt(Integer::intValue).sum();
                 case "GYÖKÉR" ->
+                        verifiedAmount += records.stream().map(CompletionRecord::getFive).mapToInt(Integer::intValue).sum();
+                case "IPARI" ->
                         verifiedAmount += records.stream().map(CompletionRecord::getSix).mapToInt(Integer::intValue).sum();
             }
             list.add(new DisplayUnit(amount, verifiedAmount, p));

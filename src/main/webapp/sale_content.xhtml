@@ -107,7 +107,8 @@
                 <p:divider >
                     <p:remoteCommand update="buyer" name="updateBuyer"/>
                     <p:outputLabel for="buyer" value="Vevő neve: "/><p:commandButton style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 3em" value="Új"  onclick="funcForWindowPopup()"/><br/>
-                    <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains" tabindex="1">
+                    <p:selectOneMenu required="true" id="buyer" value="#{saleController.dto.buyer}"  converter="#{buyerConverter}"  filter="true" filterMatchMode="contains" tabindex="1"
+                                     panelStyle="overflow: scroll; left: 0;  position: static">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
                         <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="receiptId"/>

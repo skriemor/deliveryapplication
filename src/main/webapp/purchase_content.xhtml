@@ -126,7 +126,7 @@
                         style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0" value="Új"
                         onclick="funcForWindowPopup()"/><br/>
                     <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}" required="true" tabindex="1"
-                                     converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
+                                     converter="#{vendorConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
                         <p:ajax event="change" update="@this"/>
                         <!-- <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>-->
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
@@ -139,7 +139,7 @@
                         style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0" value="Új"
                         onclick="funcForWindowPopup2()"/><br/>
                     <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="false" tabindex="2"
-                                     converter="#{siteConverter}" filter="true" filterMatchMode="contains">
+                                     converter="#{siteConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
                         <p:ajax event="change" update="@this"/>
                         <!--  <p:ajax event="select" listener="#{siteServiceImpl.allSites}" update="site"/>-->
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>

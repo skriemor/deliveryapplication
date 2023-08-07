@@ -239,7 +239,7 @@
 
                     <p:outputLabel for="mediator" value="Közvetítő:"/><br/>
                     <p:selectOneMenu id="mediator" value="#{vendorController.dto.mediator}" required="false" tabindex="19"
-                                     converter="#{mediatorConverter}" filter="true" filterMatchMode="contains">
+                                     converter="#{mediatorConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
                         <p:ajax event="select" listener="#{mediatorServiceImpl.allMediators}" update="mediator"/>
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{mediatorServiceImpl.allMediators}" var="mediator"

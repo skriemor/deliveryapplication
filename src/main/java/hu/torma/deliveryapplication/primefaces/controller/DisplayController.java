@@ -219,8 +219,8 @@ public class DisplayController implements Serializable {
             disp.setTwo(tmps.stream().filter(c -> c.getProduct().getId().equals("II.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
             disp.setThree(tmps.stream().filter(c -> c.getProduct().getId().equals("III.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
             disp.setFour(tmps.stream().filter(c -> c.getProduct().getId().equals("IV.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setFive(tmps.stream().filter(c -> c.getProduct().getId().equals("IPARI")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setSix(tmps.stream().filter(c -> c.getProduct().getId().equals("GYÖKÉR")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
+            disp.setFive(tmps.stream().filter(c -> c.getProduct().getId().equals("GYÖKÉR")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
+            disp.setSix(tmps.stream().filter(c -> c.getProduct().getId().equals("IPARI")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
             disp.setMediatorName(m.getId());
             mediatorDisplays.add(disp);
         });

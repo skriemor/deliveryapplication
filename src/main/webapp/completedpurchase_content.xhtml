@@ -506,20 +506,20 @@
                 </p:column>
             </p:dataTable>
             <p:panel id="buttonPanel9" header="Felvásárlási jegy műveletek">
-                <p:commandButton value="Mentés" id="saviorButton" style="width: 4em; color: black; background-color: aqua"
+                <p:commandButton value="Mentés" id="saviorButton" style=" color: black; background-color: aqua; width: 10em;height: 2.6em"
                                  actionListener="#{completedPurchaseController.uiSaveCompletedPurchase()}"
                                  update="purchaseForm:cPTabs:recordList purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
 
                 </p:commandButton>
 
-                <p:commandButton value="Új" id="newCPButton" style="width: 4em; color: black; background-color: aqua"
+                <p:commandButton value="Új" id="newCPButton" style=" color: black; background-color: aqua; width: 10em;height: 2.6em"
                                  actionListener="#{completedPurchaseController.newPurchase()}" immediate="true"
                                  update="purchaseForm:purchaseList">
                     <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
                             render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
 
                 </p:commandButton>
-                <p:commandButton value="Törlés" id="deleteCPButton" style="width: 4em; color: black; background-color: aqua"
+                <p:commandButton value="Törlés" id="deleteCPButton" style=" color: black; background-color: aqua; width: 10em;height: 2.6em"
                                  actionListener="#{completedPurchaseController.deletePurchase()}" immediate="true"
                                     update="purchaseForm:purchaseList purchaseForm:cPTabs:recordList">
                     <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
@@ -721,12 +721,13 @@
             </p:dataTable>
 
             <p:panel id="buttonPanel2">
-                <h:commandButton value="Kiválasztott törlése"
-                                 action="#{completedPurchaseController.deletePurchase}"
-                                 style="width: 10em;height: 2.6em">
-                    <f:ajax execute="purchaseForm:cPTabs:PurchasePanel purchaseForm:cPTabs:purchasePanelV"
-                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 totalDisplay purchaseForm:cPTabs:pur"/>
-                </h:commandButton>
+                <p:commandButton value="Kiválasztott törlése" id="deleteCPButton2" style=" color: black; background-color: aqua; width: 10em;height: 2.6em"
+                                 actionListener="#{completedPurchaseController.deletePurchase()}" immediate="true"
+                                 update="purchaseForm:purchaseList purchaseForm:cPTabs:recordList">
+                    <f:ajax execute="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV"
+                            render="purchaseList purchasePanel purchaseForm:cPTabs:purchasePanelV  purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
+
+                </p:commandButton>
                 <p/>
 
             </p:panel>
