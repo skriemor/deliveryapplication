@@ -30,6 +30,29 @@ import java.util.stream.IntStream;
 @Controller
 public class CompletedPurchaseController implements Serializable {
 
+    private Integer selectionCounter;
+
+    public Integer getSelectionCounter() {
+        if (selectionCounter == null) {
+            selectionCounter = 0;
+        }
+        return selectionCounter;
+    }
+
+    public void setSelectionCounter(Integer selectionCounter) {
+        this.selectionCounter = selectionCounter;
+    }
+
+    public void nextSelection() {
+        if (tempRecords != null) {
+            if (selectionCounter + 1 >= tempRecords.size()) {
+                selectionCounter = 0;
+            } else {
+                selectionCounter++;
+            }
+        }
+    }
+
     private void initPItem() {
         this.pItemForSelectOneMenu = new PurchaseDTO();
         pItemForSelectOneMenu.setId(0);
@@ -38,6 +61,7 @@ public class CompletedPurchaseController implements Serializable {
         vend.setVendorName("");
         pItemForSelectOneMenu.setVendor(vend);
     }
+
     public PurchaseDTO getpItemForSelectOneMenu() {
         return pItemForSelectOneMenu;
     }
@@ -395,6 +419,7 @@ public class CompletedPurchaseController implements Serializable {
         tempRecords.clear();
         emptySix();
         updateAvailablePurchases();
+        selectionCounter=0;
     }
 
     List<CompletionRecordDTO> beforeEditList;
@@ -418,7 +443,7 @@ public class CompletedPurchaseController implements Serializable {
         this.purchaseDTO = new PurchaseDTO();
         logger.info(_dto.getObject().getRecords().getClass().getName());
 
-
+        selectionCounter=0;
     }
 
     private void acquireQuants() {
@@ -444,6 +469,7 @@ public class CompletedPurchaseController implements Serializable {
         this.purchaseDTO = new PurchaseDTO();
         this.setLabel("Felv. jegy Hozzáadása");
         updateAvailablePurchases();
+        selectionCounter=0;
     }
 
     public void setLabel(String label) {
@@ -629,14 +655,20 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void removeRecord() {
-
-        logger.warning("REMOVING RECORD");
         if (tempRecords.size() < 1) return;
         tempRecords.remove(tempRecords.size() - 1);
         this.purchaseDTO = new PurchaseDTO();
         for (var q : quantities) q.setNum(0);
         updateAvailablePurchases();
-        //T3
+
+    }
+    public void removeRecord2() {
+        if (tempRecords != null && selectionCounter >= tempRecords.size()) return;
+        pItemForSelectOneMenu = purchaseService.getPurchaseById(tempRecords.get(selectionCounter.intValue()).getPurchaseId());
+        tempRecords.remove(selectionCounter.intValue());
+        for (var q : quantities) q.setNum(0);
+        updateAvailablePurchases();
+        selectionCounter=0;
     }
 
     public void onItemSelectedListener(SelectEvent event) {
