@@ -65,6 +65,16 @@
             width: 100%;
             padding: 0.2em 0.1em;
         }
+        body .ui-button.ui-button-text-icon-left .ui-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin-top: -0.5rem;
+            left: .5rem;
+        }
+        body .ui-button.ui-button-text-icon-left .ui-button-text {
+            padding: 0rem 1rem .5rem 2rem;
+        }
         body .ui-fluid .ui-selectonemenu-label {
             width: calc(100% - 2.357rem);
             padding: .2rem 0.2rem;
@@ -391,7 +401,7 @@
     <p:panel id="buttonPanel">
         <h:commandButton value="#{purchaseController.label}" tabindex="12"
                          actionListener="#{purchaseController.uiSavePurchase}"
-                         style="width: 10em;height: 2.6em" id="newSaveButton">
+                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" id="newSaveButton">
 
             <f:ajax execute="purchasePanel fixProductPanel"
                     render="productList purchaseList fixProductPanel purchasePanel"/>
@@ -400,14 +410,14 @@
 
         <h:commandButton value="Új" id="newButton"
                          actionListener="#{purchaseController.newPurchase}"
-                         style="width: 10em;height: 2.6em">
+                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
             <f:ajax render="productList purchaseList fixProductPanel purchasePanel"/>
             <p:ajax update="newSaveButton"/>
 
         </h:commandButton>
         <h:commandButton value="Töröl" id="deleteButton"
                          actionListener="#{purchaseController.deletePurchase}"
-                         style="width: 10em;height: 2.6em">
+                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
             <f:ajax render="productList purchaseList fixProductPanel purchasePanel"/>
         </h:commandButton>
         <p/>
@@ -415,17 +425,20 @@
             <p:autoUpdate/>
         </p:messages>
         <p/>
-        <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton" style="padding: 0; height: 2.5em"
-                         onclick="PrimeFaces.monitorDownload(start, stop);"
-                         icon="pi pi-arrow-down" styleClass="mr-2"
-                         actionListener="#{purchaseController.pdf()}">
-            <p:fileDownload value="#{purchaseController.file}"/>
-        </p:commandButton>
-        <p:commandButton value="Maradék összegek frissítése" id="refreshRemains" style="padding: 0; height: 2.5em">
-            <p:ajax  listener="#{purchaseController.forceUpdateRemainingPrices()}" update="purchaseList" />
-        </p:commandButton>
+        <div style="float: left;display: inline-flex;">
+            <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton" style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0;"
+                             onclick="PrimeFaces.monitorDownload(start, stop);"
+                             icon="pi pi-arrow-down" styleClass="mr-2"
+                             actionListener="#{purchaseController.pdf()}">
+                <p:fileDownload value="#{purchaseController.file}"/>
+            </p:commandButton>
+            <p:commandButton value="Maradék összegek frissítése" id="refreshRemains" style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0;">
+                <p:ajax  listener="#{purchaseController.forceUpdateRemainingPrices()}" update="purchaseList" />
+            </p:commandButton>
+        </div>
+
     </p:panel>
-    <hr/>
+
     <p:divider style="height: 3em" >
         <p:commandButton value="Tábla Frissítése" id="refreshTable" style="position: absolute;left: 50%; border: black 1px solid ">
             <p:ajax  listener="#{purchaseController.refreshReceipts()}" update="purchaseList" />

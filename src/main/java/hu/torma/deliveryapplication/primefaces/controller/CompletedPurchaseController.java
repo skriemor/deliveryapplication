@@ -4,9 +4,6 @@ import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
-import org.primefaces.PrimeFaces;
-import org.primefaces.component.datatable.DataTable;
-import org.primefaces.context.PrimeFacesContext;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -14,7 +11,6 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -168,8 +164,6 @@ public class CompletedPurchaseController implements Serializable {
     PurchaseService purchaseService;
 
 
-
-
     public List<CompletionRecordDTO> getTempRecords() {
         return tempRecords;
     }
@@ -190,18 +184,7 @@ public class CompletedPurchaseController implements Serializable {
             total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
             tempstring += r.getCompletedPurchase().getNewSerial() + " ";
         }
-/*
-        var tmpstring = "";
-        for (var cp: dtoList) {
-            for (var rec: cp.getRecords()) {
-                if (rec.getPurchaseId().equals(temp.getId())) {
-                    tmpstring += cp.getNewSerial() + " ";
-                }
-            }
-        }
 
-        temp.setReceiptId(tmpstring);
-*/
 
         temp.setReceiptId(tempstring);
         temp.setRemainingPrice(total);
@@ -371,7 +354,7 @@ public class CompletedPurchaseController implements Serializable {
         //setQuants();
         logger.info("DTO's ONE IS: " + dto.getOne());
 
-        if (this.dto.getRecords() == null || this.dto.getRecords().size()<1) {
+        if (this.dto.getRecords() == null || this.dto.getRecords().size() < 1) {
             this.dto.setTotalPrice(0);
         }
         if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0) {
@@ -420,8 +403,8 @@ public class CompletedPurchaseController implements Serializable {
         //emptySix();
         tempRecords = _dto.getObject().getRecords();
         beforeEditList = _dto.getObject().getRecords();
-        if (beforeEditList != null && beforeEditList.size() > 0){
-            var fdo =purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId());
+        if (beforeEditList != null && beforeEditList.size() > 0) {
+            var fdo = purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId());
             this.setPurchaseDTO(purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId()));
             acquireQuants();
             this.pItemForSelectOneMenu = fdo;
@@ -575,22 +558,6 @@ public class CompletedPurchaseController implements Serializable {
         quantities.get(3).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum());
         quantities.get(4).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum());
         quantities.get(5).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum());
-
-        /*
-        var records = new ArrayList<>(recordService.getAllCompletionRecords().stream().filter(c -> c.getPurchaseId() == (long) purchaseDTO.getId()).toList());
-        if (dto.getRecords() != null) for (var a : dto.getRecords()) {
-            if (a.getPurchaseId() == purchaseDTO.getId().longValue() && !records.contains(a)) records.add(a);
-        }
-        */
-/*
-        logger.warning("dto one is: " + dto.getRecords().stream().map(CompletionRecordDTO::getOne).mapToInt(Integer::intValue).sum() + "before save");
-        dto.setOne(dto.getRecords().stream().map(CompletionRecordDTO::getOne).mapToInt(Integer::intValue).sum());
-        dto.setTwo(dto.getRecords().stream().map(CompletionRecordDTO::getTwo).mapToInt(Integer::intValue).sum());
-        dto.setThree(dto.getRecords().stream().map(CompletionRecordDTO::getThree).mapToInt(Integer::intValue).sum());
-        dto.setFour(dto.getRecords().stream().map(CompletionRecordDTO::getFour).mapToInt(Integer::intValue).sum());
-        dto.setFive(dto.getRecords().stream().map(CompletionRecordDTO::getFive).mapToInt(Integer::intValue).sum());
-        dto.setSix(dto.getRecords().stream().map(CompletionRecordDTO::getSix).mapToInt(Integer::intValue).sum());
-*/
     }
 
 
@@ -617,7 +584,6 @@ public class CompletedPurchaseController implements Serializable {
 
     public void addRecord() {
         if (this.purchaseDTO.getId() == null) {
-            //logger.info("purchasedto id was null");
             return;
         }
         if (this.dto.getRecords() == null) {
@@ -668,7 +634,7 @@ public class CompletedPurchaseController implements Serializable {
         if (tempRecords.size() < 1) return;
         tempRecords.remove(tempRecords.size() - 1);
         this.purchaseDTO = new PurchaseDTO();
-        for (var q: quantities) q.setNum(0);
+        for (var q : quantities) q.setNum(0);
         updateAvailablePurchases();
         //T3
     }
