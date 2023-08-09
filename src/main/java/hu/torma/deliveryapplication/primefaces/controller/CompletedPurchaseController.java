@@ -215,7 +215,6 @@ public class CompletedPurchaseController implements Serializable {
         purchaseService.savePurchase(temp);
     }
 
-
     public void setSixTotal(Double sixTotal) {
         this.sixTotal = sixTotal;
     }

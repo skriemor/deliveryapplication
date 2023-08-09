@@ -8,6 +8,7 @@
         xmlns:p="http://primefaces.org/ui">
 
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
+    <h:outputStylesheet name="deliveries.css" library="css"/>
     <script type="application/javascript">
         var forme = $('#purchaseForm');
         forme.on('keydown', 'input', function (event) {
@@ -49,76 +50,7 @@
 
 
     </script>
-    <style type="text/css">
-        body .ui-inputfield {
-            color: #495057;
-            background: #fff;
-            padding: .2rem .2rem;
-            border: 1px solid #ced4da;
-            outline: 0 none;
-            font-size: 1rem;
-            border-radius: 4px;
-            transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, opacity .2s;
-            -webkit-appearance: none;
-            appearance: none;
-        }
 
-        .ui-fluid .ui-inputmask {
-            width: 100%;
-            padding: 0.2em 0.1em;
-        }
-
-
-        body .ui-fluid .ui-selectonemenu-label {
-            width: calc(100% - 2.357rem);
-            padding: .2rem 0.2rem;
-        }
-
-        body .ui-button.ui-button-text-only .ui-button-text {
-            padding: .1rem 0.2rem;
-        }
-
-        .ui-fluid .ui-inputtext {
-            width: 100%;
-            padding: 0.2em;
-        }
-
-        .ui-grid .ui-grid-row {
-
-            margin: 0;
-            padding: 0;
-        }
-
-        body .ui-panelgrid .ui-panelgrid-cell {
-            border: 1px solid #dee2e6;
-            background: #fff;
-            color: #495057;
-            padding: 0;
-        }
-
-        body .ui-panel .ui-panel-content {
-            border: 1px solid #dee2e6;
-            border-top-color: rgb(222, 226, 230);
-            border-top-style: solid;
-            border-top-width: 1px;
-            background: #fff;
-            color: #495057;
-            padding: 0;
-            margin: 0;
-        }
-
-        body .ui-datatable .ui-datatable-data > tr > td {
-            padding: 0.3rem 0.3rem;
-            border: 1px solid rgba(0, 0, 0, .08);
-            border-top-width: 1px;
-            border-right-width: 1px;
-            border-bottom-width: 1px;
-            border-left-width: 1px;
-            border-width: 0 0 1px 0;
-            padding-left: 1.2rem;
-        }
-
-    </style>
 
 
     <p:tabView id="cPTabs">
@@ -160,7 +92,7 @@
 
 
                             <p:outputLabel for="vendor" value="Eladó neve: "/><p:commandButton
-                                style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0"
+                                style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 2.8em; padding: 0"
                                 value="Új"
                                 onclick="funcForWindowPopup()"/><br/>
                             <p:selectOneMenu requiredMessage="Válasszon eladót!" id="vendor"
@@ -180,7 +112,7 @@
                             </p:selectOneMenu><br/>
 
                             <p:outputLabel for="site" value="Telephely: "/><p:commandButton
-                                style="margin-left: 5px; font-size: 0.8em; width: 4em; height: fit-content; padding: 0"
+                                style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 2.8em; padding: 0"
                                 value="Új"
                                 onclick="funcForWindowPopup2()"/><br/>
                             <p:selectOneMenu id="site" value="#{completedPurchaseController.dto.site}" required="true"
@@ -491,14 +423,14 @@
             <p:panel id="buttonPanel" header="Mérlegelési jegyek műveletei">
                 <h:commandButton value="Hozzáadás"
                                  action="#{completedPurchaseController.addRecord()}"
-                                 style="width: 10em;height: 2.6em">
+                                 style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
                             render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2  pur"/>
                 </h:commandButton>
                 <h:commandButton value="következő"
                                  action="#{completedPurchaseController.nextSelection()}"
-                                 style="width: 10em;height: 2.6em">
+                                 style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
                             render="purchaseForm:cPTabs:recordRemoverButton"/>
@@ -506,7 +438,7 @@
                 <h:commandButton value="#{completedPurchaseController.selectionCounter.intValue() + 1}. törlése"
                                  id="recordRemoverButton"
                                  action="#{completedPurchaseController.removeRecord2()}"
-                                 style="width: 10em;height: 2.6em">
+                                 style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
                             render="purchaseForm:cPTabs:recordRemoverButton purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 pur"/>

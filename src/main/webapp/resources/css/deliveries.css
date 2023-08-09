@@ -1,0 +1,87 @@
+body .ui-inputfield {
+    color: #495057;
+    background: #fff;
+    padding: .2rem .2rem;
+    border: 1px solid #ced4da;
+    outline: 0 none;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, opacity .2s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.ui-fluid .ui-inputmask {
+    width: 100%;
+    padding: 0.2em 0.1em;
+}
+
+
+body .ui-fluid .ui-selectonemenu-label {
+    width: calc(100% - 2.357rem);
+    padding: .2rem 0.2rem;
+}
+
+body .ui-button.ui-button-text-only .ui-button-text {
+    padding: .1rem 0.2rem;
+}
+
+body .ui-button {
+    background: lightgray;
+    color: #000;
+    border: black solid 1px;
+    margin: 0;
+    margin-left: 0px;
+    outline: 0 none;
+    border-radius: 4px;
+    transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+}
+.ui-fluid .ui-inputtext {
+    width: 100%;
+    padding: 0.2em;
+}
+
+.ui-grid .ui-grid-row {
+
+    margin: 0;
+    padding: 0;
+}
+
+body .ui-panelgrid .ui-panelgrid-cell {
+    border: 1px solid #dee2e6;
+    background: #fff;
+    color: #495057;
+    padding: 0;
+}
+
+body .ui-panel .ui-panel-content {
+    border: 1px solid #dee2e6;
+    border-top-color: rgb(222, 226, 230);
+    border-top-style: solid;
+    border-top-width: 1px;
+    background: #fff;
+    color: #495057;
+    padding: 0;
+    margin: 0;
+}
+
+body .ui-datatable .ui-datatable-data > tr > td {
+    padding: 0.3rem 0.3rem;
+    border: 1px solid rgba(0, 0, 0, .08);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
+    border-left-width: 1px;
+    border-width: 0 0 1px 0;
+    padding-left: 1.2rem;
+}
+body .ui-button.ui-button-text-icon-left .ui-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -0.5rem;
+    left: .5rem;
+}
+body .ui-button.ui-button-text-icon-left .ui-button-text {
+    padding: 0rem 1rem .5rem 2rem;
+}

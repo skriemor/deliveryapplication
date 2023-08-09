@@ -1,5 +1,18 @@
-<div class="card" xmlns:h="http://java.sun.com/jsf/html" xmlns:p="http://primefaces.org/ui" style="position: fixed; top: 10px; z-index: +99">
+<div class="card"
+     xmlns:h="http://java.sun.com/jsf/html"
+     xmlns:f="http://java.sun.com/jsf/core"
+     xmlns:p="http://primefaces.org/ui"
+     style="position: fixed; top: 10px; z-index: +99">
     <h:form>
+
+        <script>
+            function resetCP() {
+                resetCompletedPurchase();
+            }
+            function resetP() {
+                resetPurchase();
+            }
+        </script>
         <style>
             @media (max-width: 460px) {
                 .desktop {
@@ -26,7 +39,8 @@
         </style>
         <div class="desktop">
         <p:growl id="messages"/>
-
+            <p:remoteCommand name="resetCompletedPurchase" actionListener="#{completedPurchaseController.newPurchase()}" />
+            <p:remoteCommand name="resetPurchase" actionListener="#{purchaseController.newPurchase()}" />
         <p:menubar >
 
             <p:submenu label="Adatbázis" icon="pi pi-fw pi-users" >
@@ -42,11 +56,11 @@
             </p:submenu>
 
             <p:submenu label="Forgalom" icon="pi pi-fw pi-pencil">
-                <p:menuitem value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
+                <p:menuitem id="id2" onclick="resetP();" value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
                 <p:divider />
                 <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml" />
                 <p:divider />
-                <p:menuitem value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out" outcome="completedpurchase.xhtml" />
+                <p:menuitem  id="id"  value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out" outcome="completedpurchase.xhtml" onclick="resetCP();"/>
             </p:submenu>
 
             <p:submenu label="Készlet" icon="pi pi-fw pi-table">
