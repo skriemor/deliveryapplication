@@ -32,12 +32,14 @@ public class PurchaseDTO implements Serializable {
     private String receiptId;
 
 
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PurchaseDTO that = (PurchaseDTO) o;
-        return Objects.equals(id, that.id) && Objects.equals(productList, that.productList) && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(remainingPrice, that.remainingPrice) && Objects.equals(bookedDate, that.bookedDate) && Objects.equals(receiptId, that.receiptId);
+        return Objects.equals(id, that.id)  && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(remainingPrice, that.remainingPrice) && Objects.equals(bookedDate, that.bookedDate) && Objects.equals(receiptId, that.receiptId);
     }
 
     @Override
@@ -56,21 +58,5 @@ public class PurchaseDTO implements Serializable {
     public String getIntedTotalPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
 
-    }
-
-    @Override
-    public String toString() {
-        return "PurchaseDTO{" +
-                "id=" + id +
-                ", productList=" + productList +
-                ", vendor=" + vendor +
-                ", receiptDate=" + receiptDate +
-                ", site=" + site +
-                ", notes='" + notes + '\'' +
-                ", totalPrice=" + totalPrice +
-                ", remainingPrice=" + remainingPrice +
-                ", bookedDate=" + bookedDate +
-                ", receiptId='" + receiptId + '\'' +
-                '}';
     }
 }

@@ -492,7 +492,7 @@
                 </p:commandButton>
                 <p:commandButton value="Törlés" id="deleteCPButton"
                                  style="color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
-                    <f:ajax render="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel"
+                    <f:ajax render="purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel"
                             immediate="true" listener="#{completedPurchaseController.deletePurchase()}"/>
                 </p:commandButton>
 
@@ -699,7 +699,7 @@
             <p:panel id="buttonPanel2">
                 <p:commandButton value="Kiválasztott törlése" id="deleteCPButton2"
                                  style="color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
-                    <f:ajax render="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel"
+                    <f:ajax render="purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel"
                             immediate="true" listener="#{completedPurchaseController.deletePurchase()}"/>
                 </p:commandButton>
             </p:panel>
