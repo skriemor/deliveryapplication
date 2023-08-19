@@ -10,15 +10,10 @@ import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.RequestScope;
-import org.springframework.web.context.annotation.SessionScope;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
-import javax.el.MethodExpression;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.faces.view.ViewScoped;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -29,11 +24,65 @@ import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 
 @Controller
 public class PurchaseController implements Serializable {
+    private Double sixTotal;
+    private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
+
+
+    private PurchasedProductDTO one, two, three, four, five, six;
+
+    private StreamedContent file;
+
+    Logger logger = Logger.getLogger("BOOL");
+    private List<SortMeta> sortBy;
+
+    @Autowired
+    private PDFcreator pdFcreator;
+    private Boolean pdfdisabled;
+
+    @Autowired
+    StorageService sService;
+    @Autowired
+    ProductService pService;
+
+    @Autowired
+    UnitService uService;
+
+    @Autowired
+    PurchaseService service;
+
+    @Autowired
+    PurchasedProductService purchasedProductService;
+    private String label;
+
+    public void reConnectChildren() {
+        List<PurchaseDTO> purchaseList = service.getAllPurchases();
+        List<PurchasedProductDTO> purchasedProductList = purchasedProductService.getAllPurchasedProducts();
+
+        for (var c : purchaseList) {
+            logger.info("Attempting to get children of " + c.getId());
+            for (var d : c.getProductList()) {
+                int proposedAmount = (int) ((double) d.getQuantity2() / ((100.0 - d.getCorrPercent()) / 100.0));
+
+                int proposedAmount2 = (int) ((double) (d.getQuantity2() + 1) / ((100.0 - d.getCorrPercent()) / 100.0));
+                logger.info(proposedAmount +" "+proposedAmount2 );
+                if ((int)((double) proposedAmount * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2() ) {
+                    d.setQuantity(proposedAmount);
+                    logger.info("Chosen first amount");
+                } else if((int)((double) proposedAmount2 * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2() ) {
+                    d.setQuantity(proposedAmount2);
+                    logger.info("Chosen second amount");
+
+                }
+            }
+            service.savePurchase(c);
+
+        }
+
+    }
 
     public Double getNetAvgPrice() {
         return (double) Math.round(getGrossAvgPrice() / 1.12 * 100) / 100;
@@ -205,33 +254,6 @@ public class PurchaseController implements Serializable {
         this.sixTotal = sixTotal;
     }
 
-    private Double sixTotal;
-    private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
-
-
-    private PurchasedProductDTO one, two, three, four, five, six;
-
-    private StreamedContent file;
-
-    Logger logger = Logger.getLogger("BOOL");
-    private List<SortMeta> sortBy;
-
-    @Autowired
-    private PDFcreator pdFcreator;
-    private Boolean pdfdisabled;
-
-    @Autowired
-    StorageService sService;
-    @Autowired
-    ProductService pService;
-
-    @Autowired
-    UnitService uService;
-
-    @Autowired
-    PurchaseService service;
-
-    private String label;
 
     public String getLabel2() {
         return label2;
@@ -392,7 +414,7 @@ public class PurchaseController implements Serializable {
 
     public void pdf() {
         if (this.dto.getProductList() == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA","Mentse a jegyet dátummal együtt, mielőtt letölti!"));
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti!"));
             return;
         }
         file = pdFcreator.createDownload(this.dto);
@@ -424,6 +446,7 @@ public class PurchaseController implements Serializable {
 
     @Autowired
     CompletedPurchaseController completedPurchaseController;
+
     public void uiSavePurchase() {
         sixSave();
         if (this.dto.getProductList() == null) {
