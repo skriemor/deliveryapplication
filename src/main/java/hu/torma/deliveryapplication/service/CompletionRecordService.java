@@ -16,4 +16,8 @@ public interface CompletionRecordService {
 
     @Transactional
     List<CompletionRecordDTO> findAllByPurchaseId(Integer idd);
+
+    List<CompletionRecordDTO> findAllByPurchaseIdExclusive(Integer id, Integer id2);
+
+    void updateRemainingPriceById(Integer id);
 }

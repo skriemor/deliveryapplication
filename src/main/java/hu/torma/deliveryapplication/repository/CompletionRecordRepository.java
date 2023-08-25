@@ -2,10 +2,23 @@ package hu.torma.deliveryapplication.repository;
 
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 public interface CompletionRecordRepository extends JpaRepository<CompletionRecord, Integer> {
 
     List<CompletionRecord> findAllByPurchaseId(Integer l);
+
+    @Query(value = "SELECT * FROM records r WHERE r.purchase_id =?1 AND r.completed_id <> ?2",
+            nativeQuery = true)
+    List<CompletionRecord> findAllByPurchaseIdExclusive(Integer id1, Integer id2);
+
+
+    @Modifying
+    @Query(value = "UPDATE purchase p  SET p.remaining_price = (SELECT SUM(r.price) FROM records r WHERE r.purchase_id = ?1) WHERE p.id = ?1", nativeQuery = true)
+    Integer updateRemainingPriceById(Integer id);
+
+
 }

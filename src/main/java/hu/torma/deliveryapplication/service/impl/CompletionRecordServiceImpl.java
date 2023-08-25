@@ -21,7 +21,7 @@ public class CompletionRecordServiceImpl implements CompletionRecordService {
 
     @Override
     public List<CompletionRecordDTO> getAllCompletionRecords() {
-        return new ArrayList<CompletionRecordDTO>(
+        return new ArrayList<>(
                 repo.findAll().stream().map(
                         c -> mapper.map(c, CompletionRecordDTO.class)
                 ).toList()
@@ -50,4 +50,15 @@ public class CompletionRecordServiceImpl implements CompletionRecordService {
     public List<CompletionRecordDTO> findAllByPurchaseId(Integer idd) {
         return repo.findAllByPurchaseId(idd).stream().map((element) -> mapper.map(element, CompletionRecordDTO.class)).collect(Collectors.toList());
     }
+
+    @Override
+    public List<CompletionRecordDTO> findAllByPurchaseIdExclusive(Integer id, Integer id2) {
+        return repo.findAllByPurchaseIdExclusive(id,id2).stream().map((element) -> mapper.map(element, CompletionRecordDTO.class)).collect(Collectors.toList());
+    }
+
+    @Override
+    public void updateRemainingPriceById(Integer id) {
+        repo.updateRemainingPriceById(id);
+    }
+
 }
