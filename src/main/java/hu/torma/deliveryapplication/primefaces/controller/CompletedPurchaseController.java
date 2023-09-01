@@ -483,6 +483,7 @@ public class CompletedPurchaseController implements Serializable {
         emptySix();
         newCP();
         this.purchaseDTO = new PurchaseDTO();
+        this.dto = new CompletedPurchaseDTO();
         this.setLabel("Felv. jegy Hozzáadása");
         updateAvailablePurchases();
         selectionCounter = 0;

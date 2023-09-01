@@ -405,7 +405,7 @@
         <p:ajax event="rowSelect" listener="#{purchaseController.editPurchase}"
                 update=":purchaseForm:newSaveButton purchaseForm:purchasePanel purchaseForm:productList purchaseForm:fixProductPanel"/>
 
-        <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="contains"
+        <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="exact"
         >
             <h:outputText value="#{purchase.id}" id="id"/>
         </p:column>

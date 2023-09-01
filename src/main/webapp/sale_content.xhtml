@@ -255,7 +255,7 @@
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{saleController.dto}" rowKey="#{sale.id}">
         <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel      saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
-        <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="contains"  >
+        <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="exact"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
         <p:column headerText="Számla sorszáma" sortBy="#{sale.receiptId}" filterBy="#{sale.receiptId}" filterMatchMode="contains"  >
