@@ -32,6 +32,22 @@ public class CompletedPurchaseDTO implements Serializable {
     Date paymentDate;
     private List<CompletionRecordDTO> records;
 
+    @Override
+    public String toString() {
+        return "CompletedPurchaseDTO{" +
+                "id=" + id +
+                ", vendor=" + vendor +
+                ", serial=" + serial +
+                ", newSerial='" + newSerial + '\'' +
+                ", receiptDate=" + receiptDate +
+                ", site=" + site +
+                ", notes='" + notes + '\'' +
+                ", totalPrice=" + totalPrice +
+                ", bookedDate=" + bookedDate +
+                ", paymentMethod='" + paymentMethod + '\'' +
+                ", paymentDate=" + paymentDate +
+                '}';
+    }
 
     @Override
     public boolean equals(Object o) {

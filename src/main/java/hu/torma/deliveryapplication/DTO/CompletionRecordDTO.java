@@ -39,5 +39,19 @@ public class CompletionRecordDTO implements Serializable {
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 
-
+    @Override
+    public String toString() {
+        return "CompletionRecordDTO{" +
+                "id=" + id +
+                ", one=" + one +
+                ", two=" + two +
+                ", three=" + three +
+                ", four=" + four +
+                ", five=" + five +
+                ", six=" + six +
+                ", purchaseId=" + purchaseId +
+                ", completedPurchase=" + completedPurchase +
+                ", price=" + price +
+                '}';
+    }
 }

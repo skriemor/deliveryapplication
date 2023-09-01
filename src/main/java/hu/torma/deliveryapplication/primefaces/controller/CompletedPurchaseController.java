@@ -76,8 +76,6 @@ public class CompletedPurchaseController implements Serializable {
 
     List<CompletionRecordDTO> validRecords;
 
-    Boolean shouldLook;
-
     public Double getNetAvgPrice() {
         return (double) Math.round(getGrossAvgPrice() / 1.12 * 100) / 100;
     }
@@ -104,7 +102,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public Integer getDtoWeight() {
-        return IntStream.range(0, 6).map(a -> getTotalAmountOf(a)).sum();
+        return IntStream.range(0, 6).map(this::getTotalAmountOf).sum();
     }
 
     public Integer getDtoTotalV() {
@@ -138,8 +136,7 @@ public class CompletedPurchaseController implements Serializable {
     public Integer getPriceOf(int i) {
         if (quantities.get(i).getNum() == 0 || this.purchaseDTO.getProductList() == null) return 0;
         var g = this.purchaseDTO.getProductList().get(i);
-        Integer sum = (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
-        return sum;
+        return (Integer) (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
     }
 
     public String getFormattedNumber(double num) {
@@ -166,6 +163,10 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public Integer getSixTotal() {
+        if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
+
+            return 0;
+        }
         int temp = 0;
         int sum;
         try {
@@ -178,6 +179,7 @@ public class CompletedPurchaseController implements Serializable {
             }
 
         } catch (Exception e) {
+            throw new RuntimeException(e);
         }
         //this.dto.setTotalPrice(temp.doubleValue());
         return temp;
@@ -375,8 +377,8 @@ public class CompletedPurchaseController implements Serializable {
                 this.dto.setSite(siteService.getAllSites().get(0));
         }
         dto.setRecords(tempRecords);
-        getSixTotal();
-        logger.warning("uiSaveCalled");
+
+        logger.warning("uiSaveCalled records size before save: " + dto.getRecords().size());
         Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
         //setQuants();
@@ -395,13 +397,14 @@ public class CompletedPurchaseController implements Serializable {
         getAllPurchases();
         updateRemainingPrices();
 
-        newCP();
+
         tempRecords.clear();
 
-        this.setPurchaseDTO(new PurchaseDTO());
-        this.setProductDTO(new PurchasedProductDTO());
+        this.purchaseDTO = new PurchaseDTO();
+        this.productDTO = new PurchasedProductDTO();
         this.pdfdisabled = true;
         emptySix();
+        newCP();
         updateAvailablePurchases();
     }
 
@@ -429,23 +432,32 @@ public class CompletedPurchaseController implements Serializable {
     List<CompletionRecordDTO> beforeEditList;
 
     public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
-        //emptySix();
         tempRecords = _dto.getObject().getRecords();
         beforeEditList = new ArrayList<>(_dto.getObject().getRecords().stream().toList());
+
         if (beforeEditList != null && beforeEditList.size() > 0) {
             var fdo = purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId());
-            this.setPurchaseDTO(purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId()));
+            this.setPurchaseDTO(fdo);
+
+                validRecords = new ArrayList<>(recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), fdo.getId()));
+                //validRecords = new ArrayList<>(recordService.findAllByPurchaseId(purchaseDTO.getId()));
+
             acquireQuants();
             this.pItemForSelectOneMenu = fdo;
+            logger.info("FDO id was " + fdo.getId());
+        } else {
+            validRecords = new ArrayList<>();
+            purchaseDTO = null;
+            logger.warning("object.records was null");
         }
 
+
+
         this.setLabel("Felv.jegy Módosítása");
-        this.pdfdisabled = false;
-        BeanUtils.copyProperties(_dto.getObject(), this.getDto());
+
+        BeanUtils.copyProperties(_dto.getObject(), this.dto);
 
         updateAvailablePurchases();
-        this.purchaseDTO = new PurchaseDTO();
-        logger.info(_dto.getObject().getRecords().getClass().getName());
 
         selectionCounter = 0;
     }
@@ -483,7 +495,7 @@ public class CompletedPurchaseController implements Serializable {
     public CompletedPurchaseDTO getDto() {
 
         if (this.dto == null) {
-            newCP();
+            this.dto = new CompletedPurchaseDTO();
         }
         return this.dto;
     }
@@ -496,36 +508,20 @@ public class CompletedPurchaseController implements Serializable {
         return sortBy;
     }
 
-    List<CompletedPurchaseDTO> dtoList;
+    ArrayList<CompletedPurchaseDTO> dtoList;
 
     @PostConstruct
     public void getAllPurchases() {
-        this.dtoList = cService.getAllCompletedPurchases();
+        this.dtoList = new ArrayList<>(cService.getAllCompletedPurchases());
         copySerials(this.dtoList);
         this.setLabel("Hozzáadás");
         this.setLabel2("Termék hozzáadása");
     }
 
-    public List<CompletedPurchaseDTO> getDtoList() {
+    public ArrayList<CompletedPurchaseDTO> getDtoList() {
         return dtoList;
     }
 
-    public String getDateRange() {
-        return dateRange;
-    }
-
-    public void setDateRange(String dateRange) {
-        this.dateRange = dateRange;
-    }
-
-
-    public Boolean getPdfdisabled() {
-        return pdfdisabled;
-    }
-
-    public void setPdfdisabled(Boolean pdfdisabled) {
-        this.pdfdisabled = pdfdisabled;
-    }
 
 
     public ArrayList<ProductDTO> getListFiveProduct() {
@@ -543,13 +539,6 @@ public class CompletedPurchaseController implements Serializable {
 
     public void setPurchaseDTO(PurchaseDTO purchaseDTO) {
         this.purchaseDTO = purchaseDTO;
-        var idee = this.dto.getId()==null?-1:this.dto.getId();
-        if (purchaseDTO.getId() != null) {
-            validRecords = new ArrayList<>(recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), idee));
-            //validRecords = new ArrayList<>(recordService.findAllByPurchaseId(purchaseDTO.getId()));
-        }
-        logger.info(validRecords != null ? String.valueOf(validRecords.size()) : " ");
-
     }
 
     public ArrayList<Quant> getQuantities() {
@@ -563,7 +552,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public int getMaxQuantOf(int i) {
 
-        if (purchaseDTO.getProductList() == null) {
+        if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
             //logger.info("PurchaseDTO's productlist was null");
             return 0;
         }
@@ -646,6 +635,9 @@ public class CompletedPurchaseController implements Serializable {
         recordDTO.setFive(quantities.get(4).getNum());
         recordDTO.setSix(quantities.get(5).getNum());
         recordDTO.setPurchaseId(purchaseDTO.getId());
+
+        //TEST THIS
+        recordDTO.setCompletedPurchase(this.dto);
 
         recordDTO.setPrice(getSixTotal());
         tempRecords = new ArrayList<>(tempRecords.stream().filter(a-> a.getPurchaseId().intValue() != recordDTO.getPurchaseId().intValue()).toList());
@@ -747,11 +739,8 @@ public class CompletedPurchaseController implements Serializable {
         return availablePurchases;
     }
 
-    public void logRecordList() {
-        if (dto == null || dto.getRecords() == null) {
-            logger.warning("RECORDLIST OR RECVORD NULL ");
-            return;
-        }
-        logger.warning("RECORDLIST SIZE: " + dto.getRecords().size());
+    public void acquireRecords() {
+        int idee = this.dto==null||this.dto.getId()==null?-1:this.dto.getId();
+        validRecords = new ArrayList<>(recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(),idee));
     }
 }
