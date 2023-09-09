@@ -8,6 +8,7 @@
         xmlns:p="http://primefaces.org/ui">
 
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
+
     <h:outputStylesheet name="deliveries.css" library="css"/>
     <script type="application/javascript">
         var forme = $('#purchaseForm');
@@ -48,10 +49,13 @@
 
         }
 
+        function reCalculate() {
+            reCalc();
+        }
 
     </script>
 
-
+    <p:remoteCommand actionListener="#{completedPurchaseController.reCalculateOfficialPrices()}" name="reCalc" immediate="true" />
 
     <p:tabView id="cPTabs">
 

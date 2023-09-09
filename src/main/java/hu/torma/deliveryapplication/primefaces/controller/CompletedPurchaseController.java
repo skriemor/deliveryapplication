@@ -76,6 +76,18 @@ public class CompletedPurchaseController implements Serializable {
 
     List<CompletionRecordDTO> validRecords;
 
+    public void reCalculateOfficialPrices() {
+        getAllPurchases();
+        for (var a: dtoList) {
+            logger.info("Recalculating " + a.getId());
+            tempRecords = a.getRecords();
+            beforeEditList = a.getRecords();
+            a.setTotalPrice(getGrossTotalV().intValue());
+            cService.saveCompletedPurchase(a);
+            logger.info("Saved");
+        }
+    }
+
     public Double getNetAvgPrice() {
         return (double) Math.round(getGrossAvgPrice() / 1.12 * 100) / 100;
     }
@@ -586,22 +598,15 @@ public class CompletedPurchaseController implements Serializable {
 
 
     public Integer getTotalAmountOf(int i) {
-        switch (i) {
-            case 0:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
-            case 1:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
-            case 2:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
-            case 3:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
-            case 4:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
-            case 5:
-                return tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
-
-        }
-        return 0;
+        return switch (i) {
+            case 0 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+            default -> 0;
+        };
     }
 
     List tempNamesList = new ArrayList(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
