@@ -20,4 +20,6 @@ public interface CompletionRecordService {
     List<CompletionRecordDTO> findAllByPurchaseIdExclusive(Integer id, Integer id2);
 
     void updateRemainingPriceById(Integer id);
+
+    public boolean existsByPurchaseId(Integer id);
 }

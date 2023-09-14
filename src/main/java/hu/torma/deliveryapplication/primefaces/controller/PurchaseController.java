@@ -31,7 +31,6 @@ public class PurchaseController implements Serializable {
     private Double sixTotal;
     private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
 
-
     private PurchasedProductDTO one, two, three, four, five, six;
 
     private StreamedContent file;
@@ -58,6 +57,9 @@ public class PurchaseController implements Serializable {
     PurchasedProductService purchasedProductService;
     private String label;
 
+    private Boolean isSafeToDelete;
+
+
     public void reConnectChildren() {
         List<PurchaseDTO> purchaseList = service.getAllPurchases();
         List<PurchasedProductDTO> purchasedProductList = purchasedProductService.getAllPurchasedProducts();
@@ -68,11 +70,11 @@ public class PurchaseController implements Serializable {
                 int proposedAmount = (int) ((double) d.getQuantity2() / ((100.0 - d.getCorrPercent()) / 100.0));
 
                 int proposedAmount2 = (int) ((double) (d.getQuantity2() + 1) / ((100.0 - d.getCorrPercent()) / 100.0));
-                logger.info(proposedAmount +" "+proposedAmount2 );
-                if ((int)((double) proposedAmount * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2() ) {
+                logger.info(proposedAmount + " " + proposedAmount2);
+                if ((int) ((double) proposedAmount * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2()) {
                     d.setQuantity(proposedAmount);
                     logger.info("Chosen first amount");
-                } else if((int)((double) proposedAmount2 * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2() ) {
+                } else if ((int) ((double) proposedAmount2 * ((100.0 - d.getCorrPercent()) / 100.0)) == d.getQuantity2()) {
                     d.setQuantity(proposedAmount2);
                     logger.info("Chosen second amount");
 
@@ -483,6 +485,7 @@ public class PurchaseController implements Serializable {
         }
     }
 
+
     public void deletePurchase() {
         service.deletePurchase(this.dto);
         this.getAllPurchases();
@@ -490,14 +493,26 @@ public class PurchaseController implements Serializable {
         this.pdfdisabled = true;
         emptySix();
         completedPurchaseController.updateAvailablePurchases();
+
     }
 
     public void editPurchase(SelectEvent<PurchaseDTO> _dto) {
-
         this.setLabel("Módosítás");
         this.pdfdisabled = false;
         BeanUtils.copyProperties(_dto.getObject(), this.getDto());
+        if (this.dto != null && this.dto.getId() != null) {
+            if (!recordService.existsByPurchaseId(this.dto.getId())) {
+                isSafeToDelete = true;
+            } else {
+                isSafeToDelete = false;
+            }
+        }
         editSix();
+        logger.info(isSafeToDelete ? "Safe" : "Unsafe");
+    }
+
+    public Boolean getIsSafeToDelete() {
+        return this.isSafeToDelete;
     }
 
     private void editSix() {
@@ -526,7 +541,9 @@ public class PurchaseController implements Serializable {
         BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
     }
 
+
     public void newPurchase() {
+
         emptySix();
         this.dto = new PurchaseDTO();
         this.setLabel("Hozzáadás");

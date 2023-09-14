@@ -21,4 +21,7 @@ public interface CompletionRecordRepository extends JpaRepository<CompletionReco
     Integer updateRemainingPriceById(Integer id);
 
 
+
+
+    boolean existsByPurchaseId(Integer id);
 }

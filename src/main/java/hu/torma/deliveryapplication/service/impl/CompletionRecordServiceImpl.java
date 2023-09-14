@@ -56,6 +56,12 @@ public class CompletionRecordServiceImpl implements CompletionRecordService {
         return repo.findAllByPurchaseIdExclusive(id,id2).stream().map((element) -> mapper.map(element, CompletionRecordDTO.class)).collect(Collectors.toList());
     }
 
+
+    @Override
+    public boolean existsByPurchaseId(Integer id) {
+        return repo.existsByPurchaseId(id);
+    }
+
     @Override
     public void updateRemainingPriceById(Integer id) {
         repo.updateRemainingPriceById(id);
