@@ -283,6 +283,7 @@ public class PurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
+        newPurchase();
         checkFive();
         setUpFive();
         pdfdisabled = true;
@@ -543,7 +544,6 @@ public class PurchaseController implements Serializable {
 
 
     public void newPurchase() {
-
         emptySix();
         this.dto = new PurchaseDTO();
         this.setLabel("Hozzáadás");

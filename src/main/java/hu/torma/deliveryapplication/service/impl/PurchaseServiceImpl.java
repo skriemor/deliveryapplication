@@ -60,7 +60,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDTO getPurchaseById(Integer id) {
-        var g = mapper.map(repo.findById(id).get(),PurchaseDTO.class);
+        var g = mapper.map(repo.findById(id).orElseGet(()->{Purchase p = new Purchase(); p.setRemainingPrice(0.0);p.setTotalPrice(0.0);p.setProductList(null);p.setId(-1);return p;}),PurchaseDTO.class);
         //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getCompletedPurchaseDTOS().size());
         return g;
     }

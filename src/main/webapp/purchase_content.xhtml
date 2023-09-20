@@ -331,7 +331,7 @@
     </p:panel>
     <hr></hr>
     <p:panel id="buttonPanel">
-        <p:commandButton value="#{purchaseController.label}" tabindex="12" immediate="true" resetValues="true" update="purchasePanel fixProductPanel productList purchaseList"
+        <p:commandButton value="#{purchaseController.label}" tabindex="12" resetValues="true" update="purchasePanel fixProductPanel productList purchaseList"
                          actionListener="#{purchaseController.uiSavePurchase}"
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" id="newSaveButton">
 
@@ -348,13 +348,13 @@
 
         <p:commandButton value="Töröl" id="deleteButton"
                          actionListener="#{purchaseController.deletePurchase}"
-                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" immediate="true" update="purchaseForm:productList purchaseForm:purchaseList purchaseForm:fixProductPanel purchaseForm:purchasePanel" resetValues="true">
+                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" immediate="true" update="purchaseForm:productList purchaseForm:purchaseList purchaseForm:fixProductPanel purchaseForm:purchasePanel purchaseForm:conf" resetValues="true">
 
-            <p:confirm header="Törlés jóváhagyása" message="#{purchaseController.isSafeToDelete ? 'Biztosan törli a mérlegjegyet?' : 'Ehhez a mérlegelési jegyhez tartozik felvásárlási jegy, biztosan törli?'}" icon="pi pi-info-circle"  />
+            <p:confirm header="Törlés jóváhagyása" message="#{purchaseController.isSafeToDelete ? 'Biztosan törli a mérlegjegyet?' : 'Ehhez a mérlegelési jegyhez tartozik felvásárlási jegy, kérem először távolítsa el a felvásárlási jegyről!'}" icon="pi pi-info-circle"  />
         </p:commandButton>
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" id="confirmer">
             <p:commandButton value="Mégsem" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
-            <p:commandButton value="Igen, törlöm" type="button" styleClass="ui-confirmdialog-yes" />
+            <p:commandButton id="conf" rendered="#{purchaseController.isSafeToDelete}" value="Igen, törlöm" type="button" styleClass="ui-confirmdialog-yes" />
         </p:confirmDialog>
         <p/>
         <p:messages id="messages" showDetail="true" closable="true">
@@ -407,7 +407,7 @@
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  selection="#{purchaseController.dto}" rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{purchaseController.editPurchase}"
-                update=":purchaseForm:newSaveButton purchaseForm:purchasePanel purchaseForm:productList purchaseForm:fixProductPanel purchaseForm:deleteButton"/>
+                update=":purchaseForm:newSaveButton purchaseForm:purchasePanel purchaseForm:productList purchaseForm:fixProductPanel purchaseForm:deleteButton purchaseForm:confirmer purchaseForm:conf" />
 
         <p:column headerText="Sorszám" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="exact"
         >
