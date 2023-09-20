@@ -210,6 +210,7 @@ public class CompletedPurchaseController implements Serializable {
         logger.info("updating remaining price of " + id);
         var temp = purchaseService.getPurchaseById(id);
         var tempList = temp.getProductList();
+        if (tempList == null) return;
         var total = temp.getTotalPrice();
         var records = recordService.findAllByPurchaseId(id);
         StringBuilder tempstring = new StringBuilder();
