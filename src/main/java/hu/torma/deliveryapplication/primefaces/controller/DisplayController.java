@@ -55,27 +55,32 @@ public class DisplayController implements Serializable {
     @Autowired
     SaleService saleService;
 
+    @PostConstruct
+    public void init() {
+        dtoListRefresh();
+    }
 
-    public void refreshPurchases(){
+    public void refreshPurchases() {
         purchaseDTOS = purchaseService.getAllPurchases();
     }
-    public void refreshSales(){
+
+    public void refreshSales() {
         saleDTOS = saleService.getAllSales();
     }
-    public void refreshCompletedpurchases(){
+
+    public void refreshCompletedpurchases() {
         CPDTOS = CPService.getAllCompletedPurchases();
     }
-    public void refreshMediators(){
-        mediatorDTOS = mediatorService.getAllMediators();    }
+
+    public void refreshMediators() {
+        mediatorDTOS = mediatorService.getAllMediators();
+    }
+
     public void dtoListRefresh() {
         refreshPurchases();
         refreshMediators();
         refreshCompletedpurchases();
         refreshSales();
-    }
-    @PostConstruct
-    public void init() {
-        dtoListRefresh();
     }
 
 
@@ -88,39 +93,37 @@ public class DisplayController implements Serializable {
 
     private void doFilterDate() {
         if (filterDateFrom != null && filterDateTo != null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom))) && p.getReceiptDate().before(filterDateTo)).toList();
+            purchaseDTOS = purchaseService.getPsByBothDates(filterDateFrom, filterDateTo);
         }
         if (filterDateFrom != null && filterDateTo == null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p ->( p.getReceiptDate() != null )&& (p.getReceiptDate().after(filterDateFrom) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom)))).toList();
+            purchaseDTOS = purchaseService.getPsByStartingDate(filterDateFrom);
         }
         if (filterDateFrom == null && filterDateTo != null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo)).toList();
+            purchaseDTOS = purchaseService.getPsByEndingDate(filterDateTo);
         }
     }
 
     private void doFilterDate4() {
         if (filterDateFrom4 != null && filterDateTo4 != null) {
-            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom4) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom4))) && p.getReceiptDate().before(filterDateTo4)).toList();
+            CPDTOS = CPService.getCPsByBothDates(filterDateFrom4, filterDateTo4);
         }
         if (filterDateFrom4 != null && filterDateTo4 == null) {
-            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().after(filterDateFrom4) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom4))).toList();
+            CPDTOS = CPService.getCPsByStartingDate(filterDateFrom4);
         }
         if (filterDateFrom4 == null && filterDateTo4 != null) {
-            CPDTOS = CPDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo4)).toList();
+            CPDTOS = CPService.getCPsByEndingDate(filterDateTo4);
         }
     }
 
     private void doFilterDate2() {
         if (filterDateFrom2 != null && filterDateTo2 != null) {
-
-            saleDTOS = saleDTOS.stream().filter(p -> p.getReceiptDate() != null && (p.getReceiptDate().after(filterDateFrom2) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom2))) && p.getReceiptDate().before(filterDateTo2)).toList();
-
+            saleDTOS = saleService.getSalesByBothDates(filterDateFrom2, filterDateTo2);
         }
         if (filterDateFrom2 != null && filterDateTo2 == null) {
-            saleDTOS = saleDTOS.stream().filter(p -> (p.getReceiptDate() != null) && (p.getReceiptDate().after(filterDateFrom2) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom2)))).toList();
+            saleDTOS = saleService.getSalesByStartingDate(filterDateFrom2);
         }
         if (filterDateFrom2 == null && filterDateTo2 != null) {
-            saleDTOS = saleDTOS.stream().filter(p -> p.getReceiptDate() != null && p.getReceiptDate().before(filterDateTo2)).toList();
+            saleDTOS = saleService.getSalesByEndingDate(filterDateTo2);
         }
     }
 
@@ -190,17 +193,16 @@ public class DisplayController implements Serializable {
         return new ArrayList<>(mediatorDisplays);
     }
 
-    private ArrayList<PurchaseDTO> getPurchasedProductListDateFiltered(List<PurchaseDTO> lst) {
+    private ArrayList<PurchaseDTO> getPurchasedProductListDateFiltered() {
+        List<PurchaseDTO> lst = new ArrayList<>();
         if (filterDateFrom3 != null && filterDateTo3 != null) {
-
-            lst = lst.stream().filter(p -> (p.getReceiptDate().after(filterDateFrom3) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3))) && p.getReceiptDate().before(filterDateTo3)).toList();
-
-        }
-        if (filterDateFrom3 != null && filterDateTo3 == null) {
-            lst = lst.stream().filter(p -> p.getReceiptDate().after(filterDateFrom3) || p.getReceiptDate().after(subOneDayFromDate(filterDateFrom3))).toList();
-        }
-        if (filterDateFrom3 == null && filterDateTo3 != null) {
-            lst = lst.stream().filter(p -> p.getReceiptDate().before(filterDateTo3)).toList();
+            lst = purchaseService.getPsByBothDates(filterDateFrom3, filterDateTo3);
+        } else if (filterDateFrom3 != null && filterDateTo3 == null) {
+            lst = purchaseService.getPsByStartingDate(filterDateFrom3);
+        } else if (filterDateFrom3 == null && filterDateTo3 != null) {
+            lst = purchaseService.getPsByEndingDate(filterDateTo3);
+        } else {
+            lst = purchaseService.getAllPurchases();
         }
 
 
@@ -211,8 +213,8 @@ public class DisplayController implements Serializable {
         mediatorDisplays = new ArrayList<>();
         mediatorDTOS.forEach(m -> {
             var disp = new MediatorDisplay();
-            var tmpsv = purchaseService.getAllPurchases();
-            tmpsv = getPurchasedProductListDateFiltered(tmpsv);
+
+            var tmpsv = getPurchasedProductListDateFiltered();
             var tmps = tmpsv.stream().filter(p -> p.getVendor().getMediator() != null && p.getVendor().getMediator().getId().equals(m.getId())).flatMap(g -> g.getProductList().stream()).toList();
 
             disp.setOne(tmps.stream().filter(c -> c.getProduct().getId().equals("I.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());

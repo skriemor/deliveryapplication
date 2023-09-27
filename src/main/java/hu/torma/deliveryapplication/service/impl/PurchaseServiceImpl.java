@@ -2,6 +2,7 @@ package hu.torma.deliveryapplication.service.impl;
 
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
+import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.repository.PurchaseRepository;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -61,7 +63,34 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public PurchaseDTO getPurchaseById(Integer id) {
         var g = mapper.map(repo.findById(id).orElseGet(()->{Purchase p = new Purchase(); p.setRemainingPrice(0.0);p.setTotalPrice(0.0);p.setProductList(null);p.setId(-1);return p;}),PurchaseDTO.class);
-        //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getCompletedPurchaseDTOS().size());
+        //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getPurchaseDTOS().size());
         return g;
+    }
+
+    @Override
+    public List<PurchaseDTO> getPsByStartingDate(Date startDate) {
+        return new ArrayList<PurchaseDTO>(
+                repo.findAllByReceiptDateAfter(startDate).stream().map(
+                        c -> mapper.map(c, PurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<PurchaseDTO> getPsByEndingDate(Date endDate) {
+        return new ArrayList<PurchaseDTO>(
+                repo.findAllByReceiptDateBefore(endDate).stream().map(
+                        c -> mapper.map(c, PurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<PurchaseDTO> getPsByBothDates(Date startDate, Date endDate) {
+        return new ArrayList<PurchaseDTO>(
+                repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
+                        c -> mapper.map(c, PurchaseDTO.class)
+                ).toList()
+        );
     }
 }

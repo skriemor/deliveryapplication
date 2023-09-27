@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -50,6 +51,33 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Transactional
     public void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
         repo.deleteById(CompletedPurchaseDTO.getId());
+    }
+
+    @Override
+    public List<CompletedPurchaseDTO> getCPsByStartingDate(Date startDate) {
+        return new ArrayList<CompletedPurchaseDTO>(
+                repo.findAllByReceiptDateAfter(startDate).stream().map(
+                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<CompletedPurchaseDTO> getCPsByEndingDate(Date endDate) {
+        return new ArrayList<CompletedPurchaseDTO>(
+                repo.findAllByReceiptDateBefore(endDate).stream().map(
+                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<CompletedPurchaseDTO> getCPsByBothDates(Date startDate, Date endDate) {
+        return new ArrayList<CompletedPurchaseDTO>(
+                repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
+                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                ).toList()
+        );
     }
 
 }

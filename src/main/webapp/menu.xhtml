@@ -9,6 +9,7 @@
             function resetCP() {
                 resetCompletedPurchase();
             }
+
             function resetP() {
                 resetPurchase();
             }
@@ -18,6 +19,7 @@
                 .desktop {
                     visibility: hidden;
                 }
+
                 .mobile {
                     visibility: visible;
                     position: absolute;
@@ -25,6 +27,7 @@
                     left: 0;
                 }
             }
+
             @media (min-width: 460px) {
                 .mobile {
                     visibility: hidden;
@@ -32,68 +35,81 @@
                     top: 0;
                     left: 0;
                 }
+
                 .desktop {
                     visibility: visible;
                 }
             }
         </style>
         <div class="desktop">
-        <p:growl id="messages"/>
-            <p:remoteCommand name="resetCompletedPurchase" actionListener="#{completedPurchaseController.newPurchase()}" />
-            <p:remoteCommand name="resetPurchase" actionListener="#{purchaseController.newPurchase()}" />
-        <p:menubar >
+            <p:growl id="messages"/>
+            <p:remoteCommand name="resetCompletedPurchase"
+                             actionListener="#{completedPurchaseController.newPurchase()}"/>
+            <p:remoteCommand name="resetPurchase" actionListener="#{purchaseController.newPurchase()}"/>
+            <p:menubar>
 
-            <p:submenu label="Adatbázis" icon="pi pi-fw pi-users" >
-                <p:menuitem value="Termelők" icon="pi pi-fw pi-user" outcome="vendors.xhtml" />
-                <p:divider />
-                <p:menuitem value="Vevők" icon="pi pi-fw pi-user" outcome="buyers.xhtml" />
-                <p:divider />
-                <p:menuitem value="Telephelyek" icon="pi pi-fw pi-home"  outcome="sites.xhtml"/>
-                <p:divider />
-                <p:menuitem value="Mennyiségi egység" icon="pi pi-fw pi-sliders-h"  outcome="units.xhtml"/>
-                <p:divider />
-                <p:menuitem value="Közvetítők" icon="pi pi-fw pi-forward"  outcome="mediators.xhtml"/>
-            </p:submenu>
+                <p:submenu label="Adatbázis" icon="pi pi-fw pi-users">
+                    <p:menuitem value="Termelők" icon="pi pi-fw pi-user" outcome="vendors.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem value="Vevők" icon="pi pi-fw pi-user" outcome="buyers.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem value="Telephelyek" icon="pi pi-fw pi-home" outcome="sites.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem value="Mennyiségi egység" icon="pi pi-fw pi-sliders-h" outcome="units.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem value="Közvetítők" icon="pi pi-fw pi-forward" outcome="mediators.xhtml"/>
+                </p:submenu>
 
-            <p:submenu label="Forgalom" icon="pi pi-fw pi-pencil">
-                <p:menuitem id="id2" onclick="resetP();" value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
-                <p:divider />
-                <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml" />
-                <p:divider />
-                <p:menuitem  id="id"  value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out" outcome="completedpurchase.xhtml" onclick="resetCP();"/>
-            </p:submenu>
+                <p:submenu label="Forgalom" icon="pi pi-fw pi-pencil">
+                    <p:menuitem id="id2" onclick="resetP();" value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in"
+                                outcome="purchase.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml"/>
+                    <p:divider/>
+                    <p:menuitem id="id" value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out"
+                                outcome="completedpurchase.xhtml" onclick="resetCP();"/>
+                </p:submenu>
 
-            <p:submenu label="Készlet" icon="pi pi-fw pi-table">
-                <p:menuitem value="Raktár" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
-            </p:submenu>
+                <p:submenu label="Készlet" icon="pi pi-fw pi-table">
+                    <p:submenu label="Raktár">
+                        <p:menuitem value="Készlet" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                        <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                    </p:submenu>
+                    <p:menuitem value="Listázás" icon="pi pi-fw pi-box" outcome="listings.xhtml"/>
+                </p:submenu>
 
-        </p:menubar>
+            </p:menubar>
         </div>
         <div class="mobile">
-            <p:menubar  >
+            <p:menubar>
                 <p:submenu label="Menü">
-                    <p:submenu label="Adatbázis" icon="pi pi-fw pi-users" >
-                        <p:menuitem value="Termelők" icon="pi pi-fw pi-user" outcome="vendors.xhtml" />
-                        <p:divider />
-                        <p:menuitem value="Vevők" icon="pi pi-fw pi-user" outcome="buyers.xhtml" />
-                        <p:divider />
-                        <p:menuitem value="Telephelyek" icon="pi pi-fw pi-home"  outcome="sites.xhtml"/>
-                        <p:divider />
-                        <p:menuitem value="Mennyiségi egység" icon="pi pi-fw pi-sliders-h"  outcome="units.xhtml"/>
-                        <p:divider />
-                        <p:menuitem value="Közvetítők" icon="pi pi-fw pi-forward"  outcome="mediators.xhtml"/>
+                    <p:submenu label="Adatbázis" icon="pi pi-fw pi-users">
+                        <p:menuitem value="Termelők" icon="pi pi-fw pi-user" outcome="vendors.xhtml"/>
+                        <p:divider/>
+                        <p:menuitem value="Vevők" icon="pi pi-fw pi-user" outcome="buyers.xhtml"/>
+                        <p:divider/>
+                        <p:menuitem value="Telephelyek" icon="pi pi-fw pi-home" outcome="sites.xhtml"/>
+                        <p:divider/>
+                        <p:menuitem value="Mennyiségi egység" icon="pi pi-fw pi-sliders-h" outcome="units.xhtml"/>
+                        <p:divider/>
+                        <p:menuitem value="Közvetítők" icon="pi pi-fw pi-forward" outcome="mediators.xhtml"/>
                     </p:submenu>
 
                     <p:submenu label="Forgalom" icon="pi pi-fw pi-pencil">
                         <p:menuitem value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
-                        <p:divider />
-                        <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml" />
-                        <p:divider />
-                        <p:menuitem value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out" outcome="completedpurchase.xhtml" />
+                        <p:divider/>
+                        <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml"/>
+                        <p:divider/>
+                        <p:menuitem value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out"
+                                    outcome="completedpurchase.xhtml"/>
                     </p:submenu>
 
                     <p:submenu label="Készlet" icon="pi pi-fw pi-table">
-                        <p:menuitem value="Raktár" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                        <p:submenu label="Raktár">
+                            <p:menuitem value="Készlet" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                            <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                        </p:submenu>
+                        <p:menuitem value="Listázás" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
                     </p:submenu>
                 </p:submenu>
 
