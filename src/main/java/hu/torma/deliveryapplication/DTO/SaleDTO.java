@@ -43,4 +43,23 @@ public class SaleDTO implements Serializable {
     public String getIntedPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(",","");
     }
+
+    public Integer getOne() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("I.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
+    public Integer getTwo() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("II.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
+    public Integer getThree() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("III.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
+    public Integer getFour() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("IV.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
+    public Integer getFive() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("GYÖKÉR")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
+    public Integer getSix() {
+        return this.productList.stream().filter(pp->pp.getProduct().getId().equals("IPARI")).mapToInt(PurchasedProductDTO::getQuantity).sum();
+    }
 }

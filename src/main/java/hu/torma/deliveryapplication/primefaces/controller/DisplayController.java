@@ -1,7 +1,9 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.*;
+import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
 import hu.torma.deliveryapplication.service.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -21,12 +24,18 @@ import java.util.*;
 @Setter
 @Getter
 public class DisplayController implements Serializable {
+    private CompletedPurchaseDTO CPSums;
 
     private boolean shouldFilterByPaper, paidOnly;
 
     private String mediator;
+
+    private String filterPaymentMethodCP;
     private String filterName, filterName2, filterName4;
 
+    private SaleSumPojo saleSumPojo;
+    private String filterCurrency2, filterPaper2;
+    private Boolean filterUnpaidOnly2, filterLetaiOnly2, filterGlobalGapOnly2;
 
     private Date filterDateFrom, filterDateFrom2, filterDateFrom3, filterDateFrom4;
 
@@ -57,7 +66,10 @@ public class DisplayController implements Serializable {
 
     @PostConstruct
     public void init() {
-        dtoListRefresh();
+        purchaseDTOS = new ArrayList<>();
+        CPDTOS = new ArrayList<>();
+        mediatorDTOS = new ArrayList<>();
+        saleDTOS = new ArrayList<>();
     }
 
     public void refreshPurchases() {
@@ -70,6 +82,7 @@ public class DisplayController implements Serializable {
 
     public void refreshCompletedpurchases() {
         CPDTOS = CPService.getAllCompletedPurchases();
+        CPRecords = CPDTOS.stream().flatMap(cp-> cp.getRecords().stream()).toList();
     }
 
     public void refreshMediators() {
@@ -134,12 +147,7 @@ public class DisplayController implements Serializable {
 
     }
 
-    private void doFilterName2() {
-        if (filterName2 != null) {
-            saleDTOS = saleDTOS.stream().filter(n -> n.getBuyer().getName().toLowerCase().contains(filterName2.toLowerCase())).toList();
-        }
 
-    }
 
     private void doFilterName4() {
         if (filterName4 != null) {
@@ -150,7 +158,7 @@ public class DisplayController implements Serializable {
 
     private void doFilterPaidOnly() {
         if (paidOnly) {
-            CPDTOS = CPDTOS.stream().filter(cp -> cp.getPaymentDate() != null).toList();
+            CPDTOS = CPDTOS.stream().filter(cp -> cp.getPaymentDate() == null).toList();
         }
     }
 
@@ -164,27 +172,27 @@ public class DisplayController implements Serializable {
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
         purchaseDTOS = new ArrayList<>(purchaseService.getAllPurchases());
-        doFilterName();
         doFilterDate();
+        doFilterName();
         return new ArrayList<>(purchaseDTOS);
     }
 
     public ArrayList<SaleDTO> refreshSaleDTOS() {
-        saleDTOS = saleService.getAllSales();
-        doFilterName2();
-        doFilterDate2();
+        saleDTOS = saleService.applyFilterChainAndReturnSales(filterName2,filterCurrency2, filterDateFrom2, filterDateTo2, filterUnpaidOnly2, filterPaper2, filterLetaiOnly2, filterGlobalGapOnly2);
+        this.saleSumPojo = new SaleSumPojo(saleDTOS);
         return new ArrayList<>(saleDTOS);
-
     }
+
+
+    List<CompletionRecordDTO> CPRecords;
+
+    String numSerial;
 
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
-        CPDTOS = CPService.getAllCompletedPurchases();
-        doFilterName4();
-        doFilterDate4();
-        doFilterPaidOnly();
+        CPDTOS = CPService.getFilteredListOfCPs(filterName4,filterDateFrom4, filterDateTo4, numSerial, paidOnly, filterPaymentMethodCP);
+        CPRecords = CPDTOS.stream().flatMap(cp-> cp.getRecords().stream()).toList();
         return new ArrayList<>(CPDTOS);
     }
-
     public ArrayList<MediatorDisplay> refreshMediatorDisplays() {
         var tmp = new ArrayList<MediatorDisplay>();
         mediatorDTOS = mediatorService.getAllMediators();
@@ -263,4 +271,42 @@ public class DisplayController implements Serializable {
     public String getFormattedNumber(int num) {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
+
+
+
+    public Integer sumOnes(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+    }
+
+    public Integer sumTwos(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+    }
+
+    public Integer sumThrees(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+    }
+
+    public Integer sumFours(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+    }
+
+    public Integer sumFives(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+    }
+
+    public Integer sumSixes(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+    }
+
+    public Integer sumPrices(){
+        if (CPRecords == null ) return 0;
+        return CPRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
+    }
+
 }

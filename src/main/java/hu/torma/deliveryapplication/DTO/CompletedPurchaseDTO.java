@@ -1,6 +1,8 @@
 package hu.torma.deliveryapplication.DTO;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
@@ -10,6 +12,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class CompletedPurchaseDTO implements Serializable {
     Integer id;
     VendorDTO vendor;
@@ -19,6 +23,31 @@ public class CompletedPurchaseDTO implements Serializable {
     int four;
     int five;
     int six;
+
+    public int getOne() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+    }
+
+    public int getTwo() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+    }
+
+    public int getThree() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+    }
+
+    public int getFour() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+    }
+
+    public int getFive() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+    }
+
+    public int getSix() {
+        return this.records.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+    }
+
     Integer serial;
     String newSerial;
     Date receiptDate;
@@ -31,6 +60,17 @@ public class CompletedPurchaseDTO implements Serializable {
 
     Date paymentDate;
     private List<CompletionRecordDTO> records;
+
+
+    public CompletedPurchaseDTO(int one, int two, int three, int four, int five, int six) {
+        this.newSerial = "Összesen";
+        this.one = one;
+        this.two = two;
+        this.three = three;
+        this.four = four;
+        this.five = five;
+        this.six = six;
+    }
 
     @Override
     public String toString() {

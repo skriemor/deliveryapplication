@@ -27,6 +27,9 @@ public class PurchasedProductDTO implements Serializable {
 
     private SaleDTO sale;
 
+    public Integer getQuantity2(){
+        return this.quantity2==null?0:this.quantity2;
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,11 +1,13 @@
 package hu.torma.deliveryapplication.repository;
 
+import hu.torma.deliveryapplication.DTO.MediatorDisplay;
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CompletionRecordRepository extends JpaRepository<CompletionRecord, Integer> {
 

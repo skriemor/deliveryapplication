@@ -85,4 +85,13 @@ public class SaleServiceImpl implements SaleService {
                 ).toList()
         );
     }
+
+    @Override
+    public List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly) {
+        return new ArrayList<SaleDTO>(
+                repo.applyFilterChainAndReturnSales(name,currency,startDate,endDate,unPaidOnly,paper,letaiOnly,globalGapOnly).stream().map(
+                        c -> mapper.map(c, SaleDTO.class)
+                ).toList()
+        );
+    }
 }

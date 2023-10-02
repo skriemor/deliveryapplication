@@ -1,6 +1,7 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.CompletionRecordDTO;
+import hu.torma.deliveryapplication.DTO.MediatorDisplay;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -22,4 +23,6 @@ public interface CompletionRecordService {
     void updateRemainingPriceById(Integer id);
 
     public boolean existsByPurchaseId(Integer id);
+
+
 }

@@ -1,6 +1,7 @@
 package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.CompletionRecordDTO;
+import hu.torma.deliveryapplication.DTO.MediatorDisplay;
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import hu.torma.deliveryapplication.repository.CompletionRecordRepository;
 import hu.torma.deliveryapplication.service.CompletionRecordService;
@@ -61,6 +62,7 @@ public class CompletionRecordServiceImpl implements CompletionRecordService {
     public boolean existsByPurchaseId(Integer id) {
         return repo.existsByPurchaseId(id);
     }
+
 
     @Override
     public void updateRemainingPriceById(Integer id) {

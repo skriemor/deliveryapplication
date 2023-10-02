@@ -21,4 +21,6 @@ public interface CompletedPurchaseService {
 
     List<CompletedPurchaseDTO> getCPsByBothDates(Date startDate, Date endDate);
 
+    List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial,boolean notPaidOnly, String paymentMethod);
+
 }
