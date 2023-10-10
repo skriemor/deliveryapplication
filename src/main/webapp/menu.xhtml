@@ -73,7 +73,7 @@
                 <p:submenu label="Készlet" icon="pi pi-fw pi-table">
                     <p:submenu label="Raktár">
                         <p:menuitem value="Készlet" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
-                        <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                        <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="traffic.xhtml"/>
                     </p:submenu>
                     <p:menuitem value="Listázás" icon="pi pi-fw pi-box" outcome="listings.xhtml"/>
                 </p:submenu>
@@ -96,20 +96,21 @@
                     </p:submenu>
 
                     <p:submenu label="Forgalom" icon="pi pi-fw pi-pencil">
-                        <p:menuitem value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in" outcome="purchase.xhtml"/>
+                        <p:menuitem id="id3" onclick="resetP();" value="Mérlegelési jegy" icon="pi pi-fw pi-sign-in"
+                                    outcome="purchase.xhtml"/>
                         <p:divider/>
                         <p:menuitem value="Eladások" icon="pi pi-fw pi-sign-out" outcome="sale.xhtml"/>
                         <p:divider/>
-                        <p:menuitem value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out"
-                                    outcome="completedpurchase.xhtml"/>
+                        <p:menuitem id="id1" value="Felvásárlási jegy" icon="pi pi-fw pi-sign-out"
+                                    outcome="completedpurchase.xhtml" onclick="resetCP();"/>
                     </p:submenu>
 
                     <p:submenu label="Készlet" icon="pi pi-fw pi-table">
                         <p:submenu label="Raktár">
                             <p:menuitem value="Készlet" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
-                            <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                            <p:menuitem value="Forgalom" icon="pi pi-fw pi-box" outcome="traffic.xhtml"/>
                         </p:submenu>
-                        <p:menuitem value="Listázás" icon="pi pi-fw pi-box" outcome="storage.xhtml"/>
+                        <p:menuitem value="Listázás" icon="pi pi-fw pi-box" outcome="listings.xhtml"/>
                     </p:submenu>
                 </p:submenu>
 

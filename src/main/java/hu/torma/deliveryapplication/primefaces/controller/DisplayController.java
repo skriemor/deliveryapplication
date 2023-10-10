@@ -3,7 +3,6 @@ package hu.torma.deliveryapplication.primefaces.controller;
 import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
 import hu.torma.deliveryapplication.service.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +11,6 @@ import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.lang.reflect.Array;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -24,6 +22,10 @@ import java.util.*;
 @Setter
 @Getter
 public class DisplayController implements Serializable {
+
+    List<CompletionRecordDTO> CPRecords;
+    String numSerial;
+
     private CompletedPurchaseDTO CPSums;
 
     private boolean shouldFilterByPaper, paidOnly;
@@ -36,6 +38,7 @@ public class DisplayController implements Serializable {
     private SaleSumPojo saleSumPojo;
     private String filterCurrency2, filterPaper2;
     private Boolean filterUnpaidOnly2, filterLetaiOnly2, filterGlobalGapOnly2;
+    private Boolean fullyPaidFilter;
 
     private Date filterDateFrom, filterDateFrom2, filterDateFrom3, filterDateFrom4;
 
@@ -82,85 +85,14 @@ public class DisplayController implements Serializable {
 
     public void refreshCompletedpurchases() {
         CPDTOS = CPService.getAllCompletedPurchases();
-        CPRecords = CPDTOS.stream().flatMap(cp-> cp.getRecords().stream()).toList();
+        CPRecords = CPDTOS.stream().flatMap(cp -> cp.getRecords().stream()).toList();
     }
 
     public void refreshMediators() {
         mediatorDTOS = mediatorService.getAllMediators();
     }
 
-    public void dtoListRefresh() {
-        refreshPurchases();
-        refreshMediators();
-        refreshCompletedpurchases();
-        refreshSales();
-    }
 
-
-    private Date subOneDayFromDate(Date date) {
-
-        LocalDate ld = date.toInstant().atZone(ZoneId.of("GMT+01")).toLocalDate();
-        ld = ld.minusDays(1);
-        return Date.from(ld.atStartOfDay().atZone(ZoneId.of("GMT+01")).toInstant());
-    }
-
-    private void doFilterDate() {
-        if (filterDateFrom != null && filterDateTo != null) {
-            purchaseDTOS = purchaseService.getPsByBothDates(filterDateFrom, filterDateTo);
-        }
-        if (filterDateFrom != null && filterDateTo == null) {
-            purchaseDTOS = purchaseService.getPsByStartingDate(filterDateFrom);
-        }
-        if (filterDateFrom == null && filterDateTo != null) {
-            purchaseDTOS = purchaseService.getPsByEndingDate(filterDateTo);
-        }
-    }
-
-    private void doFilterDate4() {
-        if (filterDateFrom4 != null && filterDateTo4 != null) {
-            CPDTOS = CPService.getCPsByBothDates(filterDateFrom4, filterDateTo4);
-        }
-        if (filterDateFrom4 != null && filterDateTo4 == null) {
-            CPDTOS = CPService.getCPsByStartingDate(filterDateFrom4);
-        }
-        if (filterDateFrom4 == null && filterDateTo4 != null) {
-            CPDTOS = CPService.getCPsByEndingDate(filterDateTo4);
-        }
-    }
-
-    private void doFilterDate2() {
-        if (filterDateFrom2 != null && filterDateTo2 != null) {
-            saleDTOS = saleService.getSalesByBothDates(filterDateFrom2, filterDateTo2);
-        }
-        if (filterDateFrom2 != null && filterDateTo2 == null) {
-            saleDTOS = saleService.getSalesByStartingDate(filterDateFrom2);
-        }
-        if (filterDateFrom2 == null && filterDateTo2 != null) {
-            saleDTOS = saleService.getSalesByEndingDate(filterDateTo2);
-        }
-    }
-
-    private void doFilterName() {
-        if (filterName != null) {
-            purchaseDTOS = purchaseDTOS.stream().filter(n -> n.getVendor().getVendorName().toLowerCase().contains(filterName.toLowerCase())).toList();
-        }
-
-    }
-
-
-
-    private void doFilterName4() {
-        if (filterName4 != null) {
-            CPDTOS = CPDTOS.stream().filter(n -> n.getVendor().getVendorName().toLowerCase().contains(filterName4.toLowerCase())).toList();
-        }
-
-    }
-
-    private void doFilterPaidOnly() {
-        if (paidOnly) {
-            CPDTOS = CPDTOS.stream().filter(cp -> cp.getPaymentDate() == null).toList();
-        }
-    }
 
     private void doFilterMediator() {
         if (mediator != null) {
@@ -171,28 +103,23 @@ public class DisplayController implements Serializable {
 
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
-        purchaseDTOS = new ArrayList<>(purchaseService.getAllPurchases());
-        doFilterDate();
-        doFilterName();
+        purchaseDTOS = purchaseService.applyFilterChainAndReturnPurchases(filterName, filterDateFrom, filterDateTo, fullyPaidFilter);
         return new ArrayList<>(purchaseDTOS);
     }
 
     public ArrayList<SaleDTO> refreshSaleDTOS() {
-        saleDTOS = saleService.applyFilterChainAndReturnSales(filterName2,filterCurrency2, filterDateFrom2, filterDateTo2, filterUnpaidOnly2, filterPaper2, filterLetaiOnly2, filterGlobalGapOnly2);
+        saleDTOS = saleService.applyFilterChainAndReturnSales(filterName2, filterCurrency2, filterDateFrom2, filterDateTo2, filterUnpaidOnly2, filterPaper2, filterLetaiOnly2, filterGlobalGapOnly2);
         this.saleSumPojo = new SaleSumPojo(saleDTOS);
         return new ArrayList<>(saleDTOS);
     }
 
 
-    List<CompletionRecordDTO> CPRecords;
-
-    String numSerial;
-
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
-        CPDTOS = CPService.getFilteredListOfCPs(filterName4,filterDateFrom4, filterDateTo4, numSerial, paidOnly, filterPaymentMethodCP);
-        CPRecords = CPDTOS.stream().flatMap(cp-> cp.getRecords().stream()).toList();
+        CPDTOS = CPService.getFilteredListOfCPs(filterName4, filterDateFrom4, filterDateTo4, numSerial, paidOnly, filterPaymentMethodCP);
+        CPRecords = CPDTOS.stream().flatMap(cp -> cp.getRecords().stream()).toList();
         return new ArrayList<>(CPDTOS);
     }
+
     public ArrayList<MediatorDisplay> refreshMediatorDisplays() {
         var tmp = new ArrayList<MediatorDisplay>();
         mediatorDTOS = mediatorService.getAllMediators();
@@ -273,39 +200,38 @@ public class DisplayController implements Serializable {
     }
 
 
-
-    public Integer sumOnes(){
-        if (CPRecords == null ) return 0;
+    public Integer sumOnes() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
     }
 
-    public Integer sumTwos(){
-        if (CPRecords == null ) return 0;
+    public Integer sumTwos() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
     }
 
-    public Integer sumThrees(){
-        if (CPRecords == null ) return 0;
+    public Integer sumThrees() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
     }
 
-    public Integer sumFours(){
-        if (CPRecords == null ) return 0;
+    public Integer sumFours() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
     }
 
-    public Integer sumFives(){
-        if (CPRecords == null ) return 0;
+    public Integer sumFives() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
     }
 
-    public Integer sumSixes(){
-        if (CPRecords == null ) return 0;
+    public Integer sumSixes() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
     }
 
-    public Integer sumPrices(){
-        if (CPRecords == null ) return 0;
+    public Integer sumPrices() {
+        if (CPRecords == null) return 0;
         return CPRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
     }
 

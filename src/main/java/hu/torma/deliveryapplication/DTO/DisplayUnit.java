@@ -6,8 +6,11 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
 public class DisplayUnit {
-    private int q1,q2;
-    String productName;
+    private int quantity;
+    private String productName;
+    public DisplayUnit(String productName, int quantity) {
+        this.productName = productName;
+        this.quantity = quantity;
+    }
 }

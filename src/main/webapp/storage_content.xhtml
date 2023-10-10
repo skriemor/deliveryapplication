@@ -10,22 +10,22 @@
 <h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
     <h:outputStylesheet name="deliveries.css" library="css"/>
 
-    <p:dataTable var="quantity" value="#{storageController.storageList}" id="quantityList" stickyHeader="T" tableStyle="width: auto"
+    <p:dataTable var="statement" value="#{storageController.statements}" id="quantityList" stickyHeader="T" tableStyle="width: auto"
                  lazy="false"
                  style="overflow-x: scroll; margin-bottom: 5em"
                  emptyMessage="Nincs találat" resizableColumns="true">
         <p:column headerText="Termék" width="5em" >
-            <h:outputText value="#{quantity.productName}" id="product"/>
+            <h:outputText value="#{statement.product}" id="product"/>
         </p:column>
         <p:column headerText="Valódi Mennyiség" width="11em">
-            <h:outputText value="#{quantity.q1}kg"/>
+            <h:outputText value="#{statement.quantit1}kg"/>
         </p:column>
-        <p:column headerText="Hivatalos" width="11em">
-            <h:outputText value="#{quantity.q2}kg"/>
+        <p:column headerText="Hivatalos mennyiség">
+            <h:outputText value="#{statement.quantity2}" />
         </p:column>
-
 
     </p:dataTable>
+
 
 </h:form>
 </html>

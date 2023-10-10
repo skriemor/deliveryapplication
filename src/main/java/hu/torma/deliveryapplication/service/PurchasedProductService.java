@@ -12,4 +12,5 @@ public interface PurchasedProductService {
     PurchasedProductDTO savePurchasedProduct(PurchasedProductDTO PurchasedProductDTO);
 
     void deletePurchasedProduct(PurchasedProductDTO PurchasedProductDTO);
+
 }

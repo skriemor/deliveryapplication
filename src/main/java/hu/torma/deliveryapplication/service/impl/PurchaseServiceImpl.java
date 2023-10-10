@@ -2,7 +2,6 @@ package hu.torma.deliveryapplication.service.impl;
 
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.repository.PurchaseRepository;
@@ -62,7 +61,14 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDTO getPurchaseById(Integer id) {
-        var g = mapper.map(repo.findById(id).orElseGet(()->{Purchase p = new Purchase(); p.setRemainingPrice(0.0);p.setTotalPrice(0.0);p.setProductList(null);p.setId(-1);return p;}),PurchaseDTO.class);
+        var g = mapper.map(repo.findById(id).orElseGet(() -> {
+            Purchase p = new Purchase();
+            p.setRemainingPrice(0.0);
+            p.setTotalPrice(0.0);
+            p.setProductList(null);
+            p.setId(-1);
+            return p;
+        }), PurchaseDTO.class);
         //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getPurchaseDTOS().size());
         return g;
     }
@@ -89,6 +95,15 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseDTO> getPsByBothDates(Date startDate, Date endDate) {
         return new ArrayList<PurchaseDTO>(
                 repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
+                        c -> mapper.map(c, PurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly) {
+        return new ArrayList<PurchaseDTO>(
+                repo.applyFilterChainAndReturnPurchases(name, startDate, endDate, unPaidOnly).stream().map(
                         c -> mapper.map(c, PurchaseDTO.class)
                 ).toList()
         );

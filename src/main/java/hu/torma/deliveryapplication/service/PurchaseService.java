@@ -3,6 +3,7 @@ package hu.torma.deliveryapplication.service;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
+import hu.torma.deliveryapplication.entity.Purchase;
 
 import java.util.Date;
 import java.util.List;
@@ -25,4 +26,6 @@ public interface PurchaseService {
     List<PurchaseDTO> getPsByEndingDate(Date endDate);
 
     List<PurchaseDTO> getPsByBothDates(Date startDate, Date endDate);
+
+    List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly);
 }

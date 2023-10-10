@@ -11,8 +11,18 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 public class SaleSumPojo   {
-    int one,two,three,four,five,six;
-    int priceTotal;
+
+    Integer one,two,three,four,five,six;
+    Integer priceTotal;
+
+    public SaleSumPojo(Integer one, Integer two, Integer three, Integer four, Integer five, Integer six) {
+        this.one = one;
+        this.two = two;
+        this.three = three;
+        this.four = four;
+        this.five = five;
+        this.six = six;
+    }
 
     public SaleSumPojo(List<SaleDTO> list) {
         this.one = list.stream().mapToInt(SaleDTO::getOne).sum();
