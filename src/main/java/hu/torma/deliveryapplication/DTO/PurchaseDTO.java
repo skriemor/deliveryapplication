@@ -2,14 +2,18 @@ package hu.torma.deliveryapplication.DTO;
 
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.entity.Site;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.*;
 
 @Data
+
+@NoArgsConstructor
 public class PurchaseDTO implements Serializable {
     private Integer id;
 
@@ -30,7 +34,6 @@ public class PurchaseDTO implements Serializable {
     private Date bookedDate;
 
     private String receiptId;
-
 
 
 

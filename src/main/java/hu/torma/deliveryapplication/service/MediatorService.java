@@ -1,7 +1,9 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.MediatorDTO;
+import hu.torma.deliveryapplication.primefaces.sumutils.MediatorData;
 
+import java.util.Date;
 import java.util.List;
 
 public interface MediatorService {
@@ -14,4 +16,6 @@ public interface MediatorService {
     void deleteMediator(MediatorDTO vendorDTO);
 
     MediatorDTO getMediatorById(String s);
+
+    List<MediatorData> getMediatorData(Date date1, Date date2);
 }

@@ -35,4 +35,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
         )
     """)
     List<Purchase> applyFilterChainAndReturnPurchases(String name,  Date startDate, Date endDate, Boolean unPaidOnly);
+
+
+
 }

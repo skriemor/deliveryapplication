@@ -310,6 +310,35 @@
                          lazy="false"
                           style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
+                <p:columnGroup type="header">
+                    <p:row >
+                        <p:column headerText="Sorszám"/>
+                        <p:column headerText="Eladó neve"/>
+                        <p:column headerText="I.OSZT"/>
+                        <p:column headerText="II.OSZT"/>
+                        <p:column headerText="III.OSZT"/>
+                        <p:column headerText="IV.OSZT"/>
+                        <p:column headerText="GYÖKÉR"/>
+                        <p:column headerText="IPARI"/>
+                        <p:column headerText="VÉTELÁR"/>
+                        <p:column headerText="Papírozatlan"/>
+                        <p:column headerText="Mérlegelés Dátuma"/>
+                    </p:row>
+                    <p:row>
+                        <p:column colspan="2" headerText="Összesen: " style="text-align: end"/>
+                        <p:column  headerText="#{displayController.purchaseSumObj.one}" />
+                        <p:column  headerText="#{displayController.purchaseSumObj.two}" />
+                        <p:column  headerText="#{displayController.purchaseSumObj.three}" />
+                        <p:column  headerText="#{displayController.purchaseSumObj.four}" />
+                        <p:column  headerText="#{displayController.purchaseSumObj.five}" />
+                        <p:column  headerText="#{displayController.purchaseSumObj.six}" />
+                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.purchaseSumObj.totalP)} HUF" />
+                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.purchaseSumObj.remP)} HUF" colspan="2" />
+
+                    </p:row>
+
+                </p:columnGroup>
+
                 <p:column headerText="Sorszám"  width="5em" >
                     <h:outputText value="#{purchase.id}" id="id"/>
                 </p:column>
@@ -355,12 +384,7 @@
 
             <p:panel id="filterPanelMediator" menuTitle="Közvetítők szerint">
                 <table>
-                    <tr>
-                        <td>
-                            <p:outputLabel for="mediator" value="Közvetítő:"/><br/>
-                            <p:inputText id="mediator" value="#{displayController.mediator}" />
-                        </td>
-                    </tr>
+
                     <tr>
                         <td>
                             <p:outputLabel for="dateFromFilter3" value="Dátum: "/>
@@ -371,39 +395,31 @@
                             <p:inputMask mask="9999.99.99" id="dateToFilter3" value="#{displayController.filterDateTo3}" >
                                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                             </p:inputMask>
-                            <p:outputLabel for="dateFromFilter" value="-ig"/>
+                            <p:outputLabel for="dateFromFilter3" value="-ig"/>
                         </td>
                     </tr>
                 </table>
                 <p:commandButton id="doFilterButton3" actionListener="#{displayController.refreshMediatorDisplays()}" value="SZŰRÉS" update="mediatorList"/>
             </p:panel>
-            <p:dataTable var="mediatorDisp" value="#{displayController.mediatorDisplays}" id="mediatorList" stickyHeader="T" tableStyle="width: auto"
+            <p:dataTable var="mediatorData" value="#{displayController.mediatorData}" id="mediatorList" stickyHeader="T" tableStyle="width: auto"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em"
                          emptyMessage="Nincs találat" resizableColumns="true">
-                <p:column headerText="Közvetítő neve" width="5em" >
-                    <h:outputText value="#{mediatorDisp.mediatorName}" id="mediatorName"/>
+                <p:column headerText="Közvetítő neve" width="5em" groupRow="true" >
+                    <h:outputText value="#{mediatorData.mediatorName}" id="mediatorName"/>
                 </p:column>
-                <p:column headerText="I.OSZTÁLYÚ" width="5em" >
-                    <h:outputText value="#{mediatorDisp.one}" />
+                <p:column headerText="Termék" width="5em" >
+                    <h:outputText value="#{mediatorData.productName}" />
                 </p:column>
-                <p:column headerText="II.OSZTÁLYÚ" width="5em" >
-                    <h:outputText value="#{mediatorDisp.two}" />
+                <p:column headerText="Mennyiség" width="5em" >
+                    <h:outputText value="#{displayController.getFormattedNumber( mediatorData.quantity)} kg" />
                 </p:column>
-                <p:column headerText="III.OSZTÁLYÚ" width="5em" >
-                    <h:outputText value="#{mediatorDisp.three}" />
+                <p:column headerText="Vételár" width="5em" >
+                    <h:outputText value="#{displayController.getFormattedNumber(mediatorData.totalPrice)} HUF" />
                 </p:column>
-                <p:column headerText="IV.OSZTÁLYÚ" width="5em" >
-                    <h:outputText value="#{mediatorDisp.four}" />
+                <p:column headerText="Összesen" width="5em" groupRow="true" >
+                    <h:outputText value="#{displayController.getFormattedNumber(displayController.getMediatorTotalPriceSumByMediator(mediatorData.mediatorName))} HUF" />
                 </p:column>
-                <p:column headerText="GYÖKÉR" width="5em" >
-                    <h:outputText value="#{mediatorDisp.five}" />
-                </p:column>
-                <p:column headerText="IPARI" width="5em" >
-                    <h:outputText value="#{mediatorDisp.six}" />
-                </p:column>
-
-
             </p:dataTable>
 
 

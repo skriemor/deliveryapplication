@@ -51,6 +51,7 @@ public class StorageController {
     public ArrayList<Statement> getStorageList(){
         storageList = service.getDisplayUnits();
         saleSumPojo = service.getFictionalStorageAsObject();
+        if (saleSumPojo == null || storageList == null || storageList.size() < 1) return new ArrayList<>();
         statements = new ArrayList<>();
         statements.addAll(Arrays.asList(
                 new Statement(storageList.get(0).getProductName(),storageList.get(0).getQuantity(),saleSumPojo.getOne()),

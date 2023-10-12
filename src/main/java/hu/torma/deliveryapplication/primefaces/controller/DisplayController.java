@@ -1,6 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.*;
+import hu.torma.deliveryapplication.primefaces.sumutils.MediatorData;
+import hu.torma.deliveryapplication.primefaces.sumutils.PurchaseSumObj;
 import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
 import hu.torma.deliveryapplication.service.*;
 import lombok.Getter;
@@ -13,15 +15,15 @@ import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.*;
+import java.util.logging.Logger;
 
 @SessionScope
 @Controller("displayController")
 @Setter
 @Getter
 public class DisplayController implements Serializable {
+    List<MediatorData> mediatorData;
 
     List<CompletionRecordDTO> CPRecords;
     String numSerial;
@@ -29,8 +31,6 @@ public class DisplayController implements Serializable {
     private CompletedPurchaseDTO CPSums;
 
     private boolean shouldFilterByPaper, paidOnly;
-
-    private String mediator;
 
     private String filterPaymentMethodCP;
     private String filterName, filterName2, filterName4;
@@ -75,35 +75,15 @@ public class DisplayController implements Serializable {
         saleDTOS = new ArrayList<>();
     }
 
-    public void refreshPurchases() {
-        purchaseDTOS = purchaseService.getAllPurchases();
-    }
-
-    public void refreshSales() {
-        saleDTOS = saleService.getAllSales();
-    }
-
-    public void refreshCompletedpurchases() {
-        CPDTOS = CPService.getAllCompletedPurchases();
-        CPRecords = CPDTOS.stream().flatMap(cp -> cp.getRecords().stream()).toList();
-    }
-
-    public void refreshMediators() {
-        mediatorDTOS = mediatorService.getAllMediators();
-    }
-
-
 
     private void doFilterMediator() {
-        if (mediator != null) {
-            mediatorDTOS = mediatorDTOS.stream().filter(c -> c.getId().toLowerCase().contains(mediator.toLowerCase())).toList();
-        }
-
+        mediatorDTOS = mediatorService.getAllMediators();
     }
 
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
         purchaseDTOS = purchaseService.applyFilterChainAndReturnPurchases(filterName, filterDateFrom, filterDateTo, fullyPaidFilter);
+        sumPurchases();
         return new ArrayList<>(purchaseDTOS);
     }
 
@@ -120,73 +100,24 @@ public class DisplayController implements Serializable {
         return new ArrayList<>(CPDTOS);
     }
 
-    public ArrayList<MediatorDisplay> refreshMediatorDisplays() {
+    public void refreshMediatorDisplays() {
         var tmp = new ArrayList<MediatorDisplay>();
         mediatorDTOS = mediatorService.getAllMediators();
         doFilterMediator();
         generateDisplays();
-        return new ArrayList<>(mediatorDisplays);
     }
 
-    private ArrayList<PurchaseDTO> getPurchasedProductListDateFiltered() {
-        List<PurchaseDTO> lst = new ArrayList<>();
-        if (filterDateFrom3 != null && filterDateTo3 != null) {
-            lst = purchaseService.getPsByBothDates(filterDateFrom3, filterDateTo3);
-        } else if (filterDateFrom3 != null && filterDateTo3 == null) {
-            lst = purchaseService.getPsByStartingDate(filterDateFrom3);
-        } else if (filterDateFrom3 == null && filterDateTo3 != null) {
-            lst = purchaseService.getPsByEndingDate(filterDateTo3);
-        } else {
-            lst = purchaseService.getAllPurchases();
-        }
 
-
-        return new ArrayList<>(lst);
-    }
+    Logger log = Logger.getLogger("MEDIATOR");
 
     public void generateDisplays() {
-        mediatorDisplays = new ArrayList<>();
-        mediatorDTOS.forEach(m -> {
-            var disp = new MediatorDisplay();
-
-            var tmpsv = getPurchasedProductListDateFiltered();
-            var tmps = tmpsv.stream().filter(p -> p.getVendor().getMediator() != null && p.getVendor().getMediator().getId().equals(m.getId())).flatMap(g -> g.getProductList().stream()).toList();
-
-            disp.setOne(tmps.stream().filter(c -> c.getProduct().getId().equals("I.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setTwo(tmps.stream().filter(c -> c.getProduct().getId().equals("II.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setThree(tmps.stream().filter(c -> c.getProduct().getId().equals("III.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setFour(tmps.stream().filter(c -> c.getProduct().getId().equals("IV.OSZTÁLYÚ")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setFive(tmps.stream().filter(c -> c.getProduct().getId().equals("GYÖKÉR")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setSix(tmps.stream().filter(c -> c.getProduct().getId().equals("IPARI")).mapToInt(PurchasedProductDTO::getQuantity2).sum());
-            disp.setMediatorName(m.getId());
-            mediatorDisplays.add(disp);
-        });
+        mediatorData = mediatorService.getMediatorData(filterDateFrom3,filterDateTo3);
     }
 
 
     @Autowired
     CompletionRecordService recordService;
 
-    public String getFormattedRemainingPrice(int id) {
-        return NumberFormat.getNumberInstance(Locale.US).format(getRemaningPrice(id)).replaceAll(",", " ");
-    }
-
-    public int getRemaningPrice(int id) {
-        var temp = purchaseService.getPurchaseById(id);
-        var tempList = temp.getProductList();
-        var total = temp.getTotalPrice();
-        var records = recordService.getAllCompletionRecords().stream().filter(r -> r.getPurchaseId() == id).toList();
-        for (var r : records) {
-            total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
-        }
-
-        return total.intValue();
-    }
 
     public String toDottedDate(java.util.Date dt) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
@@ -199,6 +130,31 @@ public class DisplayController implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 
+    PurchaseSumObj purchaseSumObj = new PurchaseSumObj();
+
+    public void sumPurchases() {
+        int ones = 0, twos = 0, threes = 0, fours = 0, fives = 0, sixes = 0;
+        Double totalPriceSum = 0.0, remainingpriceSum = 0.0;
+
+        for (var pur : purchaseDTOS) {
+            ones += pur.getProductList().get(0).getQuantity2();
+            twos += pur.getProductList().get(1).getQuantity2();
+            threes += pur.getProductList().get(2).getQuantity2();
+            fours += pur.getProductList().get(3).getQuantity2();
+            fives += pur.getProductList().get(4).getQuantity2();
+            sixes += pur.getProductList().get(5).getQuantity2();
+
+            totalPriceSum += pur.getTotalPrice();
+            remainingpriceSum += pur.getRemainingPrice();
+        }
+
+        purchaseSumObj = new PurchaseSumObj(ones, twos, threes, fours, fives, sixes, totalPriceSum, remainingpriceSum);
+
+    }
+
+    public Integer getMediatorTotalPriceSumByMediator(String medName){
+        return mediatorData.stream().filter(med->med.getMediatorName().equals(medName)).mapToInt(MediatorData::getTotalPrice).sum();
+    }
 
     public Integer sumOnes() {
         if (CPRecords == null) return 0;

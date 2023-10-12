@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -283,9 +284,8 @@ public class PurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
-        newPurchase();
         checkFive();
-        setUpFive();
+        newPurchase();
         pdfdisabled = true;
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
@@ -294,6 +294,7 @@ public class PurchaseController implements Serializable {
 
     private void setUpFive() {
         listFiveProduct.add(pService.getProductById("I.OSZTÁLYÚ"));
+        logger.info(listFiveProduct.get(0)==null?"IT WAS NULL": "");
         listFiveProduct.add(pService.getProductById("II.OSZTÁLYÚ"));
         listFiveProduct.add(pService.getProductById("III.OSZTÁLYÚ"));
         listFiveProduct.add(pService.getProductById("IV.OSZTÁLYÚ"));
@@ -605,6 +606,7 @@ public class PurchaseController implements Serializable {
     public void setPdfdisabled(Boolean pdfdisabled) {
         this.pdfdisabled = pdfdisabled;
     }
+
 
     private void checkFive() {
         UnitDTO kgUnit = new UnitDTO();
