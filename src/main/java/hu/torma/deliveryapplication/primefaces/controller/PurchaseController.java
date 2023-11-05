@@ -293,8 +293,8 @@ public class PurchaseController implements Serializable {
     }
 
     private void setUpFive() {
+        listFiveProduct = new ArrayList<>();
         listFiveProduct.add(pService.getProductById("I.OSZTÁLYÚ"));
-        logger.info(listFiveProduct.get(0)==null?"IT WAS NULL": "");
         listFiveProduct.add(pService.getProductById("II.OSZTÁLYÚ"));
         listFiveProduct.add(pService.getProductById("III.OSZTÁLYÚ"));
         listFiveProduct.add(pService.getProductById("IV.OSZTÁLYÚ"));
@@ -546,6 +546,7 @@ public class PurchaseController implements Serializable {
 
     public void newPurchase() {
         emptySix();
+        setUpFive();
         this.dto = new PurchaseDTO();
         this.setLabel("Hozzáadás");
     }

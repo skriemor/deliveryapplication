@@ -15,12 +15,20 @@
                 <table>
                     <tr>
                         <td>
-                            <p:outputLabel for="nameFilter4" value="Név tartalmazza: "/>
-                            <p:inputText id="nameFilter4" value="#{displayController.filterName4}" />
+                            <p:outputLabel for="nameFilter4" value="Név alapján: "/>
+                            <p:selectOneMenu id="nameFilter4"
+                                             value="#{displayController.filterName4}"
+                                             panelStyle="overflow: scroll; left: 0;  position: static"
+                                             style="width: 100%; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; min-width: 100%;"
+                                             converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
+                                <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}"
+                                        update="nameFilter4"/>
+                                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+                                <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
+                                               itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})"
+                                               itemValue="#{vendorvar}"/>
+                            </p:selectOneMenu><br/>
                         </td>
-
-
-
                     </tr>
                     <tr>
                         <td>
@@ -34,11 +42,17 @@
                             </p:inputMask>
                             <p:outputLabel for="dateFromFilter4" value="-ig"/>
                             <br/>
-                            <p:selectBooleanCheckbox value="#{displayController.paidOnly}" itemLabel="Csak fizetetlen"/>
+                            <p:outputLabel for="paidOnlyFilter4" value="Kiegyenlítés alapján: "/>
+                            <p:selectOneMenu id="paidOnlyFilter4" value="#{displayController.paidOnly}" >
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
+                                <f:selectItem itemValue="#{true}"  itemLabel="Kiegyenlítetlen" />
+                                <f:selectItem itemValue="#{false}"  itemLabel="Kiegyenlített" />
+                            </p:selectOneMenu><br/>
+
                             <br/>
                             <p:outputLabel value="Fizetési mód: "/>
                             <p:selectOneMenu id="methodSelector4" value="#{displayController.filterPaymentMethodCP}" >
-                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mindegy" />
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
                                 <f:selectItem itemValue="Átutalás"  itemLabel="Átutalás" />
                                 <f:selectItem itemValue="Készpénz"  itemLabel="Készpénz" />
                             </p:selectOneMenu>
@@ -52,20 +66,20 @@
             </p:panel>
 
             <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList"   tableStyle="width: auto"
-                           style="overflow-x: scroll; margin-bottom: 5em"
+                           style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
 
-                <p:columnGroup type="header">
+                <p:columnGroup type="header" >
                     <p:row >
-                        <p:column headerText="Sorszám"/>
+                        <p:column headerText="Sorszám" />
                         <p:column headerText="Eladó neve"/>
-                        <p:column headerText="Felv. dátum"/>
+                        <p:column headerText="Felv. dátum" sortOrder="asc" sortBy="#{cPurchase.receiptDate}"/>
                         <p:column headerText="Fiz. dátum"  />
                         <p:column headerText="Fiz.Mód"/>
                         <p:column headerText="I.OSZT"/>
-                        <p:column headerText="I.OSZT"/>
-                        <p:column headerText="I.OSZT"/>
-                        <p:column headerText="I.OSZT"/>
+                        <p:column headerText="II.OSZT"/>
+                        <p:column headerText="III.OSZT"/>
+                        <p:column headerText="IV.OSZT"/>
                         <p:column headerText="GYÖKÉR"/>
                         <p:column headerText="IPARI"/>
                         <p:column headerText="VÉTELÁR" colspan="2"/>
@@ -74,12 +88,12 @@
                     </p:row>
                     <p:row>
                         <p:column colspan="5" headerText="Összesen: " style="text-align: end"/>
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumOnes())}" />
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumTwos())}" />
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumThrees())}" />
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumFours())}" />
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumFives())}" />
-                        <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumSixes())}" />
+                        <p:column  headerText="#{displayController.sumOnes()}" />
+                        <p:column  headerText="#{displayController.sumTwos()}" />
+                        <p:column  headerText="#{displayController.sumThrees()}" />
+                        <p:column  headerText="#{displayController.sumFours()}" />
+                        <p:column  headerText="#{displayController.sumFives()}" />
+                        <p:column  headerText="#{displayController.sumSixes()}" />
                         <p:column  headerText="#{displayController.getFormattedNumber(displayController.sumPrices())} HUF" />
 
                         <p:column  />
@@ -90,9 +104,9 @@
                     <h:outputText value="#{cPurchase.newSerial}" />
                 </p:column>
                 <p:column   >
-                    <h:outputText value="#{cPurchase.vendor.vendorName}(#{cPurchase.vendor.city})"/>
+                    <h:outputText value="#{cPurchase.vendor.vendorName}"/>
                 </p:column>
-                <p:column  >
+                <p:column sortBy="#{cPurchase.receiptDate}" sortOrder="asc" >
                     <h:outputText value="#{cPurchase.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
@@ -134,8 +148,20 @@
                 <table>
                     <tr>
                         <td>
-                            <p:outputLabel for="nameFilter2" value="Név tartalmazza: "/>
-                            <p:inputText id="nameFilter2" value="#{displayController.filterName2}" />
+                            <p:outputLabel for="nameFilter2" value="Név alapján: "/>
+                            <p:selectOneMenu id="nameFilter2"
+                                             value="#{displayController.filterName2}"
+                                             panelStyle="overflow: scroll; left: 0;  position: static"
+                                             style="width: 100%; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; min-width: 100%;"
+                                             converter="#{buyerConverter}" filter="true" filterMatchMode="contains">
+                                <p:ajax event="select" listener="#{buyerServiceImpl.allBuyers}"
+                                        update="nameFilter2"/>
+                                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+                                <f:selectItems value="#{buyerServiceImpl.allBuyers}" var="buyervar"
+                                               itemLabel="#{buyervar.name}(#{buyervar.address})"
+                                               itemValue="#{buyervar}"/>
+                            </p:selectOneMenu><br/>
+
                         </td>
                     </tr>
                     <tr>
@@ -151,27 +177,34 @@
                             <p:outputLabel for="dateFromFilter2" value="-ig"/><br/>
                             <p:outputLabel for="paperSelector2" value="Papírozott: "/>
                             <p:selectOneMenu id="paperSelector2" value="#{displayController.filterPaper2}" >
-                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mindegy" />
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
                                 <f:selectItem itemValue="Igen"  itemLabel="Csak papírozott" />
                                 <f:selectItem itemValue="Nem"  itemLabel="Csak papírozatlan" />
                             </p:selectOneMenu><br/>
                             <p:outputLabel for="letaiSelector2" value="Létais: "/>
                             <p:selectOneMenu id="letaiSelector2" value="#{displayController.filterLetaiOnly2}" >
-                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mindegy"  />
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind"  />
                                 <f:selectItem itemValue="#{true}"  itemLabel="Csak Létais" />
                                 <f:selectItem itemValue="#{false}"  itemLabel="Csak nem Létais" />
                             </p:selectOneMenu><br/>
                             <p:outputLabel for="globalGapSelector2" value="Globalgapes: "/>
                             <p:selectOneMenu id="globalGapSelector2" value="#{displayController.filterGlobalGapOnly2}" >
-                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mindegy" />
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
                                 <f:selectItem itemValue="#{true}"  itemLabel="Csak GlobalGap" />
                                 <f:selectItem itemValue="#{false}"  itemLabel="Csak nem GlobalGap" />
                             </p:selectOneMenu><br/>
 
-                            <p:selectBooleanCheckbox  value="#{displayController.filterUnpaidOnly2}" itemLabel="Csak fizetetlen"/><br/>
+
+                            <p:outputLabel value="Kiegyenlítés alapján: "/>
+                            <p:selectOneMenu id="paidSelector2" value="#{displayController.filterUnpaidOnly2}" >
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
+                                <f:selectItem itemValue="#{true}"  itemLabel="Kiegyenlítetlen" />
+                                <f:selectItem itemValue="#{false}"  itemLabel="Kiegyenlített" />
+                            </p:selectOneMenu><br/>
+
                             <p:outputLabel for="currencySelector2" value="Valuta: "/>
                             <p:selectOneMenu id="currencySelector2" value="#{displayController.filterCurrency2}" >
-                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mindegy" />
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
                                 <f:selectItem itemLabel="HUF" itemValue="HUF"/>
                                 <f:selectItem itemLabel="EUR" itemValue="EUR"/>
                                 <f:selectItem itemLabel="USD" itemValue="USD"/>
@@ -192,13 +225,14 @@
             </p:panel>
             <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList"  tableStyle="width: auto"
                          lazy="false"
-                        style="overflow-x: scroll; margin-bottom: 5em"
+                        style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                           emptyMessage="Nincs találat" resizableColumns="true">
                 <p:columnGroup type="header">
                     <p:row >
-                        <p:column headerText="Sorszám"/>
+                        <p:column headerText="Számla Sorszáma"/>
                         <p:column headerText="Vásárló neve"/>
-                        <p:column headerText="Számla kelt."/>
+                        <p:column headerText="Számla kelt." sortBy="#{sale.receiptDate}" sortOrder="asc"/>
+                        <p:column headerText="VÉTELÁR"/>
                         <p:column headerText="Fiz. valuta"  />
                         <p:column headerText="I.OSZT"/>
                         <p:column headerText="II.OSZT"/>
@@ -206,43 +240,50 @@
                         <p:column headerText="IV.OSZT"/>
                         <p:column headerText="GYÖKÉR"/>
                         <p:column headerText="IPARI"/>
-                        <p:column headerText="VÉTELÁR"/>
+                        <p:column headerText="Fiz. határidő"/>
+                        <p:column headerText="Kifizetés dát."/>
                         <p:column headerText="GGAP"/>
                         <p:column headerText="LÉTAI"/>
                         <p:column headerText="PAPÍR"/>
 
                     </p:row>
                     <p:row>
-                        <p:column colspan="4" headerText="Összesen: " style="text-align: end"/>
+                        <p:column colspan="3" headerText="Összesen: " style="text-align: end"/>
+                        <p:column colspan="2" rowspan="2" headerText="#{displayController.saleSumPojo.priceTotal}" />
                         <p:column  headerText="#{displayController.saleSumPojo.one}" />
                         <p:column  headerText="#{displayController.saleSumPojo.two}" />
                         <p:column  headerText="#{displayController.saleSumPojo.three}" />
                         <p:column  headerText="#{displayController.saleSumPojo.four}" />
                         <p:column  headerText="#{displayController.saleSumPojo.five}" />
                         <p:column  headerText="#{displayController.saleSumPojo.six}" />
-                        <p:column colspan="3" headerText="#{displayController.getFormattedNumber(displayController.saleSumPojo.priceTotal)} HUF" />
+
 
                         <p:column  />
                     </p:row>
 
                 </p:columnGroup>
-                <p:column headerText="Sorszám"  width="5em" >
-                    <h:outputText value="#{sale.id}" id="saleId"/>
+                <p:column headerText="Számla Sorszáma"  width="5em" >
+                    <h:outputText value="#{sale.receiptId}" id="saleId"/>
                 </p:column>
                 <p:column headerText="Eladó neve"   width="5em" >
                     <h:outputText value="#{sale.buyer.name}"/>
                 </p:column>
 
 
-                <p:column headerText="Számla kelt"   width="4.5em" >
+                <p:column headerText="Számla kelt"   width="4.5em"  sortBy="#{sale.receiptDate}" sortOrder="asc">
                     <h:outputText value="#{sale.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>
                 </p:column>
-
+                <p:column headerText="Vételár"   width="5em" >
+                    <h:outputText value="#{sale.formattedPrice}"/>
+                </p:column>
                 <p:column headerText="Fiz. valuta"   width="5em" >
                     <h:outputText value="#{sale.currency}"/>
                 </p:column>
+
+
+
                 <p:column headerText="I.OSZT" >
                     <h:outputText value="#{sale.one}"/>
                 </p:column>
@@ -261,8 +302,15 @@
                 <p:column headerText="IPARI" >
                     <h:outputText value="#{sale.six}"/>
                 </p:column>
-                <p:column headerText="Vételár"   width="5em" >
-                    <h:outputText value="#{sale.formattedPrice}"/>
+                <p:column headerText="Fiz. határidő"   width="4.5em" >
+                    <h:outputText value="#{sale.deadLine}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </h:outputText>
+                </p:column>
+                <p:column headerText="Kifizetés dát."   width="4.5em" >
+                    <h:outputText value="#{sale.completionDate}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </h:outputText>
                 </p:column>
                 <p:column headerText="GGAP"   width="5em" >
                     <h:outputText value="#{sale.globalAsString}"/>
@@ -280,8 +328,19 @@
                 <table>
                     <tr>
                         <td>
-                            <p:outputLabel for="nameFilter" value="Név tartalmazza: "/>
-                            <p:inputText id="nameFilter" value="#{displayController.filterName}" />
+                            <p:outputLabel for="nameFilter" value="Név alapján: "/>
+                            <p:selectOneMenu id="nameFilter"
+                                             value="#{displayController.filterName}"
+                                             panelStyle="overflow: scroll; left: 0;  position: static"
+                                             style="width: 100%; box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box; min-width: 100%;"
+                                             converter="#{vendorConverter}" filter="true" filterMatchMode="contains">
+                                <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}"
+                                        update="nameFilter"/>
+                                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
+                                <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
+                                               itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})"
+                                               itemValue="#{vendorvar}"/>
+                            </p:selectOneMenu><br/>
                         </td>
                     </tr>
                     <tr>
@@ -299,7 +358,12 @@
                     </tr>
                     <tr>
                         <td>
-                            <p:selectBooleanCheckbox id="fullyPaidFilter" value="#{displayController.fullyPaidFilter}" itemLabel="Csak fizetetlen" />
+                            <p:outputLabel for="fullyPaidFilter" value="Kiegyenlítés alapján: "/>
+                            <p:selectOneMenu id="fullyPaidFilter" value="#{displayController.fullyPaidFilter}" >
+                                <f:selectItem itemValue="#{null}" noSelectionOption="true" itemLabel="Mind" />
+                                <f:selectItem itemValue="#{true}"  itemLabel="Kiegyenlítetlen" />
+                                <f:selectItem itemValue="#{false}"  itemLabel="Kiegyenlített" />
+                            </p:selectOneMenu><br/>
                         </td>
                     </tr>
                 </table>
@@ -308,7 +372,7 @@
             </p:panel>
             <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList" tableStyle="width: auto"
                          lazy="false"
-                          style="overflow-x: scroll; margin-bottom: 5em"
+                          style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
                 <p:columnGroup type="header">
                     <p:row >
@@ -322,7 +386,7 @@
                         <p:column headerText="IPARI"/>
                         <p:column headerText="VÉTELÁR"/>
                         <p:column headerText="Papírozatlan"/>
-                        <p:column headerText="Mérlegelés Dátuma"/>
+                        <p:column headerText="Mérlegelés Dátuma" sortOrder="asc" sortBy="#{purchase.receiptDate}"/>
                     </p:row>
                     <p:row>
                         <p:column colspan="2" headerText="Összesen: " style="text-align: end"/>
@@ -343,7 +407,7 @@
                     <h:outputText value="#{purchase.id}" id="id"/>
                 </p:column>
                 <p:column headerText="Eladó neve"   width="5em" >
-                    <h:outputText value="#{purchase.vendor.vendorName}(#{purchase.vendor.city})"/>
+                    <h:outputText value="#{purchase.vendor.vendorName}"/>
                 </p:column>
                 <p:column headerText="I.OSZTÁLYÚ"   width="5em" >
                     <h:outputText value="#{purchase.productList.get(0).quantity2}"/>
@@ -371,7 +435,7 @@
                     <h:outputText value="#{displayController.getFormattedNumber(purchase.remainingPrice)} HUF"/>
                 </p:column>
 
-                <p:column headerText="Mérlegelés dátuma"   width="4.5em" >
+                <p:column headerText="Mérlegelés dátuma"   width="4.5em" sortOrder="asc" sortBy="#{purchase.receiptDate}">
                     <h:outputText value="#{purchase.receiptDate}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </h:outputText>

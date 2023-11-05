@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
+
+<h:form id="productForm" style="overflow-y: scroll; margin: 80px auto;">
+    <h:outputStylesheet name="deliveries.css" library="css"/>
+
+    <p:panel header="Termék" id="productPanel" >
+        <div class="card">
+
+        <p:panelGrid columns="3" contentStyle="margin: 0px; padding: 0px; line-height: 21px;"
+                     columnClasses="ui-grid-col-4,ui-grid-col-4,ui-grid-col-4"
+                     layout="grid"
+                     styleClass="ui-panelgrid-blank ui-fluid "
+                     style="border:0px none; padding: 0px; width: 100%;">
+            <p:divider >
+                <p:outputLabel for="name" value="Termék neve: "/><br/>
+                <p:outputLabel id="name" value="#{productController.dto.id}"/><br/>
+
+                <p:outputLabel for="pricc" value="Termék ára: "/>
+                <p:inputText id="pricc" value="#{productController.dto.price}" required="true" requiredMessage="Kötelező kitölteni!"  />
+
+
+                <h:commandButton value="Mentés"
+                                 action="#{productController.uiSaveProduct()}"
+                                 style="width: 10em;height: 2.6em">
+                    <f:ajax execute="productForm" render="productList productPanel" />
+                </h:commandButton>
+
+            </p:divider>
+
+        </p:panelGrid>
+
+        </div>
+    </p:panel>
+    <p:dataTable var="product" value="#{productController.dtoList}" id="productList"
+                 lazy="false"
+                  style="overflow-x: scroll; margin-bottom: 5em" scrollable="true" scrollWidth="100%"
+                   selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                    selection="#{productController.dto}" rowKey="#{product.id}">
+        <p:ajax event="rowSelect"  listener="#{productController.editProduct}" update="productForm:productPanel"/>
+
+        <p:column headerText="Neve" sortBy="#{product.id}" filterBy="#{product.id}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{product.id}"/>
+        </p:column>
+
+        <p:column headerText="Ár" sortBy="#{product.price}" filterBy="#{product.price}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{product.price}"/>
+        </p:column>
+
+        <p:column headerText="VTSZ" sortBy="#{product.tariffnum}" filterBy="#{product.tariffnum}" filterMatchMode="contains" width="11em">
+            <h:outputText value="#{product.tariffnum}"/>
+        </p:column>
+
+    </p:dataTable>
+
+
+
+
+
+
+
+</h:form>
+</html>
+
+
+
+

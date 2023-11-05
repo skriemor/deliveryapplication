@@ -30,19 +30,30 @@ public class DisplayController implements Serializable {
 
     private CompletedPurchaseDTO CPSums;
 
-    private boolean shouldFilterByPaper, paidOnly;
+    private boolean shouldFilterByPaper;
+    private Boolean paidOnly;
 
     private String filterPaymentMethodCP;
-    private String filterName, filterName2, filterName4;
-
+    private VendorDTO filterName;
+    private VendorDTO filterName4;
+    private BuyerDTO filterName2;
     private SaleSumPojo saleSumPojo;
-    private String filterCurrency2, filterPaper2;
-    private Boolean filterUnpaidOnly2, filterLetaiOnly2, filterGlobalGapOnly2;
+    private String filterCurrency2;
+    private String filterPaper2;
+    private Boolean filterUnpaidOnly2;
+    private Boolean filterLetaiOnly2;
+    private Boolean filterGlobalGapOnly2;
     private Boolean fullyPaidFilter;
 
-    private Date filterDateFrom, filterDateFrom2, filterDateFrom3, filterDateFrom4;
+    private Date filterDateFrom;
+    private Date filterDateFrom2;
+    private Date filterDateFrom3;
+    private Date filterDateFrom4;
 
-    private Date filterDateTo, filterDateTo2, filterDateTo3, filterDateTo4;
+    private Date filterDateTo;
+    private Date filterDateTo2;
+    private Date filterDateTo3;
+    private Date filterDateTo4;
 
     private List<PurchaseDTO> purchaseDTOS;
     private List<CompletedPurchaseDTO> CPDTOS;
@@ -82,20 +93,20 @@ public class DisplayController implements Serializable {
 
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
-        purchaseDTOS = purchaseService.applyFilterChainAndReturnPurchases(filterName, filterDateFrom, filterDateTo, fullyPaidFilter);
+        purchaseDTOS = purchaseService.applyFilterChainAndReturnPurchases(filterName==null?null:filterName.getTaxId(), filterDateFrom, filterDateTo, fullyPaidFilter);
         sumPurchases();
         return new ArrayList<>(purchaseDTOS);
     }
 
     public ArrayList<SaleDTO> refreshSaleDTOS() {
-        saleDTOS = saleService.applyFilterChainAndReturnSales(filterName2, filterCurrency2, filterDateFrom2, filterDateTo2, filterUnpaidOnly2, filterPaper2, filterLetaiOnly2, filterGlobalGapOnly2);
+        saleDTOS = saleService.applyFilterChainAndReturnSales(filterName2==null?null:filterName2.getAccountNum(), filterCurrency2, filterDateFrom2, filterDateTo2, filterUnpaidOnly2, filterPaper2, filterLetaiOnly2, filterGlobalGapOnly2);
         this.saleSumPojo = new SaleSumPojo(saleDTOS);
         return new ArrayList<>(saleDTOS);
     }
 
 
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
-        CPDTOS = CPService.getFilteredListOfCPs(filterName4, filterDateFrom4, filterDateTo4, numSerial, paidOnly, filterPaymentMethodCP);
+        CPDTOS = CPService.getFilteredListOfCPs(filterName4==null?null:filterName4.getTaxId(), filterDateFrom4, filterDateTo4, numSerial, paidOnly, filterPaymentMethodCP);
         CPRecords = CPDTOS.stream().flatMap(cp -> cp.getRecords().stream()).toList();
         return new ArrayList<>(CPDTOS);
     }
@@ -111,7 +122,7 @@ public class DisplayController implements Serializable {
     Logger log = Logger.getLogger("MEDIATOR");
 
     public void generateDisplays() {
-        mediatorData = mediatorService.getMediatorData(filterDateFrom3,filterDateTo3);
+        mediatorData = mediatorService.getMediatorData(filterDateFrom3, filterDateTo3);
     }
 
 
@@ -152,8 +163,8 @@ public class DisplayController implements Serializable {
 
     }
 
-    public Integer getMediatorTotalPriceSumByMediator(String medName){
-        return mediatorData.stream().filter(med->med.getMediatorName().equals(medName)).mapToInt(MediatorData::getTotalPrice).sum();
+    public Integer getMediatorTotalPriceSumByMediator(String medName) {
+        return mediatorData.stream().filter(med -> med.getMediatorName().equals(medName)).mapToInt(MediatorData::getTotalPrice).sum();
     }
 
     public Integer sumOnes() {

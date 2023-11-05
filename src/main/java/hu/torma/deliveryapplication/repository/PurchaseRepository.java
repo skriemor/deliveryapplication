@@ -21,7 +21,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
         FROM purchase p
         join vendor v on v.tax_id = p.vendor_name
         where (
-            ?1 is null or LOWER(v.vendor_name) like LOWER(CONCAT('%', ?1 , '%'))
+            ?1 is null or LOWER(p.vendor_name) like LOWER(CONCAT('%', ?1 , '%'))
         )
         and (
             p.receipt_date is null
@@ -31,7 +31,7 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
                 or (?2 is null and  ?3 is null)
         )
         and (
-            ?4 is false or p.remaining_price <> 0
+            ?4 is NULL or (?4 is false and p.remaining_price = 0) or (?4 is true and p.remaining_price <> 0)
         )
     """)
     List<Purchase> applyFilterChainAndReturnPurchases(String name,  Date startDate, Date endDate, Boolean unPaidOnly);

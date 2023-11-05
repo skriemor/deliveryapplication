@@ -17,7 +17,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
         FROM sale s
         join BUYER b on b.ID = s.BUYER_NAME
         where (
-            ?1 is null or LOWER(b.NAME) like LOWER(CONCAT('%', ?1 , '%'))
+            ?1 is null or LOWER(s.BUYER_NAME) like LOWER(CONCAT('%', ?1 , '%'))
         )
         and (
            ?2 is null or LOWER(s.CURRENCY) like LOWER(CONCAT('%', ?2, '%'))
@@ -30,7 +30,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
                 or (?3 is null and  ?4 is null)
         )
         and (
-            ?5 is false or s.COMPLETION_DATE is null
+            ?5 is null or (?5 is false and s.COMPLETION_DATE is not NULL) or (s.COMPLETION_DATE is null and ?5 is true)
         )
          and (
             ?6 is null or ?6 like '' or b.PAPER = ?6
