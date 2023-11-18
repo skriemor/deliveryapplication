@@ -37,5 +37,20 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
     List<Purchase> applyFilterChainAndReturnPurchases(String name,  Date startDate, Date endDate, Boolean unPaidOnly);
 
 
+    @Query(nativeQuery = true, value = """
+select p.*
+from purchase p
+join vendor v on v.tax_id = p.vendor_name
+where (v.mediator_id = ?3 OR ?3 is null)
+and (
+ (?1 is not null and ?2 is not null and p.receipt_date between ?1  and ?2)
+                or (?1 is not null and ?2 is null and  p.receipt_date >= ?1 )
+                or (?2 is not null and ?1 is null and  p.receipt_date <  ?2 )
+                or (?1 is null and  ?2 is null)
+)
+order by p.receipt_date asc NULLS LAST 
+""")
+List<Purchase> getPurchasesByMediatorAndDate(Date startDate, Date endDate, String mediatorId);
+
 
 }

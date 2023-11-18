@@ -16,4 +16,6 @@ public interface MediatorRepository extends JpaRepository<Mediator, String> {
             @Param("date1") Date date1,
             @Param("date2") Date date2
     );
+
+
 }

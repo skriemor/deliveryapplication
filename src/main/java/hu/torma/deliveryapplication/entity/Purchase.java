@@ -55,4 +55,5 @@ public class Purchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date bookedDate;
 
+
 }

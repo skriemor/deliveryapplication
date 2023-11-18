@@ -101,6 +101,15 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    public List<PurchaseDTO> getPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId) {
+        return new ArrayList<PurchaseDTO>(
+                repo.getPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
+                        c -> mapper.map(c, PurchaseDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
     public List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly) {
         return new ArrayList<PurchaseDTO>(
                 repo.applyFilterChainAndReturnPurchases(name, startDate, endDate, unPaidOnly).stream().map(

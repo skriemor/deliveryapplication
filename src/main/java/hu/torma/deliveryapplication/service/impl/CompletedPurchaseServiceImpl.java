@@ -81,12 +81,20 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
-    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial, Boolean notPaidOnly, String paymentMethod) {
+    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial1,String numSerial2, Boolean notPaidOnly, String paymentMethod) {
         return new ArrayList<CompletedPurchaseDTO>(
-                repo.applyFilterChainAndReturnResults(name,startDate, endDate, numSerial, notPaidOnly, paymentMethod).stream().map(
+                repo.applyFilterChainAndReturnResults(name,startDate, endDate, numSerial1,numSerial2, notPaidOnly, paymentMethod).stream().map(
                         c -> mapper.map(c, CompletedPurchaseDTO.class)
                 ).toList()
         );
     }
+
+    @Override
+    public List<CompletedPurchaseDTO> getCompletedPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId) {
+        return new ArrayList<CompletedPurchaseDTO>(
+                repo.getCompletedPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
+                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                ).toList()
+        );    }
 
 }

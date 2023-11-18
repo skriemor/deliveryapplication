@@ -19,6 +19,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Objects;
+import java.util.TimeZone;
 import java.util.logging.Logger;
 
 @Service
@@ -29,11 +30,13 @@ public class PDFcreator {
     ClassPathResource res;
     private Workbook workbook;
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd");
+
     private Sheet sheet;
     Logger log = Logger.getLogger("excel");
 
     @PostConstruct
     private void createWorkBook() {
+
         try {
             res = new ClassPathResource("form.xlsx", this.getClass().getClassLoader());
 
@@ -48,6 +51,8 @@ public class PDFcreator {
             style = workbook.createCellStyle();
             DataFormat format = workbook.createDataFormat();
             style.setDataFormat(format.getFormat("0"));
+
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
         } catch (Exception e) {
             e.printStackTrace();
