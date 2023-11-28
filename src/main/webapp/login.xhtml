@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:pe="http://primefaces.org/ui/extensions" >
+
+<h:head>
+    <title>Login</title>
+    <h:outputStylesheet name="/css/deliveries.css" />
+</h:head>
+
+<h:body>
+
+    <h:form prependId="false" >
+        <p:panelGrid columns="1" styleClass="ui-fluid center ui-noborder"  style="margin: auto auto;">
+            <h2>Kérem jelentkezzen be!</h2>
+
+            <p:outputLabel value="Hibás adatok!" styleClass="red"
+                           rendered="${!empty param['error']}" />
+
+            <p:inputText id="username" placeholder="Felhasználónév" />
+            <p:password id="password" placeholder="Jelszó" />
+
+            <p:commandButton  value="Bejelentkezés" ajax="false" />
+        </p:panelGrid>
+    </h:form>
+</h:body>
+</html>
