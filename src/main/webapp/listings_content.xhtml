@@ -78,8 +78,8 @@
 
                 <p:columnGroup type="header">
                     <p:row>
-                        <p:column headerText="Sorszám"/>
-                        <p:column headerText="Eladó neve"/>
+                        <p:column headerText="Sorszám" sortBy="#{cPurchase.newSerial}"/>
+                        <p:column headerText="Eladó neve" />
                         <p:column headerText="Felv. dátum" sortOrder="asc" sortBy="#{cPurchase.receiptDate}"/>
                         <p:column headerText="Fiz. dátum"/>
                         <p:column headerText="Fiz.Mód"/>
@@ -94,7 +94,7 @@
 
                     </p:row>
                     <p:row>
-                        <p:column colspan="5" headerText="Összesen: " style="text-align: end"/>
+                        <p:column colspan="5" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.cpSumObj)} kg" style="text-align: end"/>
                         <p:column headerText="#{displayController.cpSumObj.one}"/>
                         <p:column headerText="#{displayController.cpSumObj.two}"/>
                         <p:column headerText="#{displayController.cpSumObj.three}"/>
@@ -108,7 +108,7 @@
                     </p:row>
 
                 </p:columnGroup>
-                <p:column>
+                <p:column >
                     <h:outputText value="#{cPurchase.newSerial}"/>
                 </p:column>
                 <p:column>
@@ -259,7 +259,7 @@
 
                     </p:row>
                     <p:row>
-                        <p:column colspan="3" headerText="Összesen: " style="text-align: end"/>
+                        <p:column colspan="3" headerText="Összesen: #{displayController.getSumOfSaleSum(displayController.saleSumPojo)} kg" style="text-align: end"/>
                         <p:column colspan="2" rowspan="2" headerText="#{displayController.saleSumPojo.priceTotal}"/>
                         <p:column headerText="#{displayController.saleSumPojo.one}"/>
                         <p:column headerText="#{displayController.saleSumPojo.two}"/>
@@ -402,7 +402,7 @@
                         <p:column headerText="Mérlegelés Dátuma" sortOrder="asc" sortBy="#{purchase.receiptDate}"/>
                     </p:row>
                     <p:row>
-                        <p:column colspan="2" headerText="Összesen: " style="text-align: end"/>
+                        <p:column colspan="2" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.purchaseSumObj)} kg" style="text-align: end"/>
                         <p:column headerText="#{displayController.purchaseSumObj.one}"/>
                         <p:column headerText="#{displayController.purchaseSumObj.two}"/>
                         <p:column headerText="#{displayController.purchaseSumObj.three}"/>
@@ -528,7 +528,7 @@
                             <p:column headerText="VÉTELÁR"/>
                         </p:row>
                         <p:row>
-                            <p:column colspan="4" headerText="Összesen: " style="text-align: end"/>
+                            <p:column colspan="4" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.summage)} kg" style="text-align: end"/>
                             <p:column headerText="#{displayController.summage.one}"/>
                             <p:column headerText="#{displayController.summage.two}"/>
                             <p:column headerText="#{displayController.summage.three}"/>
@@ -602,7 +602,7 @@
                             <p:column headerText="VÉTELÁR"/>
                         </p:row>
                         <p:row>
-                            <p:column colspan="4" headerText="Összesen: " style="text-align: end"/>
+                            <p:column colspan="4" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.splitCPSumObj)} kg" style="text-align: end"/>
                             <p:column headerText="#{displayController.splitCPSumObj.one}"/>
                             <p:column headerText="#{displayController.splitCPSumObj.two}"/>
                             <p:column headerText="#{displayController.splitCPSumObj.three}"/>

@@ -198,4 +198,12 @@ public class DisplayController implements Serializable {
         return new PurchaseSumObj(ones, twos, threes, fours, fives, sixes, totalPriceSum, 0.0);
     }
 
+    public Integer getSumOfSumObj(PurchaseSumObj obj) {
+        if (obj == null) return 0;
+        return obj.getOne() + obj.getTwo() + obj.getThree() + obj.getFour() + obj.getFive() + obj.getSix();
+    }
+    public Integer getSumOfSaleSum(SaleSumPojo obj) {
+        if (obj == null) return 0;
+        return obj.getOne() + obj.getTwo() + obj.getThree() + obj.getFour() + obj.getFive() + obj.getSix();
+    }
 }

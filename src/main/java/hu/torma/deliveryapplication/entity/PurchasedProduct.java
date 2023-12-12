@@ -20,8 +20,23 @@ FROM PURCHASED_PRODUCT PP
 
 left join sale s on s.id = pp.sale_id
 left join purchase p on p.id = pp.purchase_id
-where (case when pp.sale_id is not null then s.receipt_date between :date1 and :date2
-else p.receipt_date between :date1 and :date2  end)
+where (case when pp.sale_id is not null then
+( 
+     (:date1 is not null and :date2 is not null and s.receipt_date between :date1  and :date2)
+                    or (:date1 is not null and :date2 is null and  s.receipt_date >= :date1 )
+                    or (:date2 is not null and :date1 is null and  s.receipt_date <  :date2 )
+                    or (:date1 is null and  :date2 is null)
+
+)
+else 
+(
+    (:date1 is not null and :date2 is not null and p.receipt_date between :date1  and :date2)
+                    or (:date1 is not null and :date2 is null and  p.receipt_date >= :date1 )
+                    or (:date2 is not null and :date1 is null and  p.receipt_date <  :date2 )
+                    or (:date1 is null and  :date2 is null)
+)
+  
+  end)
 
 
 GROUP BY product
@@ -118,10 +133,20 @@ select
  join buyer b on b.id = s.buyer_name
  where pp.sale_id is not null
  and b.paper like '%Igen%'
- and s.receipt_date between :date1 and :date2
+ and (
+ (:date1 is not null and :date2 is not null and s.receipt_date between :date1  and :date2)
+                or (:date1 is not null and :date2 is null and  s.receipt_date >= :date1 )
+                or (:date2 is not null and :date1 is null and  s.receipt_date <  :date2 )
+                or (:date1 is null and  :date2 is null)
+ )
  )
  left join completed_purchase cp on cp.id = r.completed_id
- where cp.receipt_date between  :date1 and :date2
+ where (
+  (:date1 is not null and :date2 is not null and cp.receipt_date between :date1  and :date2)
+                or (:date1 is not null and :date2 is null and  cp.receipt_date >= :date1 )
+                or (:date2 is not null and :date1 is null and  cp.receipt_date <  :date2 )
+                or (:date1 is null and  :date2 is null)
+ )
 """,
                 resultSetMapping = "salesum_mapping")
 

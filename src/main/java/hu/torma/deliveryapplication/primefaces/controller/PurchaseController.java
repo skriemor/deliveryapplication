@@ -14,7 +14,6 @@ import org.springframework.stereotype.Controller;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
-import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -408,9 +407,6 @@ public class PurchaseController implements Serializable {
     }
 
     public void uiSaveProduct() {
-        //logger.info("saveproductcalled");
-        //if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
-        //if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
         this.dto.getProductList().add(this.productDTO);
         this.productDTO = new PurchasedProductDTO();
         this.setLabel2("Termék hozzáadása");
@@ -422,14 +418,8 @@ public class PurchaseController implements Serializable {
             return;
         }
         file = pdFcreator.createDownload(this.dto);
-        /*
-        file = DefaultStreamedContent.builder()
-                .name("modified.xlsx")
-                .contentType("application/vnd.ms-excel")
-                .stream(() -> FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/demo/excel/modified.xlsx"))
-                .build();
-        */
     }
+
 
     public StreamedContent getFile() {
         return file;
@@ -451,7 +441,7 @@ public class PurchaseController implements Serializable {
     @Autowired
     CompletedPurchaseController completedPurchaseController;
 
-    public void uiSavePurchase() {
+    public void uiSavePurchase(boolean shouldPrint) {
         sixSave();
         if (this.dto.getProductList() == null) {
             return;
@@ -466,7 +456,10 @@ public class PurchaseController implements Serializable {
             dto.setSite(siteService.getSiteById("-"));
         }
 
-        service.savePurchase(this.dto);
+        this.dto = service.savePurchase(this.dto);
+        if (shouldPrint) {
+            pdf();
+        }
 
         getAllPurchases();
         emptySix();

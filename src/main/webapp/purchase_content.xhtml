@@ -332,26 +332,21 @@
     <hr></hr>
     <p:panel id="buttonPanel">
         <p:commandButton value="#{purchaseController.label}" tabindex="12" resetValues="true" update="purchasePanel fixProductPanel productList purchaseList"
-                         actionListener="#{purchaseController.uiSavePurchase}"
+                         actionListener="#{purchaseController.uiSavePurchase(false)}"
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" id="newSaveButton">
-
-
         </p:commandButton>
-
 
         <p:commandButton value="Új" id="newButton" immediate="true" resetValues="true"
                          actionListener="#{purchaseController.newPurchase}"
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" update="productList purchaseList fixProductPanel purchasePanel newSaveButton">
-
-
         </p:commandButton>
 
         <p:commandButton value="Töröl" id="deleteButton"
                          actionListener="#{purchaseController.deletePurchase}"
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" immediate="true" update="purchaseForm:productList purchaseForm:purchaseList purchaseForm:fixProductPanel purchaseForm:purchasePanel purchaseForm:conf" resetValues="true">
-
             <p:confirm header="Törlés jóváhagyása" message="#{purchaseController.isSafeToDelete ? 'Biztosan törli a mérlegjegyet?' : 'Ehhez a mérlegelési jegyhez tartozik felvásárlási jegy, kérem először távolítsa el a felvásárlási jegyről!'}" icon="pi pi-info-circle"  />
         </p:commandButton>
+
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" id="confirmer">
             <p:commandButton value="Mégsem" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
             <p:commandButton id="conf" rendered="#{purchaseController.isSafeToDelete}" value="Igen, törlöm" type="button" styleClass="ui-confirmdialog-yes" />
@@ -362,6 +357,15 @@
         </p:messages>
         <p/>
         <div style="float: left;display: inline-flex;">
+
+            <p:commandButton value="Mentés nyomtatással"  id="pdfButtonWithSave"
+                             style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0; border-radius: 0;font-size: 15px;"
+                             resetValues="true" update="purchasePanel fixProductPanel productList purchaseList"
+                             icon="pi pi-arrow-down"
+                             actionListener="#{purchaseController.uiSavePurchase(true)}">
+                <p:fileDownload value="#{purchaseController.file}"  />
+            </p:commandButton>
+
             <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton" style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0; border-radius: 0;font-size: 15px;"
                              onclick="PrimeFaces.monitorDownload(start, stop);"
                              icon="pi pi-arrow-down" styleClass="mr-2"

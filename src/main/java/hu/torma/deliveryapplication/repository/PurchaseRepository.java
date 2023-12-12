@@ -51,6 +51,4 @@ and (
 order by p.receipt_date asc NULLS LAST 
 """)
 List<Purchase> getPurchasesByMediatorAndDate(Date startDate, Date endDate, String mediatorId);
-
-
 }

@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurchase, Integer> {
     List<CompletedPurchase> findAllByReceiptDateAfter(Date date);
@@ -56,5 +57,20 @@ and (
 order by cp.receipt_date asc NULLS LAST 
 """)
     List<CompletedPurchase> getCompletedPurchasesByMediatorAndDate(Date startDate, Date endDate, String mediatorId);
+
+    @Query(nativeQuery = true, value = """
+            select p.receipt_date
+                                                 
+                                      from completed_purchase cp
+                                      join records r on r.completed_id = cp.id
+                                      join purchase p on p.id = r.purchase_id
+                                      
+                                      where cp.id = ?1
+                                      
+                                      order by p.receipt_date asc
+                                      
+                                      limit 1
+            """)
+    Optional<Date> getEarliestPurchaseDate(Integer id);
 
 }

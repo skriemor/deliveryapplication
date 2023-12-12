@@ -444,6 +444,9 @@ public class CompletedPurchaseController implements Serializable {
 
     List<CompletionRecordDTO> beforeEditList;
 
+    public java.util.Date getEarliestPurchaseOf(Integer id) {
+        return cService.getEarliestPurchaseDate(id);
+    }
     public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
         tempRecords = _dto.getObject().getRecords();
         beforeEditList = new ArrayList<>(_dto.getObject().getRecords().stream().toList());

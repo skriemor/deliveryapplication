@@ -13,6 +13,8 @@ public interface CompletedPurchaseService {
 
     CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
 
+    Date getEarliestPurchaseDate(Integer id);
+
     void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
 
     List<CompletedPurchaseDTO> getCPsByStartingDate(Date startDate);

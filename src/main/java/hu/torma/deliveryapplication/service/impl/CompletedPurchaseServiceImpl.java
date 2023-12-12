@@ -48,6 +48,11 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
+    public Date getEarliestPurchaseDate(Integer id) {
+        return repo.getEarliestPurchaseDate(id).orElseGet(Date::new);
+    }
+
+    @Override
     @Transactional
     public void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
         repo.deleteById(CompletedPurchaseDTO.getId());

@@ -759,6 +759,13 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
+        <p:column headerText="Legkorábbi mérleg dátuma" sortBy="#{completedPurchaseController.getEarliestPurchaseOf(purchase.id)}"
+                  filterBy="#{completedPurchaseController.toDottedDate(completedPurchaseController.getEarliestPurchaseOf(purchase.id))}"
+                  filterMatchMode="contains">
+            <h:outputText value="#{completedPurchaseController.getEarliestPurchaseOf(purchase.id)}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
+        </p:column>
         <p:column headerText="Felv.jegy dátuma" sortBy="#{purchase.receiptDate}"
                   filterBy="#{completedPurchaseController.toDottedDate(purchase.receiptDate)}"
                   filterMatchMode="contains">

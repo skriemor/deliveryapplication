@@ -14,12 +14,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
 @Service
 public class StorageServiceImpl implements StorageService {
+
+    List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
     Logger log = Logger.getLogger("Fos");
 
     ModelMapper mapper = new ModelMapper();
@@ -59,10 +64,27 @@ public class StorageServiceImpl implements StorageService {
     public List<DisplayUnit> getDisplayUnits() {
         return ppRepo.getRealStorage();
     }
+
     @Override
     public List<DisplayUnit> getDisplayUnitsWithDates(Date date1, Date date2) {
-        return ppRepo.getRealStorageWithDates(date1,date2);
+        List<DisplayUnit> tmp = ppRepo.getRealStorageWithDates(date1, date2);
+        List<String> notNulls = tmp.stream().map(DisplayUnit::getProductName).toList();
+        List<DisplayUnit> actual = new ArrayList<DisplayUnit>();
+
+        int it1 = 0, it2 = 0;
+        while (it1 < 6 && it2 < 6) {
+            if (tmp.size() < 1 || tmp.size() <= it2 ||!prodStrings.get(it1).equals(tmp.get(it2).getProductName())) {
+                actual.add(new DisplayUnit(prodStrings.get(it1), 0));
+                it1++;
+            } else {
+                actual.add(tmp.get(it2));
+                it1++;
+                it2++;
+            }
+        }
+        return actual;
     }
+
     @Override
     public SaleSumPojo getFictionalStorageAsObject() {
         return ppRepo.getFictionalStorage();
@@ -70,7 +92,7 @@ public class StorageServiceImpl implements StorageService {
 
     @Override
     public SaleSumPojo getFictionalStorageAsObjectDates(Date date1, Date date2) {
-        return ppRepo.getFictionalStorageWithDates(date1,date2);
+        return ppRepo.getFictionalStorageWithDates(date1, date2);
     }
 
 
