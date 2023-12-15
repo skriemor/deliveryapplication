@@ -8,6 +8,7 @@ import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.SaleService;
 import hu.torma.deliveryapplication.service.StorageService;
 import hu.torma.deliveryapplication.service.UnitService;
+import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
@@ -205,10 +206,7 @@ public class SaleController implements Serializable {
     }
 
     public String toDottedDate(java.util.Date dt) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
-
-        return dt == null ? "0000.01.01" : sdf.format(dt);
+        return DateConverter.toDottedDate(dt);
     }
 
     public void sixSave() {

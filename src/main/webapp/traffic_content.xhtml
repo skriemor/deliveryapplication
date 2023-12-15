@@ -9,40 +9,6 @@
 
 <h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
     <h:outputStylesheet name="deliveries.css" library="css"/>
-    <p:panel id="filterPanel" menuTitle="Szűrők">
-        <table>
-            <tr>
-                <td>
-                    <p:outputLabel for="dateFromFilter" value="Dátum: "/>
-                    <p:inputMask mask="9999.99.99" id="dateFromFilter" value="#{storageController.filterDateFrom}" >
-                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                    </p:inputMask>
-                    <p:outputLabel for="dateFromFilter" value="-tól "/>
-                    <p:inputMask mask="9999.99.99" id="dateToFilter" value="#{storageController.filterDateTo}" >
-                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                    </p:inputMask>
-                    <p:outputLabel for="dateFromFilter" value="-ig"/>
-                </td>
-            </tr>
-        </table>
-
-        <p:commandButton id="doFilterButton" actionListener="#{storageController.getStorageListWithDates()}" value="SZŰRÉS"  update="quantityList"/>
-    </p:panel>
-    <p:dataTable var="statement" value="#{storageController.statementsDates}" id="quantityList" stickyHeader="T" tableStyle="width: auto"
-                 lazy="false"
-                 style="overflow-x: scroll; margin-bottom: 5em"
-                 emptyMessage="Nincs találat" resizableColumns="true">
-        <p:column headerText="Termék" width="5em" >
-            <h:outputText value="#{statement.product}" id="product"/>
-        </p:column>
-        <p:column headerText="Valódi Mennyiség" width="11em">
-            <h:outputText value="#{statement.quantit1}kg"/>
-        </p:column>
-        <p:column headerText="Hivatalos mennyiség">
-            <h:outputText value="#{statement.quantity2}" />
-        </p:column>
-
-    </p:dataTable>
 
 
 </h:form>

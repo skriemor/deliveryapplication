@@ -7,25 +7,214 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
-<h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
+<h:form id="storageForm" style="overflow-y: scroll; margin: 80px auto;">
     <h:outputStylesheet name="deliveries.css" library="css"/>
 
-    <p:dataTable var="statement" value="#{storageController.statements}" id="quantityList" stickyHeader="T" tableStyle="width: auto"
-                 lazy="false"
-                 style="overflow-x: scroll; margin-bottom: 5em"
-                 emptyMessage="Nincs találat" resizableColumns="true">
-        <p:column headerText="Termék" width="5em" >
-            <h:outputText value="#{statement.product}" id="product"/>
+
+    <p:panel id="filterPanel">
+        <table style="padding: 0.8em; border-collapse: separate; border: 0px">
+            <tr>
+                <td><p:outputLabel value="Dátum "/></td>
+                <td>
+                    <p:inputMask mask="9999.99.99" id="dateFrom"
+                                 value="#{storageController.storageSnapshotDTO.dateFrom}">
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                    </p:inputMask>
+                    <p:outputLabel value="-tól "/>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><p:inputMask mask="9999.99.99" id="dateTo"
+                                 value="#{storageController.storageSnapshotDTO.dateTo}">
+                    <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                </p:inputMask>
+                    <p:outputLabel value="-ig "/></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><p:commandButton resetValues="false" update="resultsPanel"
+                                     style="font-size: 1.2em; width: 5em; background-color: blue; color: white"
+                                     value="Szűrés" actionListener="#{storageController.updateCols()}"/></td>
+            </tr>
+        </table>
+
+
+    </p:panel>
+
+    <ui:param name="purchases" value="#{storageController.purchaseColumn}"/>
+    <ui:param name="sales" value="#{storageController.saleColumn}"/>
+    <ui:param name="snap" value="#{storageController.storageSnapshotDTO}"/>
+    <p:panel id="resultsPanel" style="margin-top: 2em">
+        <table id="resultsTable" border="1px" class="complexTable">
+            <tr style="text-align:center">
+                <td></td>
+                <td><p:outputLabel value="Mérlegjegy"/></td>
+                <td><p:outputLabel value="Eladások"/></td>
+                <td><p:outputLabel value="Valós Készlet"/></td>
+                <td><p:outputLabel value="Mentett"/></td>
+                <td><p:outputLabel value="Selejt"/></td>
+
+            </tr>
+            <tr>
+                <td><p:outputLabel value="I.Osztályú"/></td>
+                <td><p:outputLabel value="#{purchases.get(0).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(0).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(0).quantity - sales.get(0).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputOne" value="#{snap.one}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste1" value="#{purchases.get(0).quantity - sales.get(0).quantity - snap.one}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="II.Osztályú"/></td>
+                <td><p:outputLabel value="#{purchases.get(1).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(1).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(1).quantity - sales.get(1).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputTwo" value="#{snap.two}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste2" value="#{purchases.get(1).quantity - sales.get(1).quantity - snap.two}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="III.Osztályú"/></td>
+                <td><p:outputLabel value="#{purchases.get(2).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(2).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(2).quantity - sales.get(2).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputThree" value="#{snap.three}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste3"
+                                   value="#{purchases.get(2).quantity - sales.get(2).quantity - snap.three}"/></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="IV.Osztályú"/></td>
+                <td><p:outputLabel value="#{purchases.get(3).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(3).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(3).quantity - sales.get(3).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputFour" value="#{snap.four}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste4"
+                                   value="#{purchases.get(3).quantity - sales.get(3).quantity - snap.four}"/></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="Gyökér"/></td>
+                <td><p:outputLabel value="#{purchases.get(4).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(4).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(4).quantity - sales.get(4).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputFive" value="#{snap.five}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste5"
+                                   value="#{purchases.get(4).quantity - sales.get(4).quantity - snap.five}"/></td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="Ipari"/></td>
+                <td><p:outputLabel value="#{purchases.get(5).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(5).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(5).quantity - sales.get(5).quantity}"/></td>
+                <td>
+                    <p:inputNumber id="inputSix" value="#{snap.six}" styleClass="storageDigitInput"
+                                   thousandSeparator="&nbsp;">
+                        <f:ajax event="change" execute="@this"
+                                render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
+                                listener="#{storageController.updateSum()}"/>
+                    </p:inputNumber>
+                </td>
+                <td><p:outputLabel id="waste6" value="#{purchases.get(5).quantity - sales.get(5).quantity - snap.six}"/>
+                </td>
+            </tr>
+            <tr>
+                <td><p:outputLabel value="Összesen"/></td>
+                <td><p:outputLabel value="#{purchases.get(6).quantity}"/></td>
+                <td><p:outputLabel value="#{sales.get(6).quantity}"/></td>
+                <td><p:outputLabel value="#{purchases.get(6).quantity - sales.get(6).quantity}"/></td>
+                <td><p:outputLabel id="inputSum" value="#{snap.sum}"/></td>
+                <td><p:outputLabel id="waste7" value="#{purchases.get(6).quantity - sales.get(6).quantity - snap.sum}"/>
+                </td>
+            </tr>
+        </table>
+    </p:panel>
+    <p:panel id="userActionPanel">
+        <p:commandButton resetValues="true"  value="Mentés" id="saveButt"
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.saveSnapshot()}"/>
+        <p:commandButton resetValues="true"  value="Új" id="newButt" style="width: 4em"
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.newSnapshot()}"/>
+        <p:commandButton resetValues="true"  value="Törlés" id="deleteButt" style="width: 4em"
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.deleteSnapshot()}"/>
+    </p:panel>
+
+
+    <p:dataTable var="snapshot" value="#{storageController.snapshotDTOs}" id="snapshotList"
+                 tableStyle="width: auto"
+                 lazy="false" sortMode="single"
+                 allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
+                 selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
+                 selection="#{storageController.storageSnapshotDTO}" rowKey="#{snapshot.id}">
+        <p:ajax event="rowSelect" listener="#{storageController.selectSnapshot}"
+                update="storageForm:resultsPanel storageForm:filterPanel"/>
+
+        <p:column headerText="-tól" sortBy="#{snapshot.dateFrom}" sortOrder="asc">
+            <h:outputText value="#{snapshot.dateFrom}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
         </p:column>
-        <p:column headerText="Valódi Mennyiség" width="11em">
-            <h:outputText value="#{statement.quantit1}kg"/>
+        <p:column headerText="-ig" sortBy="#{snapshot.dateTo}">
+            <h:outputText value="#{snapshot.dateTo}">
+                <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+            </h:outputText>
         </p:column>
-        <p:column headerText="Hivatalos mennyiség">
-            <h:outputText value="#{statement.quantity2}" />
+        <p:column headerText="I.Osztályú" sortBy="#{snapshot.one}" >
+            <h:outputText value="#{snapshot.one}" />
+        </p:column>
+        <p:column headerText="II.Osztályú" sortBy="#{snapshot.two}" >
+            <h:outputText value="#{snapshot.two}" />
+        </p:column>
+        <p:column headerText="III.Osztályú" sortBy="#{snapshot.three}" >
+            <h:outputText value="#{snapshot.three}" />
+        </p:column>
+        <p:column headerText="IV.Osztályú" sortBy="#{snapshot.four}" >
+            <h:outputText value="#{snapshot.four}" />
+        </p:column>
+        <p:column headerText="Gyökér" sortBy="#{snapshot.five}" >
+            <h:outputText value="#{snapshot.five}" />
+        </p:column>
+        <p:column headerText="Ipari" sortBy="#{snapshot.six}" >
+            <h:outputText value="#{snapshot.six}" />
+        </p:column>
+        <p:column headerText="összesen" sortBy="#{snapshot.sum}" >
+            <h:outputText value="#{snapshot.sum}" />
         </p:column>
 
     </p:dataTable>
-
 
 </h:form>
 </html>

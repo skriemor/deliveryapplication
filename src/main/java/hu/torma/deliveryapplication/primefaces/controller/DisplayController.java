@@ -5,6 +5,7 @@ import hu.torma.deliveryapplication.primefaces.sumutils.MediatorData;
 import hu.torma.deliveryapplication.primefaces.sumutils.PurchaseSumObj;
 import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
 import hu.torma.deliveryapplication.service.*;
+import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,10 +143,7 @@ public class DisplayController implements Serializable {
 
 
     public String toDottedDate(java.util.Date dt) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
-
-        return dt == null ? "0000.01.01" : sdf.format(dt);
+        return DateConverter.toDottedDate(dt);
     }
 
     public String getFormattedNumber(int num) {

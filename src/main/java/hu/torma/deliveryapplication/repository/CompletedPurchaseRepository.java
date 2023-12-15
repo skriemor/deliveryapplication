@@ -20,7 +20,8 @@ public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurc
         FROM COMPLETED_PURCHASE cp
         where (?1 is null or LOWER(cp.vendor_name) like LOWER(CONCAT('%', ?1 , '%')))
         and (
-            cp.receipt_date is null
+         (cp.receipt_date is null and ?2 is null and ?3 is null)
+           
                 or (?2 is not null and ?3 is not null and cp.receipt_date between ?2  and ?3)
                 or (?2 is not null and ?3 is null and  cp.receipt_date >= ?2 )
                 or (?3 is not null and ?2 is null and  cp.receipt_date <  ?3 )

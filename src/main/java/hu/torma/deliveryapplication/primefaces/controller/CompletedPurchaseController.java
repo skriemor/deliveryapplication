@@ -3,6 +3,7 @@ package hu.torma.deliveryapplication.primefaces.controller;
 import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
+import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
@@ -659,10 +660,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public String toDottedDate(java.util.Date dt) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
-
-        return dt == null ? "0000.01.01" : sdf.format(dt);
+        return DateConverter.toDottedDate(dt);
     }
 
     public void removeRecord() {

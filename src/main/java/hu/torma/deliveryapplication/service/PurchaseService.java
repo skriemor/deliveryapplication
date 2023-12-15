@@ -4,6 +4,7 @@ import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import java.util.Date;
 import java.util.List;
@@ -29,4 +30,6 @@ public interface PurchaseService {
 
     List<PurchaseDTO> getPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId);
     List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly);
+
+    List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2);
 }

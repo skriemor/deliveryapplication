@@ -3,6 +3,7 @@ package hu.torma.deliveryapplication.service;
 import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.DTO.SaleDTO;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import java.util.Date;
 import java.util.List;
@@ -24,4 +25,6 @@ public interface SaleService {
 
     List<SaleDTO> getSalesByBothDates(Date startDate, Date endDate);
     List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
+
+    List<ProductWithQuantity> getSalesByDates(Date date1, Date date2);
 }

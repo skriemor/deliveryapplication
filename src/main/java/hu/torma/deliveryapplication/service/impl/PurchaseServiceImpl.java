@@ -4,6 +4,7 @@ package hu.torma.deliveryapplication.service.impl;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.PurchaseRepository;
 import hu.torma.deliveryapplication.service.PurchaseService;
 import org.modelmapper.ModelMapper;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
@@ -116,5 +118,27 @@ public class PurchaseServiceImpl implements PurchaseService {
                         c -> mapper.map(c, PurchaseDTO.class)
                 ).toList()
         );
+    }
+
+
+
+    List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
+    @Override
+    public List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2) {
+        List<ProductWithQuantity> tmp = repo.getProductsWithQuantitiesByDates(date1, date2);
+        List<ProductWithQuantity> actual = new ArrayList<>();
+
+        int it1 = 0, it2 = 0;
+        while (it1 < 6 && it2 < 6) {
+            if (tmp.size() < 1 || tmp.size() <= it2 ||!prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
+                actual.add(new ProductWithQuantity(prodStrings.get(it1), 0));
+                it1++;
+            } else {
+                actual.add(tmp.get(it2));
+                it1++;
+                it2++;
+            }
+        }
+        return actual;
     }
 }

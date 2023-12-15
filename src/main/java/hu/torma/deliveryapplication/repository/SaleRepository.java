@@ -2,8 +2,10 @@ package hu.torma.deliveryapplication.repository;
 
 import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.entity.Sale;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
@@ -23,7 +25,8 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
            ?2 is null or LOWER(s.CURRENCY) like LOWER(CONCAT('%', ?2, '%'))
         )
         and (
-            s.receipt_date is null
+         (s.receipt_date is null and ?2 is null and ?3 is null)
+            
                 or (?3 is not null and ?4 is not null and s.receipt_date between ?3  and ?4)
                 or (?3 is not null and ?4 is null and  s.receipt_date >= ?3 )
                 or (?4 is not null and ?3 is null and  s.receipt_date <  ?4 )
@@ -44,4 +47,10 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
        
     """)
     List<Sale> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
+
+    @Query(name = "supply_products_with_quantity_sale", nativeQuery = true)
+    List<ProductWithQuantity> getProductsWithQuantitiesByDates(
+            @Param("date1") Date date1,
+            @Param("date2") Date date2
+    );
 }

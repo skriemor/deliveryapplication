@@ -34,8 +34,9 @@ body .ui-button {
     margin-left: 0px;
     outline: 0 none;
     border-radius: 4px;
-    transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
+    transition: background-color .2s, color .2s, border-color .2s, box-shadow .2s, opacity .2s;
 }
+
 .ui-fluid .ui-inputtext {
     width: 100%;
     padding: 0.2em;
@@ -75,6 +76,7 @@ body .ui-datatable .ui-datatable-data > tr > td {
     border-width: 0 0 1px 0;
     padding-left: 1.2rem;
 }
+
 body .ui-button.ui-button-text-icon-left .ui-icon {
     position: absolute;
     top: 50%;
@@ -82,6 +84,29 @@ body .ui-button.ui-button-text-icon-left .ui-icon {
     margin-top: -0.5rem;
     left: .5rem;
 }
+
 body .ui-button.ui-button-text-icon-left .ui-button-text {
     padding: 0rem 1rem .5rem 2rem;
+}
+
+#resultsTable {
+    background-color: rgba(225,225,225,1.00);
+    border-collapse: collapse;
+}
+#resultsTable tbody td:nth-child(odd) {
+    background-color: rgba(240,240,240,1.00);
+}
+body .ui-panel > div:last-of-type {
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+body .complexTable tr td {
+    min-width: 6em;
+    height: 2.1em;
+}
+
+
+
+.storageDigitInput input {
+    width: 6em;
 }

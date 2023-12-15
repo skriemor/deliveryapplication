@@ -4,6 +4,7 @@ import hu.torma.deliveryapplication.DTO.MediatorDTO;
 import hu.torma.deliveryapplication.DTO.VendorDTO;
 import hu.torma.deliveryapplication.service.MediatorService;
 import hu.torma.deliveryapplication.service.VendorService;
+import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import hu.torma.deliveryapplication.utility.postal.PostalCodeHU;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
@@ -112,10 +113,7 @@ public class VendorController implements Serializable {
     }
 
     public String toDottedDate(java.util.Date dt) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
-
-        return dt==null?"0000.01.01":sdf.format(dt);
+        return DateConverter.toDottedDate(dt);
     }
     public void newVendor() {
         this.dto = new VendorDTO();
