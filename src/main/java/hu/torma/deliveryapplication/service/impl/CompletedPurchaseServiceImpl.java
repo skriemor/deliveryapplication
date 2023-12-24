@@ -3,6 +3,7 @@ package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.CompletedPurchaseRepository;
 import hu.torma.deliveryapplication.service.CompletedPurchaseService;
 import org.modelmapper.ModelMapper;
@@ -10,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -86,9 +87,9 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
-    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial1,String numSerial2, Boolean notPaidOnly, String paymentMethod) {
+    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial1, String numSerial2, Boolean notPaidOnly, String paymentMethod) {
         return new ArrayList<CompletedPurchaseDTO>(
-                repo.applyFilterChainAndReturnResults(name,startDate, endDate, numSerial1,numSerial2, notPaidOnly, paymentMethod).stream().map(
+                repo.applyFilterChainAndReturnResults(name, startDate, endDate, numSerial1, numSerial2, notPaidOnly, paymentMethod).stream().map(
                         c -> mapper.map(c, CompletedPurchaseDTO.class)
                 ).toList()
         );
@@ -100,6 +101,19 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
                 repo.getCompletedPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
                         c -> mapper.map(c, CompletedPurchaseDTO.class)
                 ).toList()
-        );    }
+        );
+    }
+
+    @Override
+    public List<ProductWithQuantity> getCpsByDatesAsProductWithQuantities(Date date1, Date date2) {
+        List<ProductWithQuantity> cps = repo.getCpsByDatesAsProductWithQuantities(date1, date2);
+        for (ProductWithQuantity pq : cps) {
+            if (pq.getQuantity() == null) {
+                pq.setQuantity(0);
+            }
+        }
+        return cps;
+
+    }
 
 }

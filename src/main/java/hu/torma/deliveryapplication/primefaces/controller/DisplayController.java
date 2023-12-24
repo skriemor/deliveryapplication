@@ -8,6 +8,8 @@ import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import lombok.Getter;
 import lombok.Setter;
+import org.primefaces.event.CellEditEvent;
+import org.primefaces.event.RowEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;

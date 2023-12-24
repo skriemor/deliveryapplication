@@ -53,4 +53,10 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
             @Param("date1") Date date1,
             @Param("date2") Date date2
     );
+
+    @Query(name = "supply_official_products_with_quantity_sale", nativeQuery = true)
+    List<ProductWithQuantity> getOfficialProductsWithQuantitiesByDates(
+            @Param("date1") Date date1,
+            @Param("date2") Date date2
+    );
 }

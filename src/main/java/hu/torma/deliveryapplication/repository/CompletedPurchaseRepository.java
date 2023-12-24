@@ -2,9 +2,12 @@ package hu.torma.deliveryapplication.repository;
 
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import javax.persistence.NamedNativeQuery;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -73,5 +76,13 @@ order by cp.receipt_date asc NULLS LAST
                                       limit 1
             """)
     Optional<Date> getEarliestPurchaseDate(Integer id);
+
+
+
+    @Query(name = "supply_completed_purchases_with_dates", nativeQuery = true)
+    List<ProductWithQuantity> getCpsByDatesAsProductWithQuantities(
+            @Param("date1") Date date1,
+            @Param("date2") Date date2
+    );
 
 }

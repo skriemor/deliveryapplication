@@ -11,7 +11,8 @@ import java.util.List;
 @Entity
 @Data
 @Table(name = "sale")
-@NamedNativeQueries(@NamedNativeQuery(name = "supply_products_with_quantity_sale", query = """
+@NamedNativeQueries( {
+        @NamedNativeQuery(name = "supply_products_with_quantity_sale", query = """
         select pp.p_id as product, sum(quantity) as quantity
                         from purchased_product pp
                         join sale s on s.id = pp.sale_id
@@ -34,7 +35,36 @@ import java.util.List;
                         WHEN pp.p_id like 'GYÖK%' then 5
                         WHEN pp.p_id like 'IP%' then 6
                         END ASC
-                        """, resultSetMapping = "product_with_quantity_mapping"))
+                        """, resultSetMapping = "product_with_quantity_mapping"),
+
+
+        @NamedNativeQuery(name = "supply_official_products_with_quantity_sale", query = """
+        select pp.p_id as product, sum(quantity) as quantity
+                        from purchased_product pp
+                        join sale s on s.id = pp.sale_id
+                        join buyer b on b.id = s.buyer_name
+                        where pp.sale_id is not null
+                        and (b.paper like '%Igen%')
+                        and (
+                        (:date1 is not null and :date2 is not null and s.receipt_date between :date1  and :date2)
+                                            or (:date1 is not null and :date2 is null and  s.receipt_date >= :date1 )
+                                            or (:date2 is not null and :date1 is null and  s.receipt_date <  :date2 )
+                                            or (:date1 is null and  :date2 is null)
+                              
+                        )
+                        
+                        
+                        group by pp.p_id
+                        ORDER BY CASE
+                        WHEN pp.p_id like 'I.O%' then 1
+                        WHEN pp.p_id like 'II.O%' then 2
+                        WHEN pp.p_id like 'III.O%' then 3
+                        WHEN pp.p_id like 'IV.O%' then 4
+                        WHEN pp.p_id like 'GYÖK%' then 5
+                        WHEN pp.p_id like 'IP%' then 6
+                        END ASC
+                        """, resultSetMapping = "product_with_quantity_mapping")
+})
 public class Sale {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

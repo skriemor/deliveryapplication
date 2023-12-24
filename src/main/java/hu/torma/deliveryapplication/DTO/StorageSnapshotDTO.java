@@ -22,7 +22,53 @@ public class StorageSnapshotDTO implements Serializable {
     private Date dateFrom;
     private Date dateTo;
 
+    public void setOne(Integer one) {
+        if (one == null) {
+            this.one = 0;
+        } else {
+            this.one = one;
+        }
+    }
 
+    public void setTwo(Integer two) {
+        if (two == null) {
+            this.two = 0;
+        } else {
+            this.two = two;
+        }
+    }
+
+    public void setThree(Integer three) {
+        if (three == null) {
+            this.three = 0;
+        } else {
+            this.three = three;
+        }
+    }
+
+    public void setFour(Integer four) {
+        if (four == null) {
+            this.four = 0;
+        } else {
+            this.four = four;
+        }
+    }
+
+    public void setFive(Integer five) {
+        if (five == null) {
+            this.five = 0;
+        } else {
+            this.five = five;
+        }
+    }
+
+    public void setSix(Integer six) {
+        if (six == null) {
+            this.six = 0;
+        } else {
+            this.six = six;
+        }
+    }
 
     @Override
     public boolean equals(Object o) {

@@ -90,7 +90,7 @@ public class SaleServiceImpl implements SaleService {
     @Override
     public List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly) {
         return new ArrayList<SaleDTO>(
-                repo.applyFilterChainAndReturnSales(name,currency,startDate,endDate,unPaidOnly,paper,letaiOnly,globalGapOnly).stream().map(
+                repo.applyFilterChainAndReturnSales(name, currency, startDate, endDate, unPaidOnly, paper, letaiOnly, globalGapOnly).stream().map(
                         c -> mapper.map(c, SaleDTO.class)
                 ).toList()
         );
@@ -98,14 +98,12 @@ public class SaleServiceImpl implements SaleService {
 
 
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
-    @Override
-    public List<ProductWithQuantity> getSalesByDates(Date date1, Date date2) {
-        List<ProductWithQuantity> tmp = repo.getProductsWithQuantitiesByDates(date1, date2);
-        List<ProductWithQuantity> actual = new ArrayList<>();
 
+    public List<ProductWithQuantity> getGeneralizedQuantities(List<ProductWithQuantity> tmp) {
+        List<ProductWithQuantity> actual = new ArrayList<>();
         int it1 = 0, it2 = 0;
         while (it1 < 6 && it2 < 6) {
-            if (tmp.size() < 1 || tmp.size() <= it2 ||!prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
+            if (tmp.size() < 1 || tmp.size() <= it2 || !prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
                 actual.add(new ProductWithQuantity(prodStrings.get(it1), 0));
                 it1++;
             } else {
@@ -115,5 +113,17 @@ public class SaleServiceImpl implements SaleService {
             }
         }
         return actual;
+    }
+
+    @Override
+    public List<ProductWithQuantity> getSalesByDates(Date date1, Date date2) {
+        List<ProductWithQuantity> tmp = repo.getProductsWithQuantitiesByDates(date1, date2);
+        return getGeneralizedQuantities(tmp);
+    }
+
+    @Override
+    public List<ProductWithQuantity> getOfficialSalesByDates(Date date1, Date date2) {
+        List<ProductWithQuantity> tmp = repo.getOfficialProductsWithQuantitiesByDates(date1, date2);
+        return getGeneralizedQuantities(tmp);
     }
 }

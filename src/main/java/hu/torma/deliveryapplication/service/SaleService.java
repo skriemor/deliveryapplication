@@ -27,4 +27,6 @@ public interface SaleService {
     List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
 
     List<ProductWithQuantity> getSalesByDates(Date date1, Date date2);
+
+    List<ProductWithQuantity> getOfficialSalesByDates(Date date1, Date date2);
 }

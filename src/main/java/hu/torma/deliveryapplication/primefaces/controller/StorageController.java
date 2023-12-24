@@ -48,6 +48,19 @@ public class StorageController {
         updateDTOs();
     }
 
+    private void resetDatesOf(StorageSnapshotDTO dto) {
+        dto.setDateFrom(null);
+        dto.setDateTo(null);
+    }
+
+    public void uiResetFields() {
+        newSnapshot();
+        storageSnapshotDTO.setDateFrom(Date.from(Instant.now()));
+        storageSnapshotDTO.setDateTo(Date.from(Instant.now()));
+        updateCols();
+        resetDatesOf(storageSnapshotDTO);
+    }
+
     public void newSnapshot() {
         storageSnapshotDTO = new StorageSnapshotDTO(
                 0L, 0, 0, 0, 0, 0, 0, 0,
@@ -112,12 +125,12 @@ public class StorageController {
         }
         snapshotService.saveSnapshot(storageSnapshotDTO);
         updateDTOs();
-        newSnapshot();
+        uiResetFields();
     }
 
     public void deleteSnapshot() {
         snapshotService.deleteSnapshot(storageSnapshotDTO);
         updateDTOs();
-        newSnapshot();
+        uiResetFields();
     }
 }

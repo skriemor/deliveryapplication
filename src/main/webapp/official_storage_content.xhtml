@@ -14,10 +14,26 @@
     <p:panel id="filterPanel">
         <table style="padding: 0.8em; border-collapse: separate; border: 0px">
             <tr>
+                <td>
+                    <p:outputLabel for="prevSelector" value="Induló készlet:"/>
+                </td>
+                <td>
+                    <p:selectOneMenu id="prevSelector" value="#{officialStorageView.prevDto}"
+                                     converter="#{oSnapShotConverter}" filter="true" filterMatchMode="contains"
+                                     panelStyle="overflow: scroll; left: 0;  position: static">
+                        <p:ajax update="@this" event="change"/>
+                        <f:selectItem  itemLabel="Válasszon!" itemValue="#{officialStorageView.nulledDto}" />
+                        <f:selectItems value="#{officialStorageView.snapshotDTOs}" var="snapVar"
+                                       itemLabel="#{snapVar.asSelectOneString}"
+                                       itemValue="#{snapVar}"/>
+                    </p:selectOneMenu>
+                </td>
+            </tr>
+            <tr>
                 <td><p:outputLabel value="Dátum "/></td>
                 <td>
                     <p:inputMask mask="9999.99.99" id="dateFrom"
-                                 value="#{storageController.storageSnapshotDTO.dateFrom}">
+                                 value="#{officialStorageView.snapDto.dateFrom}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                     </p:inputMask>
                     <p:outputLabel value="-tól "/>
@@ -26,160 +42,169 @@
             <tr>
                 <td></td>
                 <td><p:inputMask mask="9999.99.99" id="dateTo"
-                                 value="#{storageController.storageSnapshotDTO.dateTo}">
+                                 value="#{officialStorageView.snapDto.dateTo}">
                     <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
                 </p:inputMask>
                     <p:outputLabel value="-ig "/></td>
             </tr>
             <tr>
                 <td></td>
-                <td><p:commandButton resetValues="false" update="resultsPanel"
+                <td><p:commandButton resetValues="false" update="resultsPanel filterPanel"
                                      style="font-size: 1.2em; width: 5em; background-color: blue; color: white"
-                                     value="Szűrés" actionListener="#{storageController.updateCols()}"/></td>
+                                     value="Szűrés" actionListener="#{officialStorageView.updateCols()}"/></td>
             </tr>
         </table>
 
 
     </p:panel>
 
-    <ui:param name="purchases" value="#{storageController.purchaseColumn}"/>
-    <ui:param name="sales" value="#{storageController.saleColumn}"/>
-    <ui:param name="snap" value="#{storageController.storageSnapshotDTO}"/>
+    <ui:param name="purchases" value="#{officialStorageView.CPurchaseColumn}"/>
+    <ui:param name="sales" value="#{officialStorageView.saleColumn}"/>
+    <ui:param name="snap" value="#{officialStorageView.snapDto}"/>
+    <ui:param name="prev" value="#{officialStorageView.prevDto}"/>
     <p:panel id="resultsPanel" style="margin-top: 2em">
         <table id="resultsTable" border="1px" class="complexTable">
             <tr style="text-align:center">
                 <td></td>
-                <td><p:outputLabel value="Mérlegjegy"/></td>
-                <td><p:outputLabel value="Eladások"/></td>
-                <td><p:outputLabel value="Valós Készlet"/></td>
+                <td><p:outputLabel value="Induló készlet"/></td>
+                <td><p:outputLabel value="Felv. jegy"/></td>
+                <td><p:outputLabel value="Eladások(papírozott)"/></td>
+                <td><p:outputLabel value="H. különbözet"/></td>
                 <td><p:outputLabel value="Raktár"/></td>
                 <td><p:outputLabel value="Selejt"/></td>
 
             </tr>
             <tr>
                 <td><p:outputLabel value="I.Osztályú"/></td>
+                <td><p:outputLabel value="#{prev.getOne()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(0).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(0).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(0).quantity - sales.get(0).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getOne() + purchases.get(0).quantity - sales.get(0).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputOne" value="#{snap.one}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
-                <td><p:outputLabel id="waste1" value="#{purchases.get(0).quantity - sales.get(0).quantity - snap.one}"/>
+                <td><p:outputLabel id="waste1" value="#{prev.getOne() + purchases.get(0).quantity - sales.get(0).quantity - snap.one}"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel value="II.Osztályú"/></td>
+                <td><p:outputLabel value="#{prev.getTwo()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(1).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(1).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(1).quantity - sales.get(1).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getTwo() + purchases.get(1).quantity - sales.get(1).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputTwo" value="#{snap.two}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
-                <td><p:outputLabel id="waste2" value="#{purchases.get(1).quantity - sales.get(1).quantity - snap.two}"/>
+                <td><p:outputLabel id="waste2" value="#{prev.getTwo() + purchases.get(1).quantity - sales.get(1).quantity - snap.two}"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel value="III.Osztályú"/></td>
+                <td><p:outputLabel value="#{prev.getThree()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(2).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(2).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(2).quantity - sales.get(2).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getThree() + purchases.get(2).quantity - sales.get(2).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputThree" value="#{snap.three}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
                 <td><p:outputLabel id="waste3"
-                                   value="#{purchases.get(2).quantity - sales.get(2).quantity - snap.three}"/></td>
+                                   value="#{prev.getThree() + purchases.get(2).quantity - sales.get(2).quantity - snap.three}"/></td>
             </tr>
             <tr>
                 <td><p:outputLabel value="IV.Osztályú"/></td>
+                <td><p:outputLabel value="#{prev.getFour()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(3).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(3).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(3).quantity - sales.get(3).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getFour() + purchases.get(3).quantity - sales.get(3).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputFour" value="#{snap.four}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
                 <td><p:outputLabel id="waste4"
-                                   value="#{purchases.get(3).quantity - sales.get(3).quantity - snap.four}"/></td>
+                                   value="#{prev.getFour() + purchases.get(3).quantity - sales.get(3).quantity - snap.four}"/></td>
             </tr>
             <tr>
                 <td><p:outputLabel value="Gyökér"/></td>
+                <td><p:outputLabel value="#{prev.getFive()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(4).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(4).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(4).quantity - sales.get(4).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getFive() + purchases.get(4).quantity - sales.get(4).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputFive" value="#{snap.five}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
                 <td><p:outputLabel id="waste5"
-                                   value="#{purchases.get(4).quantity - sales.get(4).quantity - snap.five}"/></td>
+                                   value="#{prev.getFive() + purchases.get(4).quantity - sales.get(4).quantity - snap.five}"/></td>
             </tr>
             <tr>
                 <td><p:outputLabel value="Ipari"/></td>
+                <td><p:outputLabel value="#{prev.getSix()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(5).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(5).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(5).quantity - sales.get(5).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getSix() + purchases.get(5).quantity - sales.get(5).quantity}"/></td>
                 <td>
                     <p:inputNumber id="inputSix" value="#{snap.six}" styleClass="storageDigitInput"
                                    thousandSeparator="">
                         <f:ajax event="change" execute="@this"
                                 render="inputSum waste1 waste2 waste3 waste4 waste5 waste6 waste7"
-                                listener="#{storageController.updateSum()}"/>
+                                listener="#{officialStorageView.updateSum()}"/>
                     </p:inputNumber>
                 </td>
-                <td><p:outputLabel id="waste6" value="#{purchases.get(5).quantity - sales.get(5).quantity - snap.six}"/>
+                <td><p:outputLabel id="waste6" value="#{prev.getFive() + purchases.get(5).quantity - sales.get(5).quantity - snap.six}"/>
                 </td>
             </tr>
             <tr>
                 <td><p:outputLabel value="Összesen"/></td>
+                <td><p:outputLabel value="#{prev.getSum()}"/></td>
                 <td><p:outputLabel value="#{purchases.get(6).quantity}"/></td>
                 <td><p:outputLabel value="#{sales.get(6).quantity}"/></td>
-                <td><p:outputLabel value="#{purchases.get(6).quantity - sales.get(6).quantity}"/></td>
+                <td><p:outputLabel value="#{prev.getSum() + purchases.get(6).quantity - sales.get(6).quantity}"/></td>
                 <td><p:outputLabel id="inputSum" value="#{snap.sum}"/></td>
-                <td><p:outputLabel id="waste7" value="#{purchases.get(6).quantity - sales.get(6).quantity - snap.sum}"/>
+                <td><p:outputLabel id="waste7" value="#{prev.getSum() + purchases.get(6).quantity - sales.get(6).quantity - snap.sum}"/>
                 </td>
             </tr>
         </table>
     </p:panel>
     <p:panel id="userActionPanel">
         <p:commandButton resetValues="true"  value="Mentés" id="saveButt"
-                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.saveSnapshot()}"/>
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{officialStorageView.saveSnapshot()}"/>
         <p:commandButton resetValues="true"  value="Új" id="newButt" style="width: 4em"
-                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.uiResetFields()}"/>
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{officialStorageView.uiResetFields()}"/>
         <p:commandButton resetValues="true"  value="Törlés" id="deleteButt" style="width: 4em"
-                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{storageController.deleteSnapshot()}"/>
+                         update="storageForm:resultsPanel snapshotList storageForm:filterPanel" action="#{officialStorageView.deleteSnapshot()}"/>
     </p:panel>
 
 
-    <p:dataTable var="snapshot" value="#{storageController.snapshotDTOs}" id="snapshotList"
+    <p:dataTable var="snapshot" value="#{officialStorageView.snapshotDTOs}" id="snapshotList"
                  tableStyle="width: auto"
                  lazy="false" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
-                 selection="#{storageController.storageSnapshotDTO}" rowKey="#{snapshot.id}">
-        <p:ajax event="rowSelect" listener="#{storageController.selectSnapshot}"
+                 selection="#{officialStorageView.snapDto}" rowKey="#{snapshot.id}">
+        <p:ajax event="rowSelect" listener="#{officialStorageView.selectSnapshot}"
                 update="storageForm:resultsPanel storageForm:filterPanel"/>
 
         <p:column headerText="-tól" sortBy="#{snapshot.dateFrom}" sortOrder="asc">
