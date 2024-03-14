@@ -106,16 +106,17 @@ public class StorageController {
         this.snapshotDTOs = new ArrayList<>(snapshotService.getAllSnapshots());
     }
 
+    private void calculateAndSetSum(StorageSnapshotDTO dto) {
+        dto.setSum(dto.getOne()
+                + dto.getTwo()
+                + dto.getThree()
+                + dto.getFour()
+                + dto.getFive()
+                + dto.getSix());
+    }
     public void updateSum() {
         StorageSnapshotDTO sn = this.storageSnapshotDTO;
-        sn.setSum(
-                sn.getOne()
-                        + sn.getTwo()
-                        + sn.getThree()
-                        + sn.getFour()
-                        + sn.getFive()
-                        + sn.getSix()
-        );
+        calculateAndSetSum(sn);
     }
 
     public void saveSnapshot() {
@@ -123,6 +124,7 @@ public class StorageController {
                 || storageSnapshotDTO.getDateTo() == null) {
             return;
         }
+        calculateAndSetSum(storageSnapshotDTO);
         snapshotService.saveSnapshot(storageSnapshotDTO);
         updateDTOs();
         uiResetFields();
