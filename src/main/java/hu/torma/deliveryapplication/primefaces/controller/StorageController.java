@@ -10,27 +10,27 @@ import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Logger;
 
-@Getter
-@Setter
-@Controller
+@ViewScoped
+@ManagedBean("storageController")
+//This was supposed to be a controller... ended up being ejb/facesbean
 public class StorageController {
-    /**
-     * The new displays for storage
-     */
-    Logger logger = Logger.getLogger("Storage");
+    @Getter
     private List<ProductWithQuantity> purchaseColumn;
+    @Getter
     private List<ProductWithQuantity> saleColumn;
+    @Setter
     private StorageSnapshotDTO storageSnapshotDTO;
+    @Getter
     private ArrayList<StorageSnapshotDTO> snapshotDTOs;
     @Autowired
     PurchaseService purchaseService;
@@ -114,6 +114,7 @@ public class StorageController {
                 + dto.getFive()
                 + dto.getSix());
     }
+
     public void updateSum() {
         StorageSnapshotDTO sn = this.storageSnapshotDTO;
         calculateAndSetSum(sn);

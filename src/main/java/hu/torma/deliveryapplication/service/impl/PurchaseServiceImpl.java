@@ -122,10 +122,12 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public List<Integer> getPricesOnLastPurchase(String vendorId) {
-        return repo.getLastPurchasePricesByVendorTaxId(vendorId);
+        List<Integer> ints = repo.getLastPurchasePricesByVendorTaxId(vendorId);
+        return ints.size() > 0 ? ints : Arrays.asList(0, 0, 0, 0, 0, 0);
     }
 
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
+
     @Override
     public List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2) {
         List<ProductWithQuantity> tmp = repo.getProductsWithQuantitiesByDates(date1, date2);
@@ -133,7 +135,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
         int it1 = 0, it2 = 0;
         while (it1 < 6 && it2 < 6) {
-            if (tmp.size() < 1 || tmp.size() <= it2 ||!prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
+            if (tmp.size() < 1 || tmp.size() <= it2 || !prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
                 actual.add(new ProductWithQuantity(prodStrings.get(it1), 0));
                 it1++;
             } else {
