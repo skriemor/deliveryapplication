@@ -120,7 +120,10 @@ public class PurchaseServiceImpl implements PurchaseService {
         );
     }
 
-
+    @Override
+    public List<Integer> getPricesOnLastPurchase(String vendorId) {
+        return repo.getLastPurchasePricesByVendorTaxId(vendorId);
+    }
 
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
     @Override

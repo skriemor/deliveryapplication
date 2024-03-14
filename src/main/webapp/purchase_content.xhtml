@@ -47,8 +47,6 @@
             popup.focus();
 
         }
-
-
     </script>
 
     <h:outputStylesheet name="deliveries.css" library="css"/>
@@ -90,8 +88,6 @@
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="note" value="Megjegyzés:"/><br/>
                     <p:inputText id="note" value="#{purchaseController.dto.notes}" required="false" tabindex="3"/><br/>
-
-
                 </p:divider>
                 <p:divider>
                     <p:outputLabel for="paymentdate" value="Mérlegelési jegy dátuma:"/><br/>
@@ -103,11 +99,8 @@
                     <p:outputLabel for="receiptId" value="Számla sorszáma:"/><br/>
                     <p:inputText id="receiptId" value="#{purchaseController.dto.receiptId}" required="false"
                                  tabindex="5"><p:ajax event="change" update="@this"/> </p:inputText>
-
                 </p:divider>
-
             </p:panelGrid>
-
         </div>
     </p:panel>
     <p:panel header="Termékek" id="fixProductPanel" toggleable="true" collapsed="false">
@@ -402,8 +395,6 @@
         </p:column>
 
     </p:dataTable>
-
-
     <p:dataTable var="purchase" value="#{purchaseController.dtoList}" id="purchaseList"
                   tableStyle="width: auto"
                  lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
@@ -459,7 +450,6 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-
     </p:dataTable>
 </p:divider>
 </h:form>

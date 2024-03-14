@@ -31,5 +31,7 @@ public interface PurchaseService {
     List<PurchaseDTO> getPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId);
     List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly);
 
+    List<Integer> getPricesOnLastPurchase(String vendorId);
+
     List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2);
 }

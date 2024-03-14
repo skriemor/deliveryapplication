@@ -61,4 +61,19 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
             @Param("date1") Date date1,
             @Param("date2") Date date2
     );
+
+    @Query(nativeQuery = true, value = """
+SELECT pp.unit_price
+FROM (
+SELECT MAX(p.id) id, p.vendor_name name
+FROM purchase p
+where p.vendor_name like ?1
+group by name
+) query2
+inner join purchased_product pp on pp.purchase_id = query2.id
+limit 6
+""")
+    List<Integer> getLastPurchasePricesByVendorTaxId(
+            @Param(value = "vendortaxid") String vendorid
+    );
 }

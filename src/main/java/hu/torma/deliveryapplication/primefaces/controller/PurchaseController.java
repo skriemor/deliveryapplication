@@ -775,6 +775,17 @@ public class PurchaseController implements Serializable {
             temp.setRemainingPrice(total);
             service.savePurchase(temp);
         }
+    }
 
+    public void getLastPrices() {
+        if (this.dto != null && this.dto.getVendor() != null && dto.getVendor().getTaxId() != null) {
+            List<Integer> ints = service.getPricesOnLastPurchase(dto.getVendor().getTaxId());
+            one.setUnitPrice(ints.get(0));
+            two.setUnitPrice(ints.get(1));
+            three.setUnitPrice(ints.get(2));
+            four.setUnitPrice(ints.get(3));
+            five.setUnitPrice(ints.get(4));
+            six.setUnitPrice(ints.get(5));
+        }
     }
 }
