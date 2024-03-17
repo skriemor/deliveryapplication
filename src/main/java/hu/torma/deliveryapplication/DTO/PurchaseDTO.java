@@ -12,30 +12,18 @@ import java.text.NumberFormat;
 import java.util.*;
 
 @Data
-
 @NoArgsConstructor
 public class PurchaseDTO implements Serializable {
     private Integer id;
-
     private List<PurchasedProductDTO> productList;
-
     private VendorDTO vendor;
-
     private Date receiptDate;
-
     private SiteDTO site;
-
     private String notes;
-
     private Double totalPrice;
-
     private Double remainingPrice;
-
     private Date bookedDate;
-
     private String receiptId;
-
-
 
     @Override
     public boolean equals(Object o) {

@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.Tuple;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,6 +134,9 @@ public class PurchaseServiceImpl implements PurchaseService {
         List<ProductWithQuantity> tmp = repo.getProductsWithQuantitiesByDates(date1, date2);
         List<ProductWithQuantity> actual = new ArrayList<>();
 
+        /**
+         * Transpone an unentire list to an entire list that contains all possible products in the correct order
+         */
         int it1 = 0, it2 = 0;
         while (it1 < 6 && it2 < 6) {
             if (tmp.size() < 1 || tmp.size() <= it2 || !prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
@@ -145,5 +149,10 @@ public class PurchaseServiceImpl implements PurchaseService {
             }
         }
         return actual;
+    }
+
+    @Override
+    public Tuple getConcatedSerialsAndMaskedPricesById(Integer id) {
+        return repo.getConcatedSerialsAndMaskedPricesById(id);
     }
 }

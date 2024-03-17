@@ -6,6 +6,7 @@ import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
+import javax.persistence.Tuple;
 import java.util.Date;
 import java.util.List;
 
@@ -34,4 +35,6 @@ public interface PurchaseService {
     List<Integer> getPricesOnLastPurchase(String vendorId);
 
     List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2);
+
+    Tuple getConcatedSerialsAndMaskedPricesById(Integer id);
 }

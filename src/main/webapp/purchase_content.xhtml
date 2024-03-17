@@ -357,9 +357,6 @@
                              actionListener="#{purchaseController.pdf()}">
                 <p:fileDownload value="#{purchaseController.file}"/>
             </p:commandButton>
-            <p:commandButton value="Maradék összegek frissítése" id="refreshRemains" style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0;border-radius: 0;font-size: 15px;">
-                <p:ajax  listener="#{purchaseController.forceUpdateRemainingPrices()}" update="purchaseList" />
-            </p:commandButton>
         </div>
     </p:panel>
 

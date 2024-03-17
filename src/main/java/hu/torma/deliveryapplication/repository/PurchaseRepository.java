@@ -1,14 +1,12 @@
 package hu.torma.deliveryapplication.repository;
 
-import hu.torma.deliveryapplication.DTO.DisplayUnit;
-import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
-import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.persistence.Tuple;
 import java.util.Date;
 import java.util.List;
 
@@ -63,17 +61,26 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
     );
 
     @Query(nativeQuery = true, value = """
-SELECT pp.unit_price
-FROM (
-SELECT MAX(p.id) id, p.vendor_name name
-FROM purchase p
-where p.vendor_name like ?1
-group by name
-) query2
-inner join purchased_product pp on pp.purchase_id = query2.id
-limit 6
-""")
+            SELECT pp.unit_price
+            FROM (
+            SELECT MAX(p.id) id, p.vendor_name name
+            FROM purchase p
+            where p.vendor_name like ?1
+            group by name
+            ) query2
+            inner join purchased_product pp on pp.purchase_id = query2.id
+            limit 6
+            """)
     List<Integer> getLastPurchasePricesByVendorTaxId(
             @Param(value = "vendortaxid") String vendorid
     );
+
+    @Query(nativeQuery = true, value = """
+            select sum(r.price), GROUP_CONCAT(cp.new_serial SEPARATOR ' ')
+            from records r
+            inner join completed_purchase cp on cp.id = r.completed_id
+            where r.purchase_id = ?1
+            group by r.purchase_id
+            """)
+    Tuple getConcatedSerialsAndMaskedPricesById(@Param("id") Integer id);
 }

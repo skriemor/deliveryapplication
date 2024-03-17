@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import javax.persistence.Tuple;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -46,13 +47,12 @@ public class PurchaseController implements Serializable {
     @Getter @Setter private PurchasedProductDTO four;
     @Getter @Setter private PurchasedProductDTO five;
     @Getter @Setter private PurchasedProductDTO six;
-    private StreamedContent file;
+    @Getter private StreamedContent file;
     Logger logger = Logger.getLogger("BOOL");
     @Getter @Setter private List<SortMeta> sortBy;
-    @Getter private String label;
-    private Boolean isSafeToDelete;
-    private PurchaseDTO dto;
-    @Getter private List<PurchaseDTO> dtoList;
+    @Getter private Boolean isSafeToDelete;
+    @Setter private PurchaseDTO dto;
+    @Getter @Setter private List<PurchaseDTO> dtoList;
 
 
     public Double getNetAvgPrice() {
@@ -84,10 +84,10 @@ public class PurchaseController implements Serializable {
     }
 
     public String getFormattedPriceOf(PurchasedProductDTO i) {
-        return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(i)).replaceAll(",", " ");
+        return NumberFormat.getNumberInstance(Locale.US).format(calculateSetAndGetTotalPriceOf(i)).replaceAll(",", " ");
     }
 
-    public Integer getPriceOf(PurchasedProductDTO dto_) {
+    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
         if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
         Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
@@ -110,40 +110,6 @@ public class PurchaseController implements Serializable {
         return setAndSumPurchasedProductDtoPrices(one, two, three, four, five, six);
     }
 
-    public void forceUpdateRemainingPrices() {
-        for (var c : dtoList) {
-            c.setRemainingPrice(getRemaningDoublePrice(c));
-            service.savePurchase(c);
-        }
-    }
-
-    private void updateRemainingPrices() {
-        for (var c : dtoList) {
-            if (c.getRemainingPrice() == null) {
-                c.setRemainingPrice(getRemaningDoublePrice(c));
-                service.savePurchase(c);
-            }
-
-        }
-    }
-
-    public double getRemaningDoublePrice(PurchaseDTO pc) {
-        var temp = pc;
-        var tempList = temp.getProductList();
-        var total = temp.getTotalPrice();
-        var records = recordService.getAllCompletionRecords().stream().filter(r -> r.getPurchaseId().intValue() == pc.getId().intValue()).toList();
-        for (var r : records) {
-            total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
-            total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
-        }
-
-        return total;
-    }
-
     public String getIntedNum(double d) {
         return NumberFormat.getNumberInstance(Locale.US).format(d).replaceAll(",", "");
     }
@@ -161,7 +127,6 @@ public class PurchaseController implements Serializable {
     }
 
     private void setUpFive() {
-
         one = new PurchasedProductDTO();
         one.setProduct(pService.getProductById("I.OSZTÁLYÚ"));
         one.setCorrPercent(5);
@@ -196,17 +161,7 @@ public class PurchaseController implements Serializable {
     @PostConstruct
     public void getAllPurchases() {
         dtoList = service.getAllPurchases();
-        updateRemainingPrices();
     }
-
-    public void setDto(PurchaseDTO dto) {
-        dto = dto;
-    }
-
-    public void setDtoList(List<PurchaseDTO> dtoList) {
-        dtoList = dtoList;
-    }
-
 
     private void copyPurchasedProductsIntoPurchaseDto(PurchasedProductDTO... dtos) {
         dto.setProductList(new ArrayList<>());
@@ -214,7 +169,7 @@ public class PurchaseController implements Serializable {
             if (pp.getUnitPrice() == null) pp.setUnitPrice(0);
             if (pp.getQuantity() == null) pp.setQuantity(0);
             if (pp.getTotalPrice() == null) {
-                pp.setTotalPrice(getPriceOf(pp) == null ? 0 : getPriceOf(pp));
+                pp.setTotalPrice(calculateSetAndGetTotalPriceOf(pp) == null ? 0 : calculateSetAndGetTotalPriceOf(pp));
             }
             dto.getProductList().add(pp);
         });
@@ -227,10 +182,6 @@ public class PurchaseController implements Serializable {
             return;
         }
         file = pdFcreator.createDownload(dto);
-    }
-
-    public StreamedContent getFile() {
-        return file;
     }
 
     private void checkNullSite() {
@@ -249,7 +200,13 @@ public class PurchaseController implements Serializable {
         }
         calculateTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
-        dto.setRemainingPrice(dto.getTotalPrice());
+        if (dto.getId() != null) {
+            Tuple priceAndSerials = service.getConcatedSerialsAndMaskedPricesById(dto.getId());
+            dto.setRemainingPrice(dto.getTotalPrice() - Double.valueOf(priceAndSerials.get(0).toString()));
+            dto.setReceiptId(priceAndSerials.get(1).toString());
+        } else {
+            dto.setRemainingPrice(dto.getTotalPrice());
+        }
         if (dto.getSite() == null) {
             checkNullSite();
             dto.setSite(siteService.getSiteById("-"));
@@ -265,7 +222,6 @@ public class PurchaseController implements Serializable {
         completedPurchaseController.updateAvailablePurchases();
     }
 
-
     private void calculateTotalPrice() {
         if (dto.getProductList() == null) {
             dto.setTotalPrice(0.0);
@@ -274,19 +230,14 @@ public class PurchaseController implements Serializable {
         }
     }
 
-
     public void deletePurchase() {
         service.deletePurchase(dto);
         getAllPurchases();
         dto = new PurchaseDTO();
         emptySix();
         completedPurchaseController.updateAvailablePurchases();
-
     }
 
-    public Boolean getIsSafeToDelete() {
-        return isSafeToDelete;
-    }
 
     private void editSix() {
         one = dto.getProductList().get(0);
@@ -404,7 +355,6 @@ public class PurchaseController implements Serializable {
 
     }
 
-
     public void refreshReceipts() {
         getAllPurchases();
         for (var c : dtoList) {
@@ -423,7 +373,6 @@ public class PurchaseController implements Serializable {
                 total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
                 tempstring += r.getCompletedPurchase().getNewSerial() + " ";
             }
-
             temp.setReceiptId(tempstring);
             temp.setRemainingPrice(total);
             service.savePurchase(temp);
