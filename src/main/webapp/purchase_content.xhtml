@@ -24,13 +24,6 @@
 
             }
         });
-        function reconnectThem() {
-            fixChildren();
-        }
-
-        function jumpToTop() {
-            window.location.href = "#top1";
-        }
 
         function funcForWindowPopup() {
             var popup = null;
@@ -68,7 +61,6 @@
                     <p:selectOneMenu id="vendor" value="#{purchaseController.dto.vendor}" required="true" tabindex="1" requiredMessage="Válasszon termelőt!"
                                      converter="#{vendorConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
                         <p:ajax event="change" update="@this"/>
-                        <!-- <p:ajax event="select" listener="#{vendorServiceImpl.allVendors}" update="vendor"/>-->
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{vendorServiceImpl.allVendors}" var="vendorvar"
                                        itemLabel="#{vendorvar.vendorName}(#{vendorvar.birthPlace}, #{vendorvar.formattedBirthDate})"
@@ -81,7 +73,6 @@
                     <p:selectOneMenu id="site" value="#{purchaseController.dto.site}" required="false" tabindex="2"
                                      converter="#{siteConverter}" filter="true" filterMatchMode="contains" panelStyle="overflow: scroll; left: 0;  position: static">
                         <p:ajax event="change" update="@this"/>
-                        <!--  <p:ajax event="select" listener="#{siteServiceImpl.allSites}" update="site"/>-->
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                         <f:selectItems value="#{siteServiceImpl.allSites}" var="sitevar" itemLabel="#{sitevar.siteName}"
                                        itemValue="#{sitevar}"/>
@@ -104,8 +95,7 @@
         </div>
     </p:panel>
     <p:panel header="Termékek" id="fixProductPanel" toggleable="true" collapsed="false">
-
-        <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;">
+        <table border="1px" style="border-collapse: collapse; overflow-x: scroll; scroll-behavior: smooth;" id="fixProductTable">
             <thead>
             <tr>
                 <th>
@@ -129,14 +119,14 @@
                 </th>
             </tr>
             </thead>
-            <tbody>
+            <tbody id="fixProductTableBody">
             <tr>
                 <td><p:outputLabel id="prod1" value="#{purchaseController.one.product.id}"/><br/></td>
                 <td><p:inputText id="unitPrice1" value="#{purchaseController.one.unitPrice}" required="false"
                                  tabindex="55">
                     <p:ajax event="change"
                             update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 net1"/>
-                </p:inputText><br/></td>
+                </p:inputText></td>
                 <td><p:inputText id="nquantity1" value="#{purchaseController.one.quantity}" required="false"
                                  tabindex="6">
                     <p:ajax event="change"
@@ -317,14 +307,16 @@
             </tr>
             </tbody>
         </table>
-
         <p/>
-
-
+        <h:commandButton id="fetchy" value="Legutóbbi árak" actionListener="#{purchaseController.getLastPrices()}" immediate="true"
+                         style="color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; border-radius: 15px">
+            <f:ajax immediate="true" render="fixProductPanel" />
+        </h:commandButton>
+        <p/>
     </p:panel>
     <hr></hr>
     <p:panel id="buttonPanel">
-        <p:commandButton value="#{purchaseController.label}" tabindex="12" resetValues="true" update="purchasePanel fixProductPanel purchaseList"
+        <p:commandButton value="Mentés" tabindex="12" resetValues="true" update="purchasePanel fixProductPanel purchaseList"
                          actionListener="#{purchaseController.uiSavePurchase(false)}"
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" id="newSaveButton">
         </p:commandButton>
@@ -339,10 +331,6 @@
                          style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black" immediate="true" update="purchaseForm:purchaseList purchaseForm:fixProductPanel purchaseForm:purchasePanel purchaseForm:conf" resetValues="true">
             <p:confirm header="Törlés jóváhagyása" message="#{purchaseController.isSafeToDelete ? 'Biztosan törli a mérlegjegyet?' : 'Ehhez a mérlegelési jegyhez tartozik felvásárlási jegy, kérem először távolítsa el a felvásárlási jegyről!'}" icon="pi pi-info-circle"  />
         </p:commandButton>
-
-        <p:commandButton id="fetch_last_prices" actionListener="#{purchaseController.getLastPrices()}"
-                         update="fixProductPanel" immediate="true" value="Legutóbbi árak betöltése"
-                         style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black"/>
 
         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" responsive="true" width="350" id="confirmer">
             <p:commandButton value="Mégsem" type="button" styleClass="ui-confirmdialog-no ui-button-flat"/>
@@ -373,7 +361,6 @@
                 <p:ajax  listener="#{purchaseController.forceUpdateRemainingPrices()}" update="purchaseList" />
             </p:commandButton>
         </div>
-
     </p:panel>
 
     <p:divider style="height: 3em" >
@@ -441,7 +428,3 @@
 </p:divider>
 </h:form>
 </html>
-
-
-
-
