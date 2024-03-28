@@ -382,14 +382,15 @@
                 <p:commandButton id="doFilterButton" actionListener="#{displayController.refreshPurchaseDTOS()}"
                                  value="SZŰRÉS" update="purchaseList"/>
             </p:panel>
+            <p:commandButton id="printerButton">
+                <p:printer  target="purchaseList"/>
+            </p:commandButton>
+
             <p:dataTable var="purchase" value="#{displayController.purchaseDTOS}" id="purchaseList"  editable="true" editMode="cell"
                          tableStyle="width: auto"
                          lazy="false"
                          style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
-
-
-
                 <p:columnGroup type="header">
                     <p:row>
                         <p:column headerText="Sorszám"/>

@@ -1,3 +1,33 @@
+@media print {
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+
+    table {
+        page-break-inside: avoid;
+    }
+
+    body .ui-datatable .ui-widget .ui-datatable-resizable {
+        visibility: hidden;
+
+        border: 0;
+        margin: 0;
+        padding: 0;
+        background: none;
+        color: black;
+    }
+    body .ui-datatable .ui-datatable-data > tr > td {
+        transform: scale(.7);
+
+        border: 0;
+        margin: 0;
+        padding: 0;
+        background: none;
+        color: black;
+    }
+}
+
 body .ui-inputfield {
     color: #495057;
     background: #fff;
