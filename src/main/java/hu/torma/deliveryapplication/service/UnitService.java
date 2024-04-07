@@ -16,4 +16,6 @@ public interface UnitService {
     UnitDTO getUnitByName(String s);
 
     UnitDTO getUnitById(String s);
+
+    boolean existsById(String id);
 }

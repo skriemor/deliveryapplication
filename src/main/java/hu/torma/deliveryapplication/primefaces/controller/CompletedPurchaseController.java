@@ -11,6 +11,7 @@ import org.primefaces.model.SortOrder;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 
 import javax.annotation.PostConstruct;
@@ -28,6 +29,7 @@ import java.util.stream.IntStream;
 
 
 @Controller
+@DependsOn("dbInit")
 public class CompletedPurchaseController implements Serializable {
 
     private Integer selectionCounter;

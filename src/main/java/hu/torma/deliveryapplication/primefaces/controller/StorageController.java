@@ -10,6 +10,7 @@ import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -22,7 +23,7 @@ import java.util.List;
 
 @ViewScoped
 @ManagedBean("storageController")
-//This was supposed to be a controller... ended up being ejb/facesbean
+@DependsOn("dbInit")
 public class StorageController {
     @Getter
     private List<ProductWithQuantity> purchaseColumn;

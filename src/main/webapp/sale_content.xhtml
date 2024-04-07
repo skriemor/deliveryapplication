@@ -111,7 +111,7 @@
                                      panelStyle="overflow: scroll; left: 0;  position: static">
                         <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true" />
                         <f:selectItems value="#{buyerController.dtoList}" var="buyervar" itemLabel="#{buyervar.name}(#{buyervar.accountNum})" itemValue="#{buyervar}" />
-                        <p:ajax event="change" listener="#{saleController.updateAccountNum()}" update="receiptId"/>
+                        <p:ajax event="change" update="receiptId"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="currency" value="Fizetési valuta:"/><br/>
                     <p:selectOneMenu id="currency" value="#{saleController.dto.currency}" filter="true" filterMatchMode="contains" required="true" style="max-width: 120px"  tabindex="2"><br/>

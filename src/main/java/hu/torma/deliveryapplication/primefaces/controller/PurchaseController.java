@@ -12,6 +12,7 @@ import org.primefaces.model.SortOrder;
 import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
@@ -31,6 +32,7 @@ import java.util.logging.Logger;
 
 @ViewScoped
 @ManagedBean("purchaseController")
+@DependsOn("dbInit")
 public class PurchaseController implements Serializable {
     @Autowired CompletionRecordService recordService;
     @Autowired private PDFcreator pdFcreator;
@@ -120,7 +122,6 @@ public class PurchaseController implements Serializable {
 
     @PostConstruct
     public void init() {
-        checkFive();
         newPurchase();
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
@@ -260,7 +261,6 @@ public class PurchaseController implements Serializable {
 
     public void newPurchase() {
         emptySix();
-        setUpFive();
         dto = new PurchaseDTO();
     }
     public PurchaseDTO getDto() {
@@ -270,67 +270,6 @@ public class PurchaseController implements Serializable {
         return dto;
     }
 
-    private void checkFive() {
-        if (uService.getUnitById("kg") == null) {
-            UnitDTO kgUnit = new UnitDTO();
-            kgUnit.setId("kg");
-            kgUnit.setUnitName("Kilogramm");
-            uService.saveUnit(kgUnit);
-            ProductDTO product = new ProductDTO();
-            product.setPrice(672);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("I.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-            product = new ProductDTO();
-            product.setPrice(560);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("II.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-            product = new ProductDTO();
-            product.setPrice(448);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("III.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-            product = new ProductDTO();
-            product.setPrice(224);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("IV.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-            product = new ProductDTO();
-            product.setPrice(56);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("GYÖKÉR");
-            pService.saveProduct(product);
-
-            product = new ProductDTO();
-            product.setPrice(300);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("IPARI");
-            pService.saveProduct(product);
-        }
-    }
 
     public String getFormattedSixTotal() {
         return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");

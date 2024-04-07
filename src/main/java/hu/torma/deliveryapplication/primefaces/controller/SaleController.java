@@ -9,11 +9,14 @@ import hu.torma.deliveryapplication.service.SaleService;
 import hu.torma.deliveryapplication.service.StorageService;
 import hu.torma.deliveryapplication.service.UnitService;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -31,7 +34,12 @@ import java.util.logging.Logger;
 
 @SessionScope
 @Controller("saleController")
+@DependsOn("dbInit")
 public class SaleController implements Serializable {
+    @Autowired StorageService sService;
+    @Autowired ProductService pService;
+    @Autowired UnitService uService;
+    @Autowired SaleService service;
 
     String errorMessage = "";
 
@@ -47,7 +55,12 @@ public class SaleController implements Serializable {
     private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
 
 
-    private PurchasedProductDTO one, two, three, four, five, six;
+    @Getter @Setter private PurchasedProductDTO one;
+    @Getter @Setter private PurchasedProductDTO two;
+    @Getter @Setter private PurchasedProductDTO three;
+    @Getter @Setter private PurchasedProductDTO four;
+    @Getter @Setter private PurchasedProductDTO five;
+    @Getter @Setter private PurchasedProductDTO six;
 
 
     private List<SortMeta> sortBy;
@@ -64,19 +77,11 @@ public class SaleController implements Serializable {
 
         return sum;
     }
+
     public String getFormattedNumber(int num) {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
-    @Autowired
-    StorageService sService;
-    @Autowired
-    ProductService pService;
 
-    @Autowired
-    UnitService uService;
-
-    @Autowired
-    SaleService service;
 
     private String label;
 
@@ -91,35 +96,19 @@ public class SaleController implements Serializable {
     private String label2;
     private SaleDTO dto;
     private List<SaleDTO> dtoList;
-    private String dateRange;
-
-    private PurchasedProductDTO productDTO;
+    @Setter private PurchasedProductDTO productDTO;
 
     public PurchasedProductDTO getProductDTO() {
         if (this.productDTO == null) this.productDTO = new PurchasedProductDTO();
         return this.productDTO;
     }
 
-    public void updateAccountNum() {
-        //if (this.dto.getBuyer() != null)
-        //this.dto.setAccountNumber(this.dto.getBuyer().getAccountNum());
-    }
-
-    public void setProductDTO(PurchasedProductDTO productDTO) {
-        this.productDTO = productDTO;
-    }
-
     @PostConstruct
     public void init() {
         errorMessage = "";
-        checkFive();
         setUpFive();
         sortBy = new ArrayList<>();
-        sortBy.add(SortMeta.builder()
-                .field("id")
-                .order(SortOrder.ASCENDING)
-                .build());
-        dateRange = (LocalDate.now().getYear() - 50) + ":" + (LocalDate.now().getYear() + 5);
+        sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
     }
 
     private void setUpFive() {
@@ -296,8 +285,8 @@ public class SaleController implements Serializable {
         six.setQuantity(null);
     }
 
-    private void setQuants(){
-        for (var c: dto.getProductList()) {
+    private void setQuants() {
+        for (var c : dto.getProductList()) {
             if (c.getProduct().getId().equals("I.OSZTÁLYÚ")) one.setQuantity(c.getQuantity());
             if (c.getProduct().getId().equals("II.OSZTÁLYÚ")) two.setQuantity(c.getQuantity());
             if (c.getProduct().getId().equals("III.OSZTÁLYÚ")) three.setQuantity(c.getQuantity());
@@ -308,6 +297,7 @@ public class SaleController implements Serializable {
 
 
     }
+
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
         this.setLabel2("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
@@ -352,14 +342,6 @@ public class SaleController implements Serializable {
         this.service = service;
     }
 
-    public String getDateRange() {
-        return dateRange;
-    }
-
-    public void setDateRange(String dateRange) {
-        this.dateRange = dateRange;
-    }
-
 
     public void newProduct() {
         this.productDTO = new PurchasedProductDTO();
@@ -370,77 +352,6 @@ public class SaleController implements Serializable {
         this.dto.setProductList(new ArrayList<>());
     }
 
-    private void checkFive() {
-        UnitDTO kgUnit = new UnitDTO();
-        kgUnit.setId("kg");
-        kgUnit.setUnitName("Kilogramm");
-        uService.saveUnit(kgUnit);
-        ProductDTO product = new ProductDTO();
-        if (!pService.exists("I.OSZTÁLYÚ")) {
-            product.setPrice(672);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("I.OSZTÁLYÚ");
-            pService.saveProduct(product);
-        }
-        if (!pService.exists("II.OSZTÁLYÚ")) {
-            product = new ProductDTO();
-            product.setPrice(560);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("II.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-        }
-        if (!pService.exists("III.OSZTÁLYÚ")) {
-            product = new ProductDTO();
-            product.setPrice(448);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("III.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-        }
-        if (!pService.exists("IV.OSZTÁLYÚ")) {
-            product = new ProductDTO();
-            product.setPrice(224);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("IV.OSZTÁLYÚ");
-            pService.saveProduct(product);
-
-        }
-        if (!pService.exists("GYÖKÉR")) {
-            product = new ProductDTO();
-            product.setPrice(56);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("GYÖKÉR");
-            pService.saveProduct(product);
-
-        }
-        if (!pService.exists("IPARI")) {
-            product = new ProductDTO();
-            product.setPrice(300);
-            product.setFirstUnit(kgUnit);
-            product.setSecondUnit(kgUnit);
-            product.setCompPercent(0);
-            product.setTariffnum("0");
-            product.setId("IPARI");
-            pService.saveProduct(product);
-        }
-
-    }
 
     public ArrayList<ProductDTO> getListFiveProduct() {
         return listFiveProduct;
@@ -450,51 +361,4 @@ public class SaleController implements Serializable {
         this.listFiveProduct = listFiveProduct;
     }
 
-    public PurchasedProductDTO getOne() {
-        return one;
-    }
-
-    public void setOne(PurchasedProductDTO one) {
-        this.one = one;
-    }
-
-    public PurchasedProductDTO getTwo() {
-        return two;
-    }
-
-    public void setTwo(PurchasedProductDTO two) {
-        this.two = two;
-    }
-
-    public PurchasedProductDTO getThree() {
-        return three;
-    }
-
-    public void setThree(PurchasedProductDTO three) {
-        this.three = three;
-    }
-
-    public PurchasedProductDTO getFour() {
-        return four;
-    }
-
-    public void setFour(PurchasedProductDTO four) {
-        this.four = four;
-    }
-
-    public PurchasedProductDTO getFive() {
-        return five;
-    }
-
-    public void setFive(PurchasedProductDTO five) {
-        this.five = five;
-    }
-
-    public PurchasedProductDTO getSix() {
-        return six;
-    }
-
-    public void setSix(PurchasedProductDTO six) {
-        this.six = six;
-    }
 }

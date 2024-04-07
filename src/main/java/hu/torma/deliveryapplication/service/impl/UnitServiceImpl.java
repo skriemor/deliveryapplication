@@ -53,4 +53,9 @@ public class UnitServiceImpl implements UnitService {
     public UnitDTO getUnitById(String s) {
         return mapper.map(repo.findById(s).get(), UnitDTO.class);
     }
+
+    @Override
+    public boolean existsById(String id) {
+        return repo.existsById(id);
+    }
 }

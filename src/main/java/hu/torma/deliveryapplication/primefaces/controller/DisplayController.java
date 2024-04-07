@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.primefaces.event.CellEditEvent;
 import org.primefaces.event.RowEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.context.annotation.SessionScope;
 
@@ -21,10 +22,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Logger;
 
-@SessionScope
+@SessionScope // TODO: fix incorrect annotations
 @Controller("displayController")
 @Setter
 @Getter
+@DependsOn("dbInit")
 public class DisplayController implements Serializable {
     List<MediatorData> mediatorData;
 

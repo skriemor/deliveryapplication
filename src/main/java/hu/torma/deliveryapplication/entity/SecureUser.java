@@ -20,6 +20,4 @@ public class SecureUser {
 
     @Column(name = "password", nullable = false)
     private String password;
-
-
 }
