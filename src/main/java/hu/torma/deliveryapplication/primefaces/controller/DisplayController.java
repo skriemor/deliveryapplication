@@ -10,10 +10,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.context.annotation.SessionScope;
 
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ManagedBean;
+import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -22,69 +22,57 @@ import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
 
-@SessionScope // TODO: fix incorrect annotations
-@Controller("displayController")
-@Setter
-@Getter
+@ViewScoped // TODO: fix incorrect annotations
+@ManagedBean(name = "displayController")
 @DependsOn("dbInit")
 public class DisplayController implements Serializable {
-    List<MediatorData> mediatorData;
+    @Autowired CompletionRecordService recordService;
+    @Getter @Setter List<MediatorData> mediatorData;
+    @Getter @Setter List<CompletionRecordDTO> CPRecords;
+    @Getter @Setter String numSerial1, numSerial2;
+    @Getter @Setter MediatorDTO mediator;
+    @Getter @Setter private CompletedPurchaseDTO CPSums;
+    @Getter @Setter private boolean shouldFilterByPaper;
+    @Getter @Setter private Boolean paidOnly;
+    @Getter @Setter private String filterPaymentMethodCP;
+    @Getter @Setter private VendorDTO filterName;
+    @Getter @Setter private VendorDTO filterName4;
+    @Getter @Setter private BuyerDTO filterName2;
+    @Getter @Setter private SaleSumPojo saleSumPojo;
+    @Getter @Setter private String filterCurrency2;
+    @Getter @Setter private String filterPaper2;
+    @Getter @Setter private Boolean filterUnpaidOnly2;
+    @Getter @Setter private Boolean filterLetaiOnly2;
+    @Getter @Setter private Boolean filterGlobalGapOnly2;
+    @Getter @Setter private Boolean fullyPaidFilter;
+    @Getter @Setter private Date filterDateFrom;
+    @Getter @Setter private Date filterDateFrom2;
+    @Getter @Setter private Date filterDateFrom3;
+    @Getter @Setter private Date filterDateFrom4;
+    @Getter @Setter private Date filterDateTo;
+    @Getter @Setter private Date filterDateTo2;
+    @Getter @Setter private Date filterDateTo3;
+    @Getter @Setter private Date filterDateTo4;
+    @Getter @Setter private List<PurchaseDTO> purchaseDTOS;
+    @Getter @Setter private List<CompletedPurchaseDTO> CPDTOS;
+    @Getter @Setter private List<SaleDTO> saleDTOS;
+    @Getter @Setter private List<PurchaseDTO> mediatorDisplaysP;
+    @Getter @Setter private List<CompletedPurchaseDTO> mediatorDisplaysCP;
+    @Getter @Setter PurchaseSumObj cpSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+    @Getter @Setter PurchaseSumObj splitCPSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+    @Getter @Setter PurchaseSumObj summage = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+    @Getter @Setter Boolean felvJegy;
 
-    List<CompletionRecordDTO> CPRecords;
-    String numSerial1, numSerial2;
-
-    MediatorDTO mediator;
-
-    private CompletedPurchaseDTO CPSums;
-
-    private boolean shouldFilterByPaper;
-    private Boolean paidOnly;
-
-    private String filterPaymentMethodCP;
-    private VendorDTO filterName;
-    private VendorDTO filterName4;
-    private BuyerDTO filterName2;
-    private SaleSumPojo saleSumPojo;
-    private String filterCurrency2;
-    private String filterPaper2;
-    private Boolean filterUnpaidOnly2;
-    private Boolean filterLetaiOnly2;
-    private Boolean filterGlobalGapOnly2;
-    private Boolean fullyPaidFilter;
-
-    private Date filterDateFrom;
-    private Date filterDateFrom2;
-    private Date filterDateFrom3;
-    private Date filterDateFrom4;
-
-    private Date filterDateTo;
-    private Date filterDateTo2;
-    private Date filterDateTo3;
-    private Date filterDateTo4;
-
-    private List<PurchaseDTO> purchaseDTOS;
-    private List<CompletedPurchaseDTO> CPDTOS;
-    private List<SaleDTO> saleDTOS;
-    private List<PurchaseDTO> mediatorDisplaysP;
-    private List<CompletedPurchaseDTO> mediatorDisplaysCP;
-
-    @Autowired
-    StorageService storageService;
-    @Autowired
-    CompletedPurchaseService CPService;
-    @Autowired
-    ProductService productService;
-    @Autowired
-    MediatorService mediatorService;
-    @Autowired
-    UnitService unitService;
+    @Autowired StorageService storageService;
+    @Autowired CompletedPurchaseService CPService;
+    @Autowired ProductService productService;
+    @Autowired MediatorService mediatorService;
+    @Autowired UnitService unitService;
 
 
-    @Autowired
-    PurchaseService purchaseService;
+    @Autowired PurchaseService purchaseService;
 
-    @Autowired
-    SaleService saleService;
+    @Autowired SaleService saleService;
 
     @PostConstruct
     public void init() {
@@ -93,7 +81,6 @@ public class DisplayController implements Serializable {
         CPDTOS = new ArrayList<>();
         saleDTOS = new ArrayList<>();
     }
-
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
         purchaseDTOS = purchaseService.applyFilterChainAndReturnPurchases(filterName == null ? null : filterName.getTaxId(), filterDateFrom, filterDateTo, fullyPaidFilter);
@@ -107,22 +94,15 @@ public class DisplayController implements Serializable {
         return new ArrayList<>(saleDTOS);
     }
 
-    PurchaseSumObj cpSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
-
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
         CPDTOS = CPService.getFilteredListOfCPs(filterName4 == null ? null : filterName4.getTaxId(), filterDateFrom4, filterDateTo4, numSerial1 == "" ? null : numSerial1, numSerial2 == "" ? null : numSerial2, paidOnly, filterPaymentMethodCP);
         cpSumObj = getSumsOfCPs(CPDTOS);
         return new ArrayList<>(CPDTOS);
     }
 
-    Boolean felvJegy;
-    Logger boolog = Logger.getLogger("Boolean of felvjegy");
-
     public void setFelvJegy(Boolean b) {
         felvJegy = b;
     }
-
-    PurchaseSumObj summage = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
 
     public void refreshMediatorDisplays() {
         if (felvJegy == null) return;
@@ -139,11 +119,6 @@ public class DisplayController implements Serializable {
     public void generatePurhcaseDisplays() {
         mediatorData = mediatorService.getMediatorData(filterDateFrom3, filterDateTo3);
     }
-
-
-    @Autowired
-    CompletionRecordService recordService;
-
 
     public String toDottedDate(java.util.Date dt) {
         return DateConverter.toDottedDate(dt);
@@ -178,8 +153,6 @@ public class DisplayController implements Serializable {
     public Integer getMediatorTotalPriceSumByMediator(String medName) {
         return mediatorData.stream().filter(med -> med.getMediatorName().equals(medName)).mapToInt(MediatorData::getTotalPrice).sum();
     }
-
-    PurchaseSumObj splitCPSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
 
     public PurchaseSumObj getSumsOfCPs(List<CompletedPurchaseDTO> cps) {
         var recs = cps.stream().flatMap(cp -> cp.getRecords().stream()).toList();
