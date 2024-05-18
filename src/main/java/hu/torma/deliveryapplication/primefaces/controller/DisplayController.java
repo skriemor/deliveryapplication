@@ -8,8 +8,6 @@ import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import lombok.Getter;
 import lombok.Setter;
-import org.primefaces.event.CellEditEvent;
-import org.primefaces.event.RowEditEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Controller;
@@ -18,8 +16,10 @@ import org.springframework.web.context.annotation.SessionScope;
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.logging.Logger;
 
 @SessionScope // TODO: fix incorrect annotations
@@ -31,7 +31,7 @@ public class DisplayController implements Serializable {
     List<MediatorData> mediatorData;
 
     List<CompletionRecordDTO> CPRecords;
-    String numSerial1,numSerial2;
+    String numSerial1, numSerial2;
 
     MediatorDTO mediator;
 
@@ -110,7 +110,7 @@ public class DisplayController implements Serializable {
     PurchaseSumObj cpSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
 
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
-        CPDTOS = CPService.getFilteredListOfCPs(filterName4 == null ? null : filterName4.getTaxId(), filterDateFrom4, filterDateTo4, numSerial1==""?null:numSerial1,numSerial2==""?null:numSerial2, paidOnly, filterPaymentMethodCP);
+        CPDTOS = CPService.getFilteredListOfCPs(filterName4 == null ? null : filterName4.getTaxId(), filterDateFrom4, filterDateTo4, numSerial1 == "" ? null : numSerial1, numSerial2 == "" ? null : numSerial2, paidOnly, filterPaymentMethodCP);
         cpSumObj = getSumsOfCPs(CPDTOS);
         return new ArrayList<>(CPDTOS);
     }
@@ -203,6 +203,7 @@ public class DisplayController implements Serializable {
         if (obj == null) return 0;
         return obj.getOne() + obj.getTwo() + obj.getThree() + obj.getFour() + obj.getFive() + obj.getSix();
     }
+
     public Integer getSumOfSaleSum(SaleSumPojo obj) {
         if (obj == null) return 0;
         return obj.getOne() + obj.getTwo() + obj.getThree() + obj.getFour() + obj.getFive() + obj.getSix();
