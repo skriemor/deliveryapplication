@@ -68,10 +68,7 @@ public class DisplayController implements Serializable {
     @Autowired ProductService productService;
     @Autowired MediatorService mediatorService;
     @Autowired UnitService unitService;
-
-
     @Autowired PurchaseService purchaseService;
-
     @Autowired SaleService saleService;
 
     @PostConstruct
@@ -100,10 +97,6 @@ public class DisplayController implements Serializable {
         return new ArrayList<>(CPDTOS);
     }
 
-    public void setFelvJegy(Boolean b) {
-        felvJegy = b;
-    }
-
     public void refreshMediatorDisplays() {
         if (felvJegy == null) return;
         if (felvJegy) {
@@ -114,7 +107,6 @@ public class DisplayController implements Serializable {
             summage = sumPurchases(mediatorDisplaysP);
         }
     }
-
 
     public void generatePurhcaseDisplays() {
         mediatorData = mediatorService.getMediatorData(filterDateFrom3, filterDateTo3);
