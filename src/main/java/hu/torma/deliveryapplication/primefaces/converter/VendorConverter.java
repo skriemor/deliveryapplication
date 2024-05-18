@@ -19,7 +19,6 @@ public class VendorConverter implements Converter {
     @Override
     public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String s) {
         String id = s.substring(s.indexOf("(") + 1, s.length() - 1);
-        log.warning("string of vendor is " + id);
         return service.getVendorById(id);
     }
 

@@ -20,7 +20,6 @@ public class PurchaseConverter implements Converter {
     public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String s) {
         if (s.contains("(")){
             var id = Integer.valueOf(s.substring(0, s.indexOf(" (")));
-            log.warning("string of purchase is " + id);
             return service.getPurchaseById(id);
         }
         var g = service.getAllPurchases();

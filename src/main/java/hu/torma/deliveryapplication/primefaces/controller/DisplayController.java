@@ -119,7 +119,6 @@ public class DisplayController implements Serializable {
     Logger boolog = Logger.getLogger("Boolean of felvjegy");
 
     public void setFelvJegy(Boolean b) {
-        boolog.info("felvjegy set to (2) " + b);
         felvJegy = b;
     }
 
