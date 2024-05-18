@@ -41,7 +41,7 @@ public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurc
             ?6 is null or (?6 is false and cp.payment_date is not null) or (?6 is true and cp.payment_date is null)
         )
         and (
-            ?7 is null or cp.payment_method like %?7%
+            ?7 is null or cp.payment_method like ?7
         )
     """)
     List<CompletedPurchase> applyFilterChainAndReturnResults(String name, Date startDate, Date endDate, String numSerial1,String numSerial2,Boolean notPaidOnly, String paymentMethod);
