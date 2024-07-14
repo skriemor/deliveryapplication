@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import javax.persistence.Tuple;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
 
@@ -83,4 +84,10 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
             group by r.purchase_id
             """)
     Tuple getConcatedSerialsAndMaskedPricesById(@Param("id") Integer id);
+
+    @Query(value = "SELECT p FROM Purchase p JOIN FETCH p.productList")
+    List<Purchase> getAllAndFetchPPs();
+
+    @Query(value = "SELECT p FROM Purchase p JOIN FETCH p.productList WHERE p.id = :id")
+    Optional<Purchase> findAndFetchPPsById(@Param("id") Integer id);
 }

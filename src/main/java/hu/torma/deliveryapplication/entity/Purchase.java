@@ -3,8 +3,6 @@ package hu.torma.deliveryapplication.entity;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -57,8 +55,7 @@ public class Purchase {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "purchase", /*fetch = FetchType.EAGER,*/ cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "purchase", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PurchasedProduct> productList;
 
     @ManyToOne
@@ -71,7 +68,7 @@ public class Purchase {
     private Date receiptDate;
 
     @ManyToOne
-    @JoinColumn(name = "site", nullable = true, referencedColumnName = "site_id")
+    @JoinColumn(name = "site", referencedColumnName = "site_id")
     private Site site;
 
     @Column(name = "notes")
@@ -90,5 +87,6 @@ public class Purchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date bookedDate;
 
-
+    @OneToMany(mappedBy = "purchase", fetch = FetchType.LAZY)
+    List<CompletionRecord> records;
 }

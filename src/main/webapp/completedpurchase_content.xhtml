@@ -48,14 +48,7 @@
             popup.focus();
 
         }
-
-        function reCalculate() {
-            reCalc();
-        }
-
     </script>
-
-    <p:remoteCommand actionListener="#{completedPurchaseController.reCalculateOfficialPrices()}" name="reCalc" immediate="true" />
 
     <p:tabView id="cPTabs">
 
@@ -67,14 +60,13 @@
                              requiredMessage="Válasszon 1 jegyet" widgetVar="sMenu"
                              converter="#{purchaseConverter}" filter="true" filterMatchMode="contains"
                              panelStyle="overflow: scroll; left: 0;  position: static">
-                <!--<p:ajax event="itemSelect" update="fixProductPanel" listener="#{completedPurchaseController.onItemSelectedListener}"/>-->
                 <p:ajax event="change" update="fixProductPanel"
                         listener="#{completedPurchaseController.acquireRecords()}"/>
 
-                <f:selectItem itemValue="#{purchaseServiceImpl.allPurchases.get(0)}" itemLabel="Válasszon"
+                <f:selectItem itemValue="#{completedPurchaseController.availablePurchases.get(0)}" itemLabel="Válasszon"
                               noSelectionOption="true"/>
-                <f:selectItem itemValue="#{completedPurchaseController.pItemForSelectOneMenu}" itemLabel="Kiválasztott"
-                              itemDisabled="#{completedPurchaseController.pItemForSelectOneMenu.id==0}"/>
+                <f:selectItem itemValue="#{completedPurchaseController.getPItemForSelectOneMenu()}" itemLabel="Kiválasztott"
+                              itemDisabled="#{completedPurchaseController.getPItemForSelectOneMenu().getId()==0}"/>
                 <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
                                itemLabel="#{purchasevar.id} (#{purchasevar.vendor.vendorName}, #{completedPurchaseController.getFormattedNumber(purchasevar.remainingPrice)} HUF)"
                                itemValue="#{purchasevar}"/>
@@ -271,8 +263,8 @@
                         </td>
                         <td><p:inputText id="nquantity1" value="#{completedPurchaseController.quantities.get(0).num}"
                                          required="false" tabindex="8">
-                            <p:ajax event="keyup"
-                                    update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1 "/>
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
+                                    update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1"/>
                         </p:inputText><br/></td>
 
 
@@ -293,7 +285,7 @@
                             <br/></td>
                         <td><p:inputText id="nquantity2" value="#{completedPurchaseController.quantities.get(1).num}"
                                          required="false" tabindex="9">
-                            <p:ajax event="keyup"
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price2"/>
                         </p:inputText><br/></td>
                         <td align="center">
@@ -313,7 +305,7 @@
                         </td>
                         <td><p:inputText id="nquantity3" value="#{completedPurchaseController.quantities.get(2).num}"
                                          required="false" tabindex="10">
-                            <p:ajax event="keyup"
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price3"/>
                         </p:inputText><br/></td>
                         <td align="center">
@@ -333,7 +325,7 @@
                         </td>
                         <td><p:inputText id="nquantity4" value="#{completedPurchaseController.quantities.get(3).num}"
                                          required="false" tabindex="11">
-                            <p:ajax event="keyup"
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price4"/>
                         </p:inputText><br/></td>
                         <td align="center">
@@ -354,7 +346,7 @@
 
                         <td><p:inputText id="nquantity5" value="#{completedPurchaseController.quantities.get(4).num}"
                                          required="false" tabindex="12">
-                            <p:ajax event="keyup"
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price5"/>
                         </p:inputText><br/></td>
                         <td align="center">
@@ -374,7 +366,7 @@
                         </td>
                         <td><p:inputText id="nquantity6" value="#{completedPurchaseController.quantities.get(5).num}"
                                          required="false" tabindex="13">
-                            <p:ajax event="keyup"
+                            <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price6"/>
                         </p:inputText><br/></td>
                         <td align="center">
@@ -387,7 +379,7 @@
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalNet"
                                                           value="#{ completedPurchaseController.netSum} kg"/></td>
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalPricePerProduct1"
-                                                          value="#{completedPurchaseController.formattedSixTotal} HUF"/>
+                                                          value="#{completedPurchaseController.getFormattedSixTotal()} HUF"/>
                         </td>
                     </tr>
 
@@ -454,7 +446,7 @@
                          emptyMessage="Nincs rekord" resizableColumns="true">
 
                 <p:column headerText="Mérlegelés sorszáma">
-                    <h:outputText value="#{record.purchaseId}" id="record_id"/>
+                    <h:outputText value="#{record.purchase.id}" id="record_id"/>
                 </p:column>
                 <p:column headerText="Ár">
                     <h:outputText value="#{record.formattedPrice} HUF"/>
@@ -674,7 +666,7 @@
                          emptyMessage="Nincs rekord" resizableColumns="true">
 
                 <p:column headerText="Mérlegelés sorszáma">
-                    <h:outputText value="#{record.purchaseId}"/>
+                    <h:outputText value="#{record.purchase.id}"/>
                 </p:column>
                 <p:column headerText="Ár">
                     <h:outputText value="#{record.formattedPrice} HUF"/>
@@ -703,12 +695,8 @@
                 <p:commandButton value="Kiválasztott törlése" id="deleteCPButton2" actionListener="#{completedPurchaseController.deletePurchase()}"
                                  style="color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black"
                                  resetValues="true" update="purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:pur purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
-
-
                 </p:commandButton>
             </p:panel>
-
-
         </p:tab>
     </p:tabView>
 
@@ -717,7 +705,7 @@
                  lazy="false" sortBy="#{completedPurchaseController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
-                 selection="#{completedPurchaseController.dto}" rowKey="#{purchase.id}">
+                 rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{completedPurchaseController.editPurchase}" oncomplete="selectItemPur();"
                 update="purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:cPTabs:pur"/>
         <p:column headerText="ID" sortBy="#{purchase.id}" filterBy="#{purchase.id}" filterMatchMode="exact"
@@ -759,10 +747,10 @@
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Legkorábbi mérleg dátuma" sortBy="#{completedPurchaseController.getEarliestPurchaseOf(purchase.id)}"
-                  filterBy="#{completedPurchaseController.toDottedDate(completedPurchaseController.getEarliestPurchaseOf(purchase.id))}"
+        <p:column headerText="Legkorábbi mérleg dátuma" sortBy="#{completedPurchaseController.getEarliestPurchaseOf(purchase)}"
+                  filterBy="#{completedPurchaseController.toDottedDate(completedPurchaseController.getEarliestPurchaseOf(purchase))}"
                   filterMatchMode="contains">
-            <h:outputText value="#{completedPurchaseController.getEarliestPurchaseOf(purchase.id)}">
+            <h:outputText value="#{completedPurchaseController.getEarliestPurchaseOf(purchase)}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>

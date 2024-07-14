@@ -1,7 +1,9 @@
 package hu.torma.deliveryapplication.utility.pdf;
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
+import hu.torma.deliveryapplication.DTO.PurchaseWithoutRecordsDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
+import hu.torma.deliveryapplication.DTO.PurchasedProductForPurchaseDTO;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -116,7 +118,7 @@ public class PDFcreator {
         sheet.getRow(row).getCell(cell).setCellStyle(st);
     }
 
-    private void populateExcel(PurchaseDTO pur) {
+    private void populateExcel(PurchaseWithoutRecordsDTO pur) {
         if (pur.getVendor() == null) return;
 
         createRowCol(6, 5, pur.getVendor().getVendorName(), true);
@@ -184,7 +186,7 @@ public class PDFcreator {
         var totalp = pur.getTotalPrice().intValue();
         createRowCol(30, 5, totalp);
         //totalW
-        var totalw = (Integer) pur.getProductList().stream().map(PurchasedProductDTO::getQuantity2).mapToInt(Integer::intValue).sum();
+        var totalw = (Integer) pur.getProductList().stream().map(PurchasedProductForPurchaseDTO::getQuantity2).mapToInt(Integer::intValue).sum();
         createRowCol(30, 4, totalw);
 
         //avg price e40
@@ -206,7 +208,7 @@ public class PDFcreator {
         createRowCol(40, 4, e41);
     }
 
-    public StreamedContent createDownload(PurchaseDTO pur) {
+    public StreamedContent createDownload(PurchaseWithoutRecordsDTO pur) {
         populateExcel(pur);
 
         try {

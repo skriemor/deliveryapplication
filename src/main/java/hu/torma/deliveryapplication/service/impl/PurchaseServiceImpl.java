@@ -1,8 +1,7 @@
 package hu.torma.deliveryapplication.service.impl;
 
 
-import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
+import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.PurchaseRepository;
@@ -27,12 +26,13 @@ public class PurchaseServiceImpl implements PurchaseService {
     ModelMapper mapper = new ModelMapper();
 
     @Override
+    public PurchaseWithoutRecordsDTO getRecordlessPurchaseById(Integer id) {
+        return mapper.map(repo.findAndFetchPPsById(id), PurchaseWithoutRecordsDTO.class);
+    }
+
+    @Override
     public List<PurchaseDTO> getAllPurchases() {
-        return new ArrayList<PurchaseDTO>(
-                repo.findAll().stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
-                ).toList()
-        );
+        return new ArrayList<>(repo.findAll().stream().map(c -> mapper.map(c, PurchaseDTO.class)).toList());
     }
 
     @Override
@@ -51,9 +51,26 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public PurchaseWithoutRecordsDTO savePurchase(PurchaseWithoutRecordsDTO dto) {
+        logger.info("Save was called");
+        for (var v : dto.getProductList())
+            v.setPurchase(dto); //to make relations work by assigning purchase to each of purchased products' ends
+        var g = mapper.map(repo.save(mapper.map(dto, Purchase.class)), PurchaseWithoutRecordsDTO.class);
+        return g;
+    }
+
+
+    @Override
     @Transactional
     public void deletePurchase(PurchaseDTO PurchaseDTO) {
         repo.deleteById(PurchaseDTO.getId());
+    }
+
+    @Override
+    @Transactional
+    public void deletePurchase(PurchaseWithoutRecordsDTO dto) {
+        repo.deleteById(dto.getId());
     }
 
     @Override
@@ -74,6 +91,16 @@ public class PurchaseServiceImpl implements PurchaseService {
         }), PurchaseDTO.class);
         //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getPurchaseDTOS().size());
         return g;
+    }
+
+    @Override
+    public PurchaseSelectorMinimalDTO getPurchaseForSelectionById(Integer id) {
+        return mapper.map(repo.findById(id), PurchaseSelectorMinimalDTO.class);
+    }
+
+    @Override
+    public List<PurchaseSelectorMinimalDTO> getAllPurchasesForSelection() {
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseSelectorMinimalDTO.class)).toList());
     }
 
     @Override
@@ -154,5 +181,20 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public Tuple getConcatedSerialsAndMaskedPricesById(Integer id) {
         return repo.getConcatedSerialsAndMaskedPricesById(id);
+    }
+
+    @Override
+    public List<PurchaseWithoutRecordsDTO> getAllPurchasesAndFetchPPs() {
+        return new ArrayList<>(repo.getAllAndFetchPPs().stream().map(purchase -> mapper.map(purchase, PurchaseWithoutRecordsDTO.class)).toList());
+    }
+
+    @Override
+    public List<PurchaseMinimalDTO> getAllPurchasesForListing() {
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseMinimalDTO.class)).toList());
+    }
+
+    @Override
+    public PurchaseWithoutRecordsDTO getPurchaseAndFetchPPsById(Integer id) {
+        return mapper.map(repo.findAndFetchPPsById(id), PurchaseWithoutRecordsDTO.class);
     }
 }

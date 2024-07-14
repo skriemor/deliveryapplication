@@ -4,45 +4,72 @@ import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
-import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
+import lombok.Getter;
+import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
-import org.primefaces.model.StreamedContent;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Controller;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.logging.Logger;
 import java.util.stream.IntStream;
 
-
-@Controller
+@ViewScoped
+@ManagedBean("completedPurchaseController")
 @DependsOn("dbInit")
 public class CompletedPurchaseController implements Serializable {
-
-    private Integer selectionCounter;
+    @Autowired StorageService sService;
+    @Autowired SiteService siteService;
+    @Autowired CompletedPurchaseService cService;
+    @Autowired ProductService pService;
+    @Autowired UnitService uService;
+    @Autowired PurchaseService OPservice;
+    @Autowired private PurchaseService purchaseService;
+    @Autowired private CompletionRecordService recordService;
+    @Getter @Setter private PurchaseSelectorMinimalDTO pItemForSelectOneMenu;
+    @Getter @Setter private List<RecordWithMinimalsDTO> tempRecords;
+    @Getter @Setter List<RecordWithMinimalsDTO> validRecords;
+    List<RecordWithMinimalsDTO> beforeEditList;
+    @Setter private Integer selectionCounter;
+    private final List<String> tempNamesList = new ArrayList<>(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
+    @Getter @Setter private ArrayList<Quant> quantities = new ArrayList<>(Arrays.asList(new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0)));
+    @Getter @Setter private List<SortMeta> sortBy;
+    @Getter @Setter public ArrayList<PurchaseSelectorMinimalDTO> availablePurchases;
+    @Getter @Setter private PurchaseWithoutRecordsDTO purchaseDTO;
+    @Getter @Setter private String label;
+    @Getter List<CompletedPurchaseListingDTO> dtoList;
+    @Setter private CompletedPurchaseWithMinimalsDTO dto;
+    @Getter private Integer sixTotal;
+    @Getter private Double netAvgPrice;
+    @Getter private Double diff;
+    @Getter private Double grossTotal;
+    @Getter private Double grossAvgPrice;
+    @Getter private Double netTotal;
+    @Getter private Integer netSum;
+    @Getter private Integer dtoWeight;
+    @Getter private Integer dtoTotalV;
+    @Getter private Double netTotalV;
+    @Getter private Double grossTotalV;
+    @Getter private Double grossAvgPriceV;
+    @Getter private Double netAvgPriceV;
+    @Getter private Double diffV;
 
     public Integer getSelectionCounter() {
         if (selectionCounter == null) {
             selectionCounter = 0;
         }
         return selectionCounter;
-    }
-
-    public void setSelectionCounter(Integer selectionCounter) {
-        this.selectionCounter = selectionCounter;
     }
 
     public void nextSelection() {
@@ -56,7 +83,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private void initPItem() {
-        this.pItemForSelectOneMenu = new PurchaseDTO();
+        this.pItemForSelectOneMenu = new PurchaseSelectorMinimalDTO();
         pItemForSelectOneMenu.setId(0);
         pItemForSelectOneMenu.setRemainingPrice(0.0);
         VendorDTO vend = new VendorDTO();
@@ -64,94 +91,97 @@ public class CompletedPurchaseController implements Serializable {
         pItemForSelectOneMenu.setVendor(vend);
     }
 
-    public PurchaseDTO getpItemForSelectOneMenu() {
-        return pItemForSelectOneMenu;
+    public void reInitCalculatedNumbers() {
+        sixTotal = calculateSixTotal();
+        netSum = calculateNetSum();
+        grossAvgPrice = calculateGrossAvgPrice();
+        grossTotal = calculateGrossTotal();
+        netTotal = calculateNetTotal();
+        netAvgPrice = calculateNetAvgPrice();
+        diff = calculateDiff();
+
+        dtoWeight = calculateDtoWeight();
+        dtoTotalV = calculateDtoTotalV();
+        grossAvgPriceV = calculateGrossAvgPriceV();
+        grossTotalV = calculateGrossTotalV();
+        netTotalV = calculateNetTotalV();
+        netAvgPriceV = calculateNetAvgPriceV();
+        diffV = calculateDiffV();
     }
 
-    public void setpItemForSelectOneMenu(PurchaseDTO pItemForSelectOneMenu) {
-        this.pItemForSelectOneMenu = pItemForSelectOneMenu;
-    }
-
-    PurchaseDTO pItemForSelectOneMenu;
-
-
-    List<CompletionRecordDTO> tempRecords;
-
-    List<CompletionRecordDTO> validRecords;
-
-    public void reCalculateOfficialPrices() {
-        getAllPurchases();
-        for (var a: dtoList) {
-            logger.info("Recalculating " + a.getId());
-            tempRecords = a.getRecords();
-            beforeEditList = a.getRecords();
-            a.setTotalPrice(getGrossTotalV().intValue());
-            cService.saveCompletedPurchase(a);
-            logger.info("Saved");
+    private Integer calculateSixTotal() {
+        if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
+            return 0;
         }
+
+        List<PurchasedProductForPurchaseDTO> list = purchaseDTO.getProductList();
+        return IntStream.range(0, Math.min(6, list.size())).map(i -> (int) (list.get(i).getUnitPrice() * quantities.get(i).getNum() * (1 + 0.01 * list.get(i).getProduct().getCompPercent()))).sum();
     }
 
-    public Double getNetAvgPrice() {
-        return (double) Math.round(getGrossAvgPrice() / 1.12 * 100) / 100;
+    private Double calculateNetAvgPrice() {
+        return (double) Math.round(grossAvgPrice / 1.12 * 100) / 100;
     }
 
-    public Double getDiff() {
-        return getGrossTotal() - getNetTotal();
+    private Double calculateDiff() {
+        return grossTotal - netTotal;
     }
 
-    public Double getGrossTotal() {
-        return (double) Math.round(getGrossAvgPrice() * getNetSum());
+    private Double calculateGrossTotal() {
+        return (double) Math.round(grossAvgPrice * netSum);
     }
 
-    public Double getGrossAvgPrice() {
-        return (double) Math.round(getSixTotal() / (double) getNetSum() * 100) / 100;
+    private Double calculateGrossAvgPrice() {
+        return (double) Math.round(sixTotal / (double) netSum * 100) / 100;
     }
 
-    public Double getNetTotal() {
-        return (double) Math.round(getGrossTotal() / 1.12);
+    private Double calculateNetTotal() {
+        return (double) Math.round(grossTotal / 1.12);
     }
 
-
-    public Integer getNetSum() {
+    private Integer calculateNetSum() {
         return quantities.stream().mapToInt(Quant::getNum).sum();
     }
 
-    public Integer getDtoWeight() {
-        return IntStream.range(0, 6).map(this::getTotalAmountOf).sum();
+    private Integer calculateDtoWeight() {
+        return IntStream.range(0, Math.min(6, tempRecords.size())).map(this::getTotalAmountOf).sum();
     }
 
-    public Integer getDtoTotalV() {
-        return tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
+    private Integer calculateDtoTotalV() {
+        return tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getPrice).sum();
     }
 
-    public Double getNetTotalV() {
-        return (double) Math.round(getGrossTotalV() / 1.12);
+    private Double calculateNetTotalV() {
+        return (double) Math.round(grossTotalV / 1.12);
     }
 
-    public Double getGrossTotalV() {
-        return (double) Math.round(getGrossAvgPriceV() * getDtoWeight());
+    private Double calculateGrossTotalV() {
+        return (double) Math.round(grossAvgPriceV * dtoWeight);
     }
 
-    public Double getGrossAvgPriceV() {
-        return (double) Math.round(getDtoTotalV() / (double) getDtoWeight() * 100) / 100;
+    private Double calculateGrossAvgPriceV() {
+        return (double) Math.round(dtoTotalV / (double) dtoWeight * 100) / 100;
     }
 
-    public Double getNetAvgPriceV() {
-        return (double) Math.round(getGrossAvgPriceV() / 1.12 * 100) / 100;
+    private Double calculateNetAvgPriceV() {
+        return (double) Math.round(grossAvgPriceV / 1.12 * 100) / 100;
     }
 
-    public Double getDiffV() {
-        return getGrossTotalV() - getNetTotalV();
+    private Double calculateDiffV() {
+        return grossTotalV - netTotalV;
     }
-
-
-    @Autowired
-    private CompletionRecordService recordService;
 
     public Integer getPriceOf(int i) {
-        if (quantities.get(i).getNum() == 0 || this.purchaseDTO.getProductList() == null) return 0;
-        var g = this.purchaseDTO.getProductList().get(i);
-        return (Integer) (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
+        if (quantities.get(i).getNum() == 0 || purchaseDTO.getProductList() == null) return 0;
+        var g = purchaseDTO.getProductList().get(i);
+        return (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
+    }
+
+    public String getFormattedPriceOf(int g) {
+        return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(g)).replaceAll(",", " ");
+    }
+
+    public String getSumOfRecordPrices() {
+        return NumberFormat.getNumberInstance(Locale.US).format(dtoTotalV).replaceAll(",", " ");
     }
 
     public String getFormattedNumber(double num) {
@@ -161,56 +191,12 @@ public class CompletedPurchaseController implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 
-    public String getFormattedPriceOf(int g) {
-        return NumberFormat.getNumberInstance(Locale.US).format(getPriceOf(g)).replaceAll(",", " ");
-
-    }
-
     public String getFormattedSixTotal() {
-        return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
-
-    }
-
-
-    public String getDtoTotal() {
-        var nuum = tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
-        return NumberFormat.getNumberInstance(Locale.US).format(nuum).replaceAll(",", " ");
-    }
-
-    public Integer getSixTotal() {
-        if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
-
-            return 0;
-        }
-        int temp = 0;
-        int sum;
-        try {
-            var list = this.purchaseDTO.getProductList();
-            if (list != null) {
-                for (int i = 0; i < 6; i++) {
-                    sum = (int) (list.get(i).getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * list.get(i).getProduct().getCompPercent())));
-                    temp += sum;
-                }
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        //this.dto.setTotalPrice(temp.doubleValue());
-        return temp;
-    }
-
-    @Autowired
-    PurchaseService purchaseService;
-
-
-    public List<CompletionRecordDTO> getTempRecords() {
-        return tempRecords;
+        return NumberFormat.getNumberInstance(Locale.US).format(sixTotal).replaceAll(",", " ");
     }
 
     @Transactional
     public void updateRemainingPrice(int id) {
-        logger.info("updating remaining price of " + id);
         var temp = purchaseService.getPurchaseById(id);
         var tempList = temp.getProductList();
         if (tempList == null) return;
@@ -226,94 +212,22 @@ public class CompletedPurchaseController implements Serializable {
             total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
             tempstring.append(r.getCompletedPurchase().getNewSerial()).append(" ");
         }
-
-
         temp.setReceiptId(tempstring.toString());
         temp.setRemainingPrice(total);
         purchaseService.savePurchase(temp);
-
-    }
-
-    public void setSixTotal(Double sixTotal) {
-        this.sixTotal = sixTotal;
-    }
-
-    private Double sixTotal;
-    private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
-
-
-    private ArrayList<Quant> quantities = new ArrayList<>(Arrays.asList(new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0)));
-
-    private StreamedContent file;
-
-    Logger logger = Logger.getLogger("BOOL");
-    private List<SortMeta> sortBy;
-
-    @Autowired
-    private PDFcreator pdFcreator;
-
-
-    private PurchaseDTO purchaseDTO;
-    private Boolean pdfdisabled;
-
-    @Autowired
-    StorageService sService;
-    @Autowired
-    CompletedPurchaseService cService;
-    @Autowired
-    ProductService pService;
-
-    @Autowired
-    UnitService uService;
-
-    @Autowired
-    PurchaseService OPservice;
-    private String label;
-
-    public String getLabel2() {
-        return label2;
-    }
-
-    public void setLabel2(String label2) {
-        this.label2 = label2;
-    }
-
-    private String label2;
-    private CompletedPurchaseDTO dto;
-    private String dateRange;
-
-    private PurchasedProductDTO productDTO;
-
-    public PurchasedProductDTO getProductDTO() {
-        if (this.productDTO == null) this.productDTO = new PurchasedProductDTO();
-        return this.productDTO;
-    }
-
-    public void setProductDTO(PurchasedProductDTO productDTO) {
-        this.productDTO = productDTO;
     }
 
     private void newCP() {
-        var stacktrace = Thread.currentThread().getStackTrace()[2].getMethodName();
-
-
-        logger.info("newCP called by " + stacktrace);
-
-
-        logger.info("new CP created");
-        this.dto = new CompletedPurchaseDTO();
-        var recordse = new ArrayList<CompletionRecordDTO>();
-        dto.setRecords(recordse);
+        dto = new CompletedPurchaseWithMinimalsDTO();
+        dto.setRecords(new ArrayList<>());
         tempRecords = new ArrayList<>();
         beforeEditList = new ArrayList<>();
-        this.getAllPurchases();
+        purchaseDTO = new PurchaseWithoutRecordsDTO();
         updateAvailablePurchases();
-
-
+        emptySix();
     }
 
     private void copySerials(List<CompletedPurchaseDTO> list) {
-
         if (list != null && list.size() > 0 && (list.get(0).getNewSerial() == null || list.get(0).getNewSerial().equals(""))) {
             for (var g : list) {
                 if (g.getSerial() != null && g.getSerial() != 0) {
@@ -329,311 +243,162 @@ public class CompletedPurchaseController implements Serializable {
     @PostConstruct
     public void init() {
         initPItem();
-        tempRecords = new ArrayList<>();
-        this.purchaseDTO = new PurchaseDTO();
         newCP();
-
-        pdfdisabled = true;
         sortBy = new ArrayList<>();
-        sortBy.add(SortMeta.builder()
-                .field("id")
-                .order(SortOrder.ASCENDING)
-                .build());
-        dateRange = (LocalDate.now().getYear() - 50) + ":" + (LocalDate.now().getYear() + 5);
-        updateAvailablePurchases();
-
+        sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
+        reInitCalculatedNumbers();
     }
 
-
-    public void setDto(CompletedPurchaseDTO dto) {
-        this.dto = dto;
-    }
-
-
-    public void setSortBy(List<SortMeta> sortBy) {
-        this.sortBy = sortBy;
-    }
-
-
-    public StreamedContent getFile() {
-        return file;
-    }
-
-    /**
-     * Also updates serials
-     */
     private void updateRemainingPrices() {
-
         if (beforeEditList != null) for (var c : beforeEditList) {
-            updateRemainingPrice(c.getPurchaseId());
-
-
+            updateRemainingPrice(c.getPurchase().getId());
         }
-
         if (dto.getRecords() != null) for (var c : dto.getRecords()) {
-            updateRemainingPrice(c.getPurchaseId());
-
+            updateRemainingPrice(c.getPurchase().getId());
         }
     }
-
-    public String getSumOfRecordPrices() {
-        return NumberFormat.getNumberInstance(Locale.US).format(tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum()).replaceAll(",", " ");
-
-    }
-
-    @Autowired
-    SiteService siteService;
 
     public void uiSaveCompletedPurchase() {
-        //if (true)return;
         if (this.dto == null) return;
         if (this.dto.getSite() == null) {
             var sites = siteService.getAllSites();
-            if (sites != null && sites.size() > 0)
-                this.dto.setSite(siteService.getAllSites().get(0));
+            if (sites != null && sites.size() > 0) this.dto.setSite(siteService.getAllSites().get(0));
         }
         dto.setRecords(tempRecords);
-
-        logger.warning("uiSaveCalled records size before save: " + dto.getRecords().size());
         Date date = new Date(System.currentTimeMillis());
         this.dto.setBookedDate(date);
-        //setQuants();
-        logger.info("DTO's ONE IS: " + dto.getOne());
-
         if (this.dto.getRecords() == null || this.dto.getRecords().size() < 1) {
             this.dto.setTotalPrice(0);
         }
         if (this.dto.getRecords() != null && this.dto.getRecords().size() > 0) {
             this.dto.setTotalPrice(getGrossTotalV().intValue());
-
         }
 
-        var b = cService.saveCompletedPurchase(dto);
-
-        getAllPurchases();
+        cService.saveCompletedPurchase(dto);
         updateRemainingPrices();
-
-
         tempRecords.clear();
-
-        this.purchaseDTO = new PurchaseDTO();
-        this.productDTO = new PurchasedProductDTO();
-        this.pdfdisabled = true;
+        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
         emptySix();
         newCP();
-        updateAvailablePurchases();
-    }
-
-
-    private void calculateTotalPrice() {
-
     }
 
     public void deletePurchase() {
-
-
-        cService.deleteCompletedPurchase(dto);
-
+        cService.deleteCompletedPurchaseById(dto.getId());
         updateRemainingPrices();
-        this.getAllPurchases();
         newCP();
-        this.purchaseDTO = new PurchaseDTO();
-        this.pdfdisabled = true;
-        tempRecords.clear();
-        emptySix();
-        updateAvailablePurchases();
         selectionCounter = 0;
     }
 
-    List<CompletionRecordDTO> beforeEditList;
-
-    public java.util.Date getEarliestPurchaseOf(Integer id) {
-        return cService.getEarliestPurchaseDate(id);
+    public java.util.Date getEarliestPurchaseOf(CompletedPurchaseListingDTO completedPurchase) {
+        return completedPurchase.getRecords().stream()
+                .map(RecordForDateComparisonDTO::getPurchase)
+                .map(PurchaseForDateComparisonDTO::getReceiptDate)
+                .min(java.util.Date::compareTo)
+                .orElse(null);
     }
-    public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
-        tempRecords = _dto.getObject().getRecords();
-        beforeEditList = new ArrayList<>(_dto.getObject().getRecords().stream().toList());
 
-        if (beforeEditList != null && beforeEditList.size() > 0) {
-            var fdo = purchaseService.getPurchaseById(beforeEditList.get(0).getPurchaseId());
-            this.setPurchaseDTO(fdo);
+    public void editPurchase(SelectEvent<CompletedPurchaseListingDTO> _dto) {
+        dto = cService.getCompletedPurchaseById(_dto.getObject().getId());
+        tempRecords = dto.getRecords();
+        beforeEditList = new ArrayList<>(tempRecords);
 
-                validRecords = new ArrayList<>(recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), fdo.getId()));
-                //validRecords = new ArrayList<>(recordService.findAllByPurchaseId(purchaseDTO.getId()));
-
+        if (!beforeEditList.isEmpty()) {
+            purchaseDTO = purchaseService.getRecordlessPurchaseById(beforeEditList.get(0).getPurchase().getId());
+            acquireRecords();
             acquireQuants();
-            this.pItemForSelectOneMenu = fdo;
-            logger.info("FDO id was " + fdo.getId());
+            this.pItemForSelectOneMenu = purchaseDTO.toSelectorDTO();
         } else {
             validRecords = new ArrayList<>();
             purchaseDTO = null;
-            logger.warning("object.records was null");
         }
-
-
-
-        this.setLabel("Felv.jegy Módosítása");
-
-        BeanUtils.copyProperties(_dto.getObject(), this.dto);
-
         updateAvailablePurchases();
-
         selectionCounter = 0;
+        reInitCalculatedNumbers();
     }
 
     private void acquireQuants() {
-        var acq = beforeEditList.get(0);
-        quantities.get(0).setNum(acq.getOne());
-        quantities.get(1).setNum(acq.getTwo());
-        quantities.get(2).setNum(acq.getThree());
-        quantities.get(3).setNum(acq.getFour());
-        quantities.get(4).setNum(acq.getFive());
-        quantities.get(5).setNum(acq.getSix());
-
+        var preEditFirst = beforeEditList.get(0);
+        quantities.get(0).setNum(preEditFirst.getOne());
+        quantities.get(1).setNum(preEditFirst.getTwo());
+        quantities.get(2).setNum(preEditFirst.getThree());
+        quantities.get(3).setNum(preEditFirst.getFour());
+        quantities.get(4).setNum(preEditFirst.getFive());
+        quantities.get(5).setNum(preEditFirst.getSix());
     }
 
     private void emptySix() {
-        for (var i : quantities) i.setNum(0);
+        quantities.forEach(quant -> quant.setNum(0));
     }
 
     public void newPurchase() {
-
         tempRecords.clear();
         emptySix();
         newCP();
-        this.purchaseDTO = new PurchaseDTO();
-        this.dto = new CompletedPurchaseDTO();
+        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
+        this.dto = new CompletedPurchaseWithMinimalsDTO();
         this.setLabel("Felv. jegy Hozzáadása");
         updateAvailablePurchases();
         selectionCounter = 0;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    public CompletedPurchaseDTO getDto() {
-
+    public CompletedPurchaseWithMinimalsDTO getDto() {
         if (this.dto == null) {
-            this.dto = new CompletedPurchaseDTO();
+            this.dto = new CompletedPurchaseWithMinimalsDTO();
         }
         return this.dto;
     }
 
-    public String getLabel() {
-        return label;
-    }
-
-    public List<SortMeta> getSortBy() {
-        return sortBy;
-    }
-
-    ArrayList<CompletedPurchaseDTO> dtoList;
-
     @PostConstruct
     public void getAllPurchases() {
-        this.dtoList = new ArrayList<>(cService.getAllCompletedPurchases());
-        copySerials(this.dtoList);
-        this.setLabel("Hozzáadás");
-        this.setLabel2("Termék hozzáadása");
+        this.dtoList = cService.getCompletedPurchasesForListing();
     }
-
-    public ArrayList<CompletedPurchaseDTO> getDtoList() {
-        return dtoList;
-    }
-
-
-
-    public ArrayList<ProductDTO> getListFiveProduct() {
-        return listFiveProduct;
-    }
-
-    public void setListFiveProduct(ArrayList<ProductDTO> listFiveProduct) {
-        this.listFiveProduct = listFiveProduct;
-    }
-
-
-    public PurchaseDTO getPurchaseDTO() {
-        return purchaseDTO;
-    }
-
-    public void setPurchaseDTO(PurchaseDTO purchaseDTO) {
-        this.purchaseDTO = purchaseDTO;
-    }
-
-    public ArrayList<Quant> getQuantities() {
-        return quantities;
-    }
-
-    public void setQuantities(ArrayList<Quant> quantities) {
-        this.quantities = quantities;
-    }
-
 
     public int getMaxQuantOf(int i) {
-
         if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
-            //logger.info("PurchaseDTO's productlist was null");
             return 0;
         }
-
 
         int original = purchaseDTO.getProductList().get(i).getQuantity2();
         int toSub = 0;
 
         switch (i) {
-            case 0 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
-            case 1 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
-            case 2 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
-            case 3 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
-            case 4 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
-            case 5 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+            case 0 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getOne).sum();
+            case 1 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getTwo).sum();
+            case 2 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getThree).sum();
+            case 3 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getFour).sum();
+            case 4 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getFive).sum();
+            case 5 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getSix).sum();
         }
-        //int toSub = quantities.get(i).getNum();
         return original - toSub;
     }
 
-    public void setQuants() {
-        if (dto.getRecords() == null) return;
-        quantities.get(0).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum());
-        quantities.get(1).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum());
-        quantities.get(2).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum());
-        quantities.get(3).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum());
-        quantities.get(4).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum());
-        quantities.get(5).setNum(tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum());
-    }
-
-
     public Integer getTotalAmountOf(int i) {
         return switch (i) {
-            case 0 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
-            case 1 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
-            case 2 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
-            case 3 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
-            case 4 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
-            case 5 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+            case 0 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getOne).sum();
+            case 1 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getTwo).sum();
+            case 2 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getThree).sum();
+            case 3 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getFour).sum();
+            case 4 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getFive).sum();
+            case 5 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getSix).sum();
             default -> 0;
         };
     }
-
-    List tempNamesList = new ArrayList(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
 
     public void addRecord() {
         if (this.purchaseDTO.getId() == null) {
             return;
         }
         if (this.dto.getRecords() == null) {
-            logger.info("records were null");
-            this.dto.setRecords(new ArrayList<CompletionRecordDTO>());
+            this.dto.setRecords(new ArrayList<>());
         }
-        var recordDTO = new CompletionRecordDTO();
-        StringBuffer sB = new StringBuffer();
+        var recordDTO = new RecordWithMinimalsDTO();
+        StringBuilder sB = new StringBuilder();
 
         boolean wasWrong = false;
         for (int i = 0; i < 6; i++) {
             if (quantities.get(i).getNum() > getMaxQuantOf(i)) {
                 wasWrong = true;
-                sB.append(tempNamesList.get(i) + ", ");
+                sB.append(tempNamesList.get(i)).append(", ");
             }
         }
         if (sB.length() > 1 || wasWrong) {
@@ -647,16 +412,14 @@ public class CompletedPurchaseController implements Serializable {
         recordDTO.setFour(quantities.get(3).getNum());
         recordDTO.setFive(quantities.get(4).getNum());
         recordDTO.setSix(quantities.get(5).getNum());
-        recordDTO.setPurchaseId(purchaseDTO.getId());
+        recordDTO.setPurchase(purchaseDTO.toSelectorDTO());
 
-        //TEST THIS
-        recordDTO.setCompletedPurchase(this.dto);
+        recordDTO.setCompletedPurchase(this.dto.toIdOnly());
 
         recordDTO.setPrice(getSixTotal());
-        tempRecords = new ArrayList<>(tempRecords.stream().filter(a-> a.getPurchaseId().intValue() != recordDTO.getPurchaseId().intValue()).toList());
+        tempRecords = new ArrayList<>(tempRecords.stream().filter(a -> recordDTO.getPurchase().getId().equals(a.getPurchase().getId())).toList());
         tempRecords.add(recordDTO);
-        logger.info("Added record" + recordDTO);
-        this.purchaseDTO = new PurchaseDTO();
+        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
         emptySix();
         updateAvailablePurchases();
     }
@@ -665,92 +428,59 @@ public class CompletedPurchaseController implements Serializable {
         return DateConverter.toDottedDate(dt);
     }
 
-    public void removeRecord() {
-        if (tempRecords.size() < 1) return;
-        tempRecords.remove(tempRecords.size() - 1);
-        this.purchaseDTO = new PurchaseDTO();
-        for (var q : quantities) q.setNum(0);
-        updateAvailablePurchases();
-
-    }
-
     public void removeRecord2() {
-        if (tempRecords != null && selectionCounter >= tempRecords.size()) return;
-        pItemForSelectOneMenu = purchaseService.getPurchaseById(tempRecords.get(selectionCounter.intValue()).getPurchaseId());
+        if (tempRecords == null || selectionCounter >= tempRecords.size()) return;
+        pItemForSelectOneMenu = tempRecords.get(selectionCounter).getPurchase();
         tempRecords.remove(selectionCounter.intValue());
-        for (var q : quantities) q.setNum(0);
+        emptySix();
         updateAvailablePurchases();
         selectionCounter = 0;
     }
 
-    public void onItemSelectedListener(SelectEvent event) {
-        purchaseDTO = (PurchaseDTO) event.getObject();
-    }
+    public void updateAvailablePurchases() {
+        List<Integer> usedIDs = tempRecords != null && !tempRecords.isEmpty() ?
+                tempRecords.stream().map(RecordWithMinimalsDTO::getPurchase).map(PurchaseSelectorMinimalDTO::getId).toList() :
+                Collections.emptyList();
 
-    public ArrayList<PurchaseDTO> getAvailablePurchases() {
-        return availablePurchases;
-    }
-
-    public void setAvailablePurchases(ArrayList<PurchaseDTO> availablePurchases) {
-        this.availablePurchases = availablePurchases;
-    }
-
-    public String getPrice(PurchaseDTO __dto) {
-
-        return NumberFormat.getNumberInstance(Locale.US).format(__dto.getRemainingPrice()).replaceAll(",", " ");
-    }
-
-    public ArrayList<PurchaseDTO> availablePurchases;
-
-
-    public ArrayList<PurchaseDTO> updateAvailablePurchases() {
-        logger.info("Getting available purchases");
-        ArrayList<Integer> usedIDs = new ArrayList<>();
-        if (tempRecords != null) {
-            usedIDs.addAll(tempRecords.stream().map(CompletionRecordDTO::getPurchaseId).toList());
-        }
-        availablePurchases = new ArrayList<>(OPservice.getAllPurchases().stream().filter(c -> !usedIDs.contains(c.getId()))
-                .filter(v -> v.getRemainingPrice() != 0).toList());
-
+        availablePurchases = new ArrayList<>(OPservice.getAllPurchasesForSelection().stream()
+                .filter(c -> !usedIDs.contains(c.getId()))
+                .filter(v -> v.getRemainingPrice() != 0)
+                .toList());
 
         if (beforeEditList != null) {
-
-            logger.info("Checking with beforeedit");
-            PurchaseDTO purchaseDTO1;
+            PurchaseSelectorMinimalDTO purchaseDTO1;
             List<CompletionRecordDTO> priceRecords;
 
             for (var a : beforeEditList) {
-                logger.info("Checking out id" + a.getPurchaseId());
-                Boolean wasFound = false;
-                for (var b: tempRecords) {
-                    if (b.getPurchaseId() == a.getPurchaseId()) {
-                        wasFound= true;
+                boolean wasFound = false;
+                for (var b : tempRecords) {
+                    if (Objects.equals(b.getPurchase().getId(), a.getPurchase().getId())) {
+                        wasFound = true;
+                        break;
                     }
                 }
-                for (var h: availablePurchases) {
-                    if( h.getId() == a.getPurchaseId()) {
-                        wasFound=true;
+                for (var h : availablePurchases) {
+                    if (Objects.equals(h.getId(), a.getPurchase().getId())) {
+                        wasFound = true;
+                        break;
                     }
                 }
                 if (!wasFound) {
-                    logger.info("adding additional available purchase");
-                    priceRecords = recordService.findAllByPurchaseId(a.getPurchaseId());
-                    purchaseDTO1 = OPservice.getPurchaseById(a.getPurchaseId());
+                    priceRecords = recordService.findAllByPurchaseId(a.getPurchase().getId());
+                    purchaseDTO1 = OPservice.getPurchaseForSelectionById(a.getPurchase().getId());
 
-
-
-                    purchaseDTO1.setRemainingPrice(purchaseDTO1.getTotalPrice() - (double) priceRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum()+a.getPrice());
+                    purchaseDTO1.setRemainingPrice(purchaseDTO1.getTotalPrice() - (double) priceRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum() + a.getPrice());
                     availablePurchases.add(purchaseDTO1);
                 }
             }
         }
-
-
-        return availablePurchases;
     }
 
     public void acquireRecords() {
-        int idee = this.dto==null||this.dto.getId()==null?-1:this.dto.getId();
-        validRecords = new ArrayList<>(recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(),idee));
+       if (dto != null && dto.getRecords() != null && dto.getId() != null) {
+            validRecords = dto.getRecords().stream()
+                    .filter(record -> !Objects.equals(record.getCompletedPurchase().getId(), dto.getId()))
+                    .toList();
+       }
     }
 }

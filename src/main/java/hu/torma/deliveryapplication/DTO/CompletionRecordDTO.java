@@ -20,7 +20,7 @@ public class CompletionRecordDTO implements Serializable {
     private int four;
     private int five;
     private int six;
-    private Integer purchaseId;
+    private PurchaseDTO purchase;
     private CompletedPurchaseDTO completedPurchase;
 
     private int price;
@@ -36,22 +36,6 @@ public class CompletionRecordDTO implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         CompletionRecordDTO that = (CompletionRecordDTO) o;
         if (that.id == null || this.id == null) return false;
-        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
-    }
-
-    @Override
-    public String toString() {
-        return "CompletionRecordDTO{" +
-                "id=" + id +
-                ", one=" + one +
-                ", two=" + two +
-                ", three=" + three +
-                ", four=" + four +
-                ", five=" + five +
-                ", six=" + six +
-                ", purchaseId=" + purchaseId +
-                ", completedPurchase=" + completedPurchase +
-                ", price=" + price +
-                '}';
+        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchase, that.purchase) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 }

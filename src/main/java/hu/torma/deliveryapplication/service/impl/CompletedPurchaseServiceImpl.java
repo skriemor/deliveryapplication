@@ -2,6 +2,9 @@ package hu.torma.deliveryapplication.service.impl;
 
 
 import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
+import hu.torma.deliveryapplication.DTO.CompletedPurchaseListingDTO;
+import hu.torma.deliveryapplication.DTO.CompletedPurchaseMinimalDTO;
+import hu.torma.deliveryapplication.DTO.CompletedPurchaseWithMinimalsDTO;
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.CompletedPurchaseRepository;
@@ -33,6 +36,27 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
+    public CompletedPurchaseWithMinimalsDTO getCompletedPurchaseById(Integer id) {
+        return mapper.map(repo.findAndFetchRecordsById(id), CompletedPurchaseWithMinimalsDTO.class);
+    }
+
+    @Override
+    public List<CompletedPurchaseListingDTO> getCompletedPurchasesForListing() {
+        return new ArrayList<>(
+                repo.findAllAndFetchRecordsAndPurchases().stream().map(
+                        c -> mapper.map(c, CompletedPurchaseListingDTO.class)
+                ).toList()
+        );
+    }
+
+    @Override
+    public List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords() {
+        List<CompletedPurchaseDTO> purchasesWithRecords = new ArrayList<>();
+        mapper.map(repo.findAllAndFetchRecords(), purchasesWithRecords);
+        return purchasesWithRecords;
+    }
+
+    @Override
     public CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
         return mapper.map(repo.findById(CompletedPurchaseDTO.getId()), CompletedPurchaseDTO.class);
     }
@@ -49,6 +73,16 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
+    @Transactional
+    public CompletedPurchaseWithMinimalsDTO saveCompletedPurchase(CompletedPurchaseWithMinimalsDTO dto) {
+        if (dto.getRecords() != null) {
+            for (var c : dto.getRecords())
+                c.setCompletedPurchase(dto.toIdOnly());
+        }
+        return mapper.map(repo.save(mapper.map(dto, CompletedPurchase.class)), CompletedPurchaseWithMinimalsDTO.class);
+    }
+
+    @Override
     public Date getEarliestPurchaseDate(Integer id) {
         return repo.getEarliestPurchaseDate(id).orElseGet(Date::new);
     }
@@ -57,6 +91,11 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Transactional
     public void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
         repo.deleteById(CompletedPurchaseDTO.getId());
+    }
+
+    @Override
+    public void deleteCompletedPurchaseById(Integer id) {
+        repo.deleteById(id);
     }
 
     @Override

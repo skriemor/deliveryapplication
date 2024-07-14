@@ -13,9 +13,6 @@ import java.util.Objects;
 @EqualsAndHashCode
 @ToString
 public class SiteDTO implements Serializable {
-
     private Long id;
-
     private String siteName;
-
 }

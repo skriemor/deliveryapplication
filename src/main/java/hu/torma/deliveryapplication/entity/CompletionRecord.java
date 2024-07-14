@@ -28,15 +28,16 @@ public class CompletionRecord {
     @Column(name = "six", nullable = false)
     private int six;
 
-    @Column(name = "price", nullable = true)
+    @Column(name = "price")
     private int price;
 
-    @Column(name = "purchase_id")
-    private Integer purchaseId;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_id", referencedColumnName = "id")
+    private Purchase purchase;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "completed_id", referencedColumnName = "id")
     private CompletedPurchase completedPurchase;
-
 
 }

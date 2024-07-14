@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.repository;
 
+import hu.torma.deliveryapplication.DTO.CompletedPurchaseWithMinimalsDTO;
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
@@ -77,6 +78,14 @@ order by cp.receipt_date asc NULLS LAST
             """)
     Optional<Date> getEarliestPurchaseDate(Integer id);
 
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records")
+    List<CompletedPurchase> findAllAndFetchRecords();
+
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records records JOIN FETCH records.purchase p")
+    List<CompletedPurchase> findAllAndFetchRecordsAndPurchases();
+
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records WHERE cp.id = :idParam ")
+    List<CompletedPurchase> findAndFetchRecordsById(@Param("idParam") Integer id);
 
 
     @Query(name = "supply_completed_purchases_with_dates", nativeQuery = true)

@@ -105,9 +105,6 @@ public class CompletedPurchase {
     @Column(name = "total_price")
     private int totalPrice;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<CompletionRecord> records;
-
-
 }
