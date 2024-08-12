@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.CompletionRecordDTO;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -40,4 +41,17 @@ public class CompletionRecord {
     @JoinColumn(name = "completed_id", referencedColumnName = "id")
     private CompletedPurchase completedPurchase;
 
+
+    public CompletionRecordDTO toDTO() {
+        CompletionRecordDTO dto = new CompletionRecordDTO();
+        dto.setId(this.id);
+        dto.setOne(this.one);
+        dto.setTwo(this.two);
+        dto.setThree(this.three);
+        dto.setFour(this.four);
+        dto.setFive(this.five);
+        dto.setSix(this.six);
+        dto.setPrice(this.price);
+        return dto;
+    }
 }

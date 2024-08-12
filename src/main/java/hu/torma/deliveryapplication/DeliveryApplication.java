@@ -8,13 +8,13 @@ import hu.torma.deliveryapplication.repository.SecureUserRepository;
 import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.SiteService;
 import hu.torma.deliveryapplication.service.UnitService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.faces.webapp.FacesServlet;
 import javax.servlet.ServletContext;
@@ -40,6 +40,11 @@ public class DeliveryApplication {
 		srb.setUrlMappings(Arrays.asList("*.xhtml"));
 		srb.setLoadOnStartup(1);
 		return srb;
+	}
+
+	@Bean
+	public ModelMapper modelMapper() {
+		return ModelMapperConfig.modelMapper();
 	}
 
 	@Component("dbInit")

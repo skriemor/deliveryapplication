@@ -8,7 +8,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import javax.transaction.Transactional;
 import java.util.List;
 
@@ -17,9 +16,6 @@ import java.util.List;
 public class OSnapshotServiceImpl implements OSnapshotService {
     @Autowired
     OfficialStorageSnapshotRepository repo;
-
-    ModelMapper mapper = new ModelMapper();
-
 
     @Override
     public List<OfficialStorageSnapshotDTO> getAllSnapshots() {

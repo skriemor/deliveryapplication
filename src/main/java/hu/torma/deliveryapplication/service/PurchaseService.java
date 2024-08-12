@@ -2,6 +2,7 @@ package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
+import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import javax.persistence.Tuple;
@@ -9,7 +10,7 @@ import java.util.Date;
 import java.util.List;
 
 public interface PurchaseService {
-    PurchaseWithoutRecordsDTO getRecordlessPurchaseById(Integer id);
+    PurchaseDTO getRecordlessPurchaseById(Integer id);
     List<PurchaseDTO> getAllPurchases();
 
     PurchaseDTO getPurchase(PurchaseDTO PurchaseDTO);
@@ -24,8 +25,8 @@ public interface PurchaseService {
     PurchaseDTO addProductToPurchase(PurchaseDTO PurchaseDTO, PurchasedProductDTO PurchasedProductDTO);
 
     PurchaseDTO getPurchaseById(Integer id);
-    PurchaseSelectorMinimalDTO getPurchaseForSelectionById(Integer id);
-    List<PurchaseSelectorMinimalDTO> getAllPurchasesForSelection();
+    PurchaseDTO getPurchaseForSelectionById(Integer id);
+    List<PurchaseDTO> getAllPurchasesForSelection();
 
     List<PurchaseDTO> getPsByStartingDate(Date startDate);
 

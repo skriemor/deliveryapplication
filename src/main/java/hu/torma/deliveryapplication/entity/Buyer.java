@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.BuyerDTO;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -20,5 +21,13 @@ public class Buyer {
     @Column(name = "address", nullable = false)
     private String address;
 
-
+    public BuyerDTO toDTO() {
+        BuyerDTO dto = new BuyerDTO();
+        dto.setAccountNum(this.accountNum);
+        dto.setName(this.name);
+        dto.setPaper(this.paper);
+        dto.setCountry(this.country);
+        dto.setAddress(this.address);
+        return dto;
+    }
 }

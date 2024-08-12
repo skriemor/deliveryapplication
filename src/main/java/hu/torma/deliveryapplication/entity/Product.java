@@ -1,6 +1,9 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.ProductDTO;
 import lombok.Data;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -41,5 +44,23 @@ public class Product {
     @Override
     public int hashCode() {
         return Objects.hash(id, firstUnit, secondUnit, price, compPercent, tariffnum);
+    }
+
+    public ProductDTO toDTO() {
+        ProductDTO dto = new ProductDTO();
+        dto.setId(this.id);
+        dto.setPrice(this.price);
+        dto.setCompPercent(this.compPercent);
+        dto.setTariffnum(this.tariffnum);
+
+        if (Hibernate.isInitialized(this.firstUnit) && !(this.firstUnit instanceof HibernateProxy)) {
+            dto.setFirstUnit(this.firstUnit.toDTO());
+        }
+
+        if (Hibernate.isInitialized(this.secondUnit) && !(this.secondUnit instanceof HibernateProxy)) {
+            dto.setSecondUnit(this.secondUnit.toDTO());
+        }
+
+        return dto;
     }
 }

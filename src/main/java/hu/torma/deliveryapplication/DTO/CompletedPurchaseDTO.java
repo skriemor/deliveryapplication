@@ -72,7 +72,7 @@ public class CompletedPurchaseDTO implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice, bookedDate, records);
+        return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice, bookedDate);
     }
 
 

@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.UnitDTO;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -18,4 +19,12 @@ public class Unit  {
 
     @Column(name = "unit_name")
     private String unitName;
+
+
+    public UnitDTO toDTO() {
+        UnitDTO dto = new UnitDTO();
+        dto.setId(this.id);
+        dto.setUnitName(this.unitName);
+        return dto;
+    }
 }

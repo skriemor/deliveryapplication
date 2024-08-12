@@ -1,14 +1,11 @@
 package hu.torma.deliveryapplication.repository;
 
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseWithMinimalsDTO;
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
-import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.persistence.NamedNativeQuery;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -84,8 +81,8 @@ order by cp.receipt_date asc NULLS LAST
     @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records records JOIN FETCH records.purchase p")
     List<CompletedPurchase> findAllAndFetchRecordsAndPurchases();
 
-    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records WHERE cp.id = :idParam ")
-    List<CompletedPurchase> findAndFetchRecordsById(@Param("idParam") Integer id);
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records recs WHERE cp.id = :idParam ")
+    CompletedPurchase findAndFetchRecordsById(@Param("idParam") Integer id);
 
 
     @Query(name = "supply_completed_purchases_with_dates", nativeQuery = true)

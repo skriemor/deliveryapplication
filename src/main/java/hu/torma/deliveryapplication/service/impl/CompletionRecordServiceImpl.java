@@ -1,7 +1,6 @@
 package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.CompletionRecordDTO;
-import hu.torma.deliveryapplication.DTO.MediatorDisplay;
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import hu.torma.deliveryapplication.repository.CompletionRecordRepository;
 import hu.torma.deliveryapplication.service.CompletionRecordService;
@@ -18,8 +17,6 @@ import java.util.stream.Collectors;
 public class CompletionRecordServiceImpl implements CompletionRecordService {
     @Autowired
     private CompletionRecordRepository repo;
-    ModelMapper mapper = new ModelMapper();
-
     @Override
     public List<CompletionRecordDTO> getAllCompletionRecords() {
         return new ArrayList<>(

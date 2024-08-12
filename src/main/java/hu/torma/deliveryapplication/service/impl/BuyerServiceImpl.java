@@ -16,7 +16,6 @@ import java.util.List;
 public class BuyerServiceImpl implements BuyerService {
     @Autowired
     BuyerRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<BuyerDTO> getAllBuyers() {

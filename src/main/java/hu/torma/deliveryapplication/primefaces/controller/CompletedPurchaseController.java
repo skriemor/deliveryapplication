@@ -1,6 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.*;
+import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.Quant;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
@@ -9,7 +11,6 @@ import lombok.Setter;
 import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 
@@ -37,19 +38,19 @@ public class CompletedPurchaseController implements Serializable {
     @Autowired PurchaseService OPservice;
     @Autowired private PurchaseService purchaseService;
     @Autowired private CompletionRecordService recordService;
-    @Getter @Setter private PurchaseSelectorMinimalDTO pItemForSelectOneMenu;
-    @Getter @Setter private List<RecordWithMinimalsDTO> tempRecords;
-    @Getter @Setter List<RecordWithMinimalsDTO> validRecords;
-    List<RecordWithMinimalsDTO> beforeEditList;
+    @Getter @Setter private PurchaseDTO pItemForSelectOneMenu;
+    @Getter @Setter private List<CompletionRecordDTO> tempRecords;
+    @Getter @Setter List<CompletionRecordDTO> validRecords;
+    List<CompletionRecordDTO> beforeEditList;
     @Setter private Integer selectionCounter;
     private final List<String> tempNamesList = new ArrayList<>(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
     @Getter @Setter private ArrayList<Quant> quantities = new ArrayList<>(Arrays.asList(new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0)));
     @Getter @Setter private List<SortMeta> sortBy;
-    @Getter @Setter public ArrayList<PurchaseSelectorMinimalDTO> availablePurchases;
-    @Getter @Setter private PurchaseWithoutRecordsDTO purchaseDTO;
+    @Getter @Setter public ArrayList<PurchaseDTO> availablePurchases;
+    @Getter @Setter private PurchaseDTO purchaseDTO;
     @Getter @Setter private String label;
     @Getter List<CompletedPurchaseListingDTO> dtoList;
-    @Setter private CompletedPurchaseWithMinimalsDTO dto;
+    @Setter private CompletedPurchaseDTO dto;
     @Getter private Integer sixTotal;
     @Getter private Double netAvgPrice;
     @Getter private Double diff;
@@ -83,7 +84,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private void initPItem() {
-        this.pItemForSelectOneMenu = new PurchaseSelectorMinimalDTO();
+        this.pItemForSelectOneMenu = new PurchaseDTO();
         pItemForSelectOneMenu.setId(0);
         pItemForSelectOneMenu.setRemainingPrice(0.0);
         VendorDTO vend = new VendorDTO();
@@ -114,7 +115,7 @@ public class CompletedPurchaseController implements Serializable {
             return 0;
         }
 
-        List<PurchasedProductForPurchaseDTO> list = purchaseDTO.getProductList();
+        List<PurchasedProductDTO> list = purchaseDTO.getProductList();
         return IntStream.range(0, Math.min(6, list.size())).map(i -> (int) (list.get(i).getUnitPrice() * quantities.get(i).getNum() * (1 + 0.01 * list.get(i).getProduct().getCompPercent()))).sum();
     }
 
@@ -147,7 +148,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private Integer calculateDtoTotalV() {
-        return tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getPrice).sum();
+        return tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
     }
 
     private Double calculateNetTotalV() {
@@ -218,11 +219,11 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private void newCP() {
-        dto = new CompletedPurchaseWithMinimalsDTO();
+        dto = new CompletedPurchaseDTO();
         dto.setRecords(new ArrayList<>());
         tempRecords = new ArrayList<>();
         beforeEditList = new ArrayList<>();
-        purchaseDTO = new PurchaseWithoutRecordsDTO();
+        purchaseDTO = new PurchaseDTO();
         updateAvailablePurchases();
         emptySix();
     }
@@ -277,7 +278,7 @@ public class CompletedPurchaseController implements Serializable {
         cService.saveCompletedPurchase(dto);
         updateRemainingPrices();
         tempRecords.clear();
-        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
+        this.purchaseDTO = new PurchaseDTO();
         emptySix();
         newCP();
     }
@@ -306,7 +307,7 @@ public class CompletedPurchaseController implements Serializable {
             purchaseDTO = purchaseService.getRecordlessPurchaseById(beforeEditList.get(0).getPurchase().getId());
             acquireRecords();
             acquireQuants();
-            this.pItemForSelectOneMenu = purchaseDTO.toSelectorDTO();
+            this.pItemForSelectOneMenu = purchaseDTO;
         } else {
             validRecords = new ArrayList<>();
             purchaseDTO = null;
@@ -334,16 +335,16 @@ public class CompletedPurchaseController implements Serializable {
         tempRecords.clear();
         emptySix();
         newCP();
-        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
-        this.dto = new CompletedPurchaseWithMinimalsDTO();
+        this.purchaseDTO = new PurchaseDTO();
+        this.dto = new CompletedPurchaseDTO();
         this.setLabel("Felv. jegy Hozzáadása");
         updateAvailablePurchases();
         selectionCounter = 0;
     }
 
-    public CompletedPurchaseWithMinimalsDTO getDto() {
+    public CompletedPurchaseDTO getDto() {
         if (this.dto == null) {
-            this.dto = new CompletedPurchaseWithMinimalsDTO();
+            this.dto = new CompletedPurchaseDTO();
         }
         return this.dto;
     }
@@ -362,24 +363,24 @@ public class CompletedPurchaseController implements Serializable {
         int toSub = 0;
 
         switch (i) {
-            case 0 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getOne).sum();
-            case 1 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getTwo).sum();
-            case 2 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getThree).sum();
-            case 3 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getFour).sum();
-            case 4 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getFive).sum();
-            case 5 -> toSub = validRecords.stream().mapToInt(RecordWithMinimalsDTO::getSix).sum();
+            case 0 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
         }
         return original - toSub;
     }
 
     public Integer getTotalAmountOf(int i) {
         return switch (i) {
-            case 0 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getOne).sum();
-            case 1 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getTwo).sum();
-            case 2 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getThree).sum();
-            case 3 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getFour).sum();
-            case 4 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getFive).sum();
-            case 5 -> tempRecords.stream().mapToInt(RecordWithMinimalsDTO::getSix).sum();
+            case 0 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5 -> tempRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
             default -> 0;
         };
     }
@@ -391,7 +392,7 @@ public class CompletedPurchaseController implements Serializable {
         if (this.dto.getRecords() == null) {
             this.dto.setRecords(new ArrayList<>());
         }
-        var recordDTO = new RecordWithMinimalsDTO();
+        var recordDTO = new CompletionRecordDTO();
         StringBuilder sB = new StringBuilder();
 
         boolean wasWrong = false;
@@ -412,14 +413,14 @@ public class CompletedPurchaseController implements Serializable {
         recordDTO.setFour(quantities.get(3).getNum());
         recordDTO.setFive(quantities.get(4).getNum());
         recordDTO.setSix(quantities.get(5).getNum());
-        recordDTO.setPurchase(purchaseDTO.toSelectorDTO());
+        recordDTO.setPurchase(purchaseDTO);
 
-        recordDTO.setCompletedPurchase(this.dto.toIdOnly());
+        recordDTO.setCompletedPurchase(this.dto);
 
         recordDTO.setPrice(getSixTotal());
         tempRecords = new ArrayList<>(tempRecords.stream().filter(a -> recordDTO.getPurchase().getId().equals(a.getPurchase().getId())).toList());
         tempRecords.add(recordDTO);
-        this.purchaseDTO = new PurchaseWithoutRecordsDTO();
+        this.purchaseDTO = new PurchaseDTO();
         emptySix();
         updateAvailablePurchases();
     }
@@ -439,7 +440,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public void updateAvailablePurchases() {
         List<Integer> usedIDs = tempRecords != null && !tempRecords.isEmpty() ?
-                tempRecords.stream().map(RecordWithMinimalsDTO::getPurchase).map(PurchaseSelectorMinimalDTO::getId).toList() :
+                tempRecords.stream().map(CompletionRecordDTO::getPurchase).map(PurchaseDTO::getId).toList() :
                 Collections.emptyList();
 
         availablePurchases = new ArrayList<>(OPservice.getAllPurchasesForSelection().stream()
@@ -448,7 +449,7 @@ public class CompletedPurchaseController implements Serializable {
                 .toList());
 
         if (beforeEditList != null) {
-            PurchaseSelectorMinimalDTO purchaseDTO1;
+            PurchaseDTO purchaseDTO1;
             List<CompletionRecordDTO> priceRecords;
 
             for (var a : beforeEditList) {

@@ -16,7 +16,6 @@ import java.util.List;
 public class UnitServiceImpl implements UnitService {
     @Autowired
     UnitRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<UnitDTO> getAllUnits() {

@@ -1,13 +1,17 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.PurchaseDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -89,4 +93,28 @@ public class Purchase {
 
     @OneToMany(mappedBy = "purchase", fetch = FetchType.LAZY)
     List<CompletionRecord> records;
+
+    public PurchaseDTO toDTO() {
+        PurchaseDTO dto = new PurchaseDTO();
+        dto.setId(this.id);
+        if (Hibernate.isInitialized(this.vendor) && !(this.vendor instanceof HibernateProxy)) {
+            dto.setVendor(this.vendor.toDTO());
+        }
+        dto.setReceiptDate(this.receiptDate);
+        if (Hibernate.isInitialized(this.site) && !(this.site instanceof HibernateProxy)) {
+            dto.setSite(this.site.toDTO());
+        }
+        dto.setNotes(this.notes);
+        dto.setReceiptId(this.receiptId);
+        dto.setTotalPrice(this.totalPrice);
+        dto.setRemainingPrice(this.remainingPrice);
+        dto.setBookedDate(this.bookedDate);
+        if (Hibernate.isInitialized(this.records)) {
+            dto.setRecords(this.records.stream()
+                    .filter(record -> Hibernate.isInitialized(record) && !(record instanceof HibernateProxy))
+                    .map(CompletionRecord::toDTO)
+                    .collect(Collectors.toList()));
+        }
+        return dto;
+    }
 }

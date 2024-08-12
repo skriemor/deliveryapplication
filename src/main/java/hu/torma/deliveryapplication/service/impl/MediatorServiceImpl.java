@@ -18,8 +18,6 @@ import java.util.List;
 public class MediatorServiceImpl implements MediatorService {
     @Autowired
     MediatorRepository repo;
-    ModelMapper mapper = new ModelMapper();
-
     @Override
     public List<MediatorDTO> getAllMediators() {
         return new ArrayList<MediatorDTO>(

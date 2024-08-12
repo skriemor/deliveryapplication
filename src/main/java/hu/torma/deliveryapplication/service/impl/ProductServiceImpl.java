@@ -17,7 +17,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductRepository repo;
-    ModelMapper mapper = new ModelMapper();
+    @Autowired
+    ModelMapper mapper;
 
     @Override
     public List<ProductDTO> getAllProducts() {

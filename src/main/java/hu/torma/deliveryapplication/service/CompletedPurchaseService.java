@@ -1,9 +1,6 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseListingDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseMinimalDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseWithMinimalsDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import javax.transaction.Transactional;
@@ -12,7 +9,7 @@ import java.util.List;
 
 public interface CompletedPurchaseService {
     List<CompletedPurchaseDTO> getAllCompletedPurchases();
-    CompletedPurchaseWithMinimalsDTO getCompletedPurchaseById(Integer id);
+    CompletedPurchaseDTO getCompletedPurchaseById(Integer id);
 
     List<CompletedPurchaseListingDTO> getCompletedPurchasesForListing();
     List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords();

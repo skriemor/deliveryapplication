@@ -17,7 +17,6 @@ public class VendorServiceImpl implements VendorService {
 
     @Autowired
     VendorRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<VendorDTO> getAllVendors() {

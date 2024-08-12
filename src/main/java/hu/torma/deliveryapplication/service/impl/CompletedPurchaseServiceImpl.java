@@ -1,10 +1,7 @@
 package hu.torma.deliveryapplication.service.impl;
 
 
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseListingDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseMinimalDTO;
-import hu.torma.deliveryapplication.DTO.CompletedPurchaseWithMinimalsDTO;
+import hu.torma.deliveryapplication.DTO.*;
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.CompletedPurchaseRepository;
@@ -24,7 +21,6 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     Logger logger = Logger.getLogger("PRODUCTLIST");
     @Autowired
     CompletedPurchaseRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<CompletedPurchaseDTO> getAllCompletedPurchases() {
@@ -36,8 +32,10 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
-    public CompletedPurchaseWithMinimalsDTO getCompletedPurchaseById(Integer id) {
-        return mapper.map(repo.findAndFetchRecordsById(id), CompletedPurchaseWithMinimalsDTO.class);
+    public CompletedPurchaseDTO getCompletedPurchaseById(Integer id) {
+        CompletedPurchase cp = repo.findAndFetchRecordsById(id);
+        CompletedPurchaseDTO mappedCP = mapper.map(cp, CompletedPurchaseDTO.class);
+        return mappedCP;
     }
 
     @Override

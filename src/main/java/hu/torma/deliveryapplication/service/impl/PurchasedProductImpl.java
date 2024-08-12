@@ -16,7 +16,6 @@ import java.util.List;
 public class PurchasedProductImpl implements PurchasedProductService {
     @Autowired
     PurchasedProductRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<PurchasedProductDTO> getAllPurchasedProducts() {

@@ -17,7 +17,6 @@ public class SiteServiceImpl implements SiteService {
 
     @Autowired
     SiteRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<SiteDTO> getAllSites() {

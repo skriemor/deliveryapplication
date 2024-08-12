@@ -1,8 +1,11 @@
 package hu.torma.deliveryapplication.entity;
 
 import hu.torma.deliveryapplication.DTO.DisplayUnit;
+import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
 import lombok.Data;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 
@@ -214,5 +217,27 @@ public class PurchasedProduct {
     @JoinColumn(name = "sale_id", referencedColumnName = "id")
     private Sale sale;
 
+    public PurchasedProductDTO toDTO() {
+        PurchasedProductDTO dto = new PurchasedProductDTO();
+        dto.setId(this.Id);
+        dto.setUnitPrice(this.unitPrice);
+        dto.setQuantity(this.quantity);
+        dto.setQuantity2(this.quantity2);
+        dto.setCorrPercent(this.corrPercent);
+        dto.setTotalPrice(this.totalPrice);
 
+        if (Hibernate.isInitialized(this.product) && !(this.product instanceof HibernateProxy)) {
+            dto.setProduct(this.product.toDTO());
+        }
+
+        if (Hibernate.isInitialized(this.purchase) && !(this.purchase instanceof HibernateProxy)) {
+            dto.setPurchase(this.purchase.toDTO());
+        }
+
+        if (Hibernate.isInitialized(this.sale) && !(this.sale instanceof HibernateProxy)) {
+            dto.setSale(this.sale.toDTO());
+        }
+
+        return dto;
+    }
 }

@@ -27,7 +27,6 @@ public class StorageServiceImpl implements StorageService {
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
     Logger log = Logger.getLogger("Fos");
 
-    ModelMapper mapper = new ModelMapper();
 
     @Autowired
     private CompletionRecordRepository cRepo;

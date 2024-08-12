@@ -22,7 +22,6 @@ public class SaleServiceImpl implements SaleService {
     Logger logger = Logger.getLogger("SaleLogger");
     @Autowired
     SaleRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<SaleDTO> getAllSales() {

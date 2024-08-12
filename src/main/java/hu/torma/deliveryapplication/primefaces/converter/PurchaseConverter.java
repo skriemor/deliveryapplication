@@ -1,8 +1,6 @@
 package hu.torma.deliveryapplication.primefaces.converter;
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchaseSelectorMinimalDTO;
-import hu.torma.deliveryapplication.DTO.VendorDTO;
 import hu.torma.deliveryapplication.service.PurchaseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,12 +21,12 @@ public class PurchaseConverter implements Converter {
             var id = Integer.valueOf(s.substring(0, s.indexOf(" (")));
             return service.getPurchaseForSelectionById(id);
         }
-        return new PurchaseSelectorMinimalDTO();
+        return new PurchaseDTO();
     }
 
     @Override
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {
-        if (o instanceof PurchaseSelectorMinimalDTO purchase) {
+        if (o instanceof PurchaseDTO purchase) {
             return purchase.getId() + " (" + purchase.getRemainingPrice().intValue() + " HUF)";
         } else {
             if (o == null) return "Válasszon";

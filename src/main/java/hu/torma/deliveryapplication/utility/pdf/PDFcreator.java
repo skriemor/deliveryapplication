@@ -1,9 +1,5 @@
 package hu.torma.deliveryapplication.utility.pdf;
 
-import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchaseWithoutRecordsDTO;
-import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
-import hu.torma.deliveryapplication.DTO.PurchasedProductForPurchaseDTO;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Sheet;

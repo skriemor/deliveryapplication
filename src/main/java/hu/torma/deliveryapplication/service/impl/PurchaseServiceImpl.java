@@ -23,11 +23,10 @@ public class PurchaseServiceImpl implements PurchaseService {
     Logger logger = Logger.getLogger("PRODUCTLIST");
     @Autowired
     PurchaseRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
-    public PurchaseWithoutRecordsDTO getRecordlessPurchaseById(Integer id) {
-        return mapper.map(repo.findAndFetchPPsById(id), PurchaseWithoutRecordsDTO.class);
+    public PurchaseDTO getRecordlessPurchaseById(Integer id) {
+        return mapper.map(repo.findAndFetchPPsById(id), PurchaseDTO.class);
     }
 
     @Override
@@ -94,13 +93,13 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public PurchaseSelectorMinimalDTO getPurchaseForSelectionById(Integer id) {
-        return mapper.map(repo.findById(id), PurchaseSelectorMinimalDTO.class);
+    public PurchaseDTO getPurchaseForSelectionById(Integer id) {
+        return mapper.map(repo.findById(id), PurchaseDTO.class);
     }
 
     @Override
-    public List<PurchaseSelectorMinimalDTO> getAllPurchasesForSelection() {
-        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseSelectorMinimalDTO.class)).toList());
+    public List<PurchaseDTO> getAllPurchasesForSelection() {
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseDTO.class)).toList());
     }
 
     @Override

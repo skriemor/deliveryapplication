@@ -1,15 +1,19 @@
 package hu.torma.deliveryapplication.entity;
 
 import hu.torma.deliveryapplication.DTO.DisplayUnit;
+import hu.torma.deliveryapplication.DTO.MediatorDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.MediatorData;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Getter
@@ -63,4 +67,16 @@ public class Mediator {
     @OneToMany(mappedBy = "mediator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vendor> buyers;
 
+    public MediatorDTO toDTO() {
+        MediatorDTO dto = new MediatorDTO();
+        dto.setId(this.id);
+
+        if (Hibernate.isInitialized(this.buyers)) {
+            dto.setBuyers(this.buyers.stream()
+                    .filter(buyer -> Hibernate.isInitialized(buyer) && !(buyer instanceof HibernateProxy))
+                    .map(Vendor::toDTO)
+                    .collect(Collectors.toList()));
+        }
+        return dto;
+    }
 }

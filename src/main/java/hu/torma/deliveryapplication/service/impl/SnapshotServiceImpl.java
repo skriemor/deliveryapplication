@@ -10,15 +10,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.logging.Logger;
 
 
 @Service
 public class SnapshotServiceImpl implements SnapshotService {
     @Autowired
     StorageSnapshotRepository repo;
-
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<StorageSnapshotDTO> getAllSnapshots() {

@@ -1,8 +1,11 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.OfficialStorageSnapshotDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -44,4 +47,24 @@ public class OfficialStorageSnapshot {
     @OneToOne(targetEntity = OfficialStorageSnapshot.class, orphanRemoval = false, optional = true)
     @JoinColumn(name = "previous_id", nullable = true, referencedColumnName = "id")
     private OfficialStorageSnapshot previous;
+
+    public OfficialStorageSnapshotDTO toDTO() {
+        OfficialStorageSnapshotDTO dto = new OfficialStorageSnapshotDTO();
+        dto.setId(this.id);
+        dto.setOne(this.one);
+        dto.setTwo(this.two);
+        dto.setThree(this.three);
+        dto.setFour(this.four);
+        dto.setFive(this.five);
+        dto.setSix(this.six);
+        dto.setSum(this.sum);
+        dto.setDateFrom(this.dateFrom);
+        dto.setDateTo(this.dateTo);
+
+        if (Hibernate.isInitialized(this.previous) && !(this.previous instanceof HibernateProxy)) {
+            dto.setPrevious(this.previous.toDTO());
+        }
+
+        return dto;
+    }
 }
