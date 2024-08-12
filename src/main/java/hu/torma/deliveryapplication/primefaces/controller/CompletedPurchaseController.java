@@ -49,7 +49,7 @@ public class CompletedPurchaseController implements Serializable {
     @Getter @Setter public ArrayList<PurchaseDTO> availablePurchases;
     @Getter @Setter private PurchaseDTO purchaseDTO;
     @Getter @Setter private String label;
-    @Getter List<CompletedPurchaseListingDTO> dtoList;
+    @Getter List<CompletedPurchasegDTO> dtoList;
     @Setter private CompletedPurchaseDTO dto;
     @Getter private Integer sixTotal;
     @Getter private Double netAvgPrice;
@@ -290,15 +290,15 @@ public class CompletedPurchaseController implements Serializable {
         selectionCounter = 0;
     }
 
-    public java.util.Date getEarliestPurchaseOf(CompletedPurchaseListingDTO completedPurchase) {
+    public java.util.Date getEarliestPurchaseOf(CompletedPurchaseDTO completedPurchase) {
         return completedPurchase.getRecords().stream()
-                .map(RecordForDateComparisonDTO::getPurchase)
-                .map(PurchaseForDateComparisonDTO::getReceiptDate)
+                .map(CompletionRecordDTO::getPurchase)
+                .map(PurchaseDTO::getReceiptDate)
                 .min(java.util.Date::compareTo)
                 .orElse(null);
     }
 
-    public void editPurchase(SelectEvent<CompletedPurchaseListingDTO> _dto) {
+    public void editPurchase(SelectEvent<CompletedPurchaseDTO> _dto) {
         dto = cService.getCompletedPurchaseById(_dto.getObject().getId());
         tempRecords = dto.getRecords();
         beforeEditList = new ArrayList<>(tempRecords);

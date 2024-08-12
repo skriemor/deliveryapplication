@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -107,5 +109,35 @@ public class CompletedPurchaseDTO implements Serializable {
 
     public int getSix() {
         return this.records.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+    }
+
+    public CompletedPurchase toEntity() {
+        CompletedPurchase entity = new CompletedPurchase();
+        entity.setId(this.id);
+        if (this.vendor != null) {
+            entity.setVendor(this.vendor.toEntity());
+        }
+        entity.setOne(this.one);
+        entity.setTwo(this.two);
+        entity.setThree(this.three);
+        entity.setFour(this.four);
+        entity.setFive(this.five);
+        entity.setSix(this.six);
+        entity.setSerial(this.serial);
+        entity.setNewSerial(this.newSerial);
+        entity.setReceiptDate(this.receiptDate);
+        entity.setPaymentDate(this.paymentDate);
+        if (this.site != null) {
+            entity.setSite(this.site.toEntity());
+        }
+        entity.setNotes(this.notes);
+        entity.setPaymentMethod(this.paymentMethod);
+        entity.setTotalPrice(this.totalPrice);
+        if (this.records != null) {
+            entity.setRecords(this.records.stream()
+                    .map(CompletionRecordDTO::toEntity)
+                    .collect(Collectors.toList()));
+        }
+        return entity;
     }
 }

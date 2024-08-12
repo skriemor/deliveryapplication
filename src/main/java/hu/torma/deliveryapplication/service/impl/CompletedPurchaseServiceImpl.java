@@ -34,15 +34,15 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Override
     public CompletedPurchaseDTO getCompletedPurchaseById(Integer id) {
         CompletedPurchase cp = repo.findAndFetchRecordsById(id);
-        CompletedPurchaseDTO mappedCP = mapper.map(cp, CompletedPurchaseDTO.class);
+        CompletedPurchaseDTO mappedCP = cp.toDTO();
         return mappedCP;
     }
 
     @Override
-    public List<CompletedPurchaseListingDTO> getCompletedPurchasesForListing() {
+    public List<CompletedPurchaseDTO> getCompletedPurchasesForListing() {
         return new ArrayList<>(
                 repo.findAllAndFetchRecordsAndPurchases().stream().map(
-                        c -> mapper.map(c, CompletedPurchaseListingDTO.class)
+                        CompletedPurchase::toDTO
                 ).toList()
         );
     }
@@ -72,7 +72,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
 
     @Override
     @Transactional
-    public CompletedPurchaseWithMinimalsDTO saveCompletedPurchase(CompletedPurchaseWithMinimalsDTO dto) {
+    public CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseWithMinimalsDTO dto) {
         if (dto.getRecords() != null) {
             for (var c : dto.getRecords())
                 c.setCompletedPurchase(dto.toIdOnly());

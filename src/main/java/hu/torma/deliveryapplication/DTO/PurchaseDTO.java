@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -52,4 +53,39 @@ public class PurchaseDTO implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
     }
 
+
+    public Purchase toEntity() {
+        Purchase entity = new Purchase();
+        entity.setId(this.id);
+
+        if (this.productList != null) {
+            entity.setProductList(this.productList.stream()
+                    .map(PurchasedProductDTO::toEntity)
+                    .collect(Collectors.toList()));
+        }
+
+        if (this.vendor != null) {
+            entity.setVendor(this.vendor.toEntity());
+        }
+
+        entity.setReceiptDate(this.receiptDate);
+
+        if (this.site != null) {
+            entity.setSite(this.site.toEntity());
+        }
+
+        entity.setNotes(this.notes);
+        entity.setTotalPrice(this.totalPrice);
+        entity.setRemainingPrice(this.remainingPrice);
+        entity.setBookedDate(this.bookedDate);
+        entity.setReceiptId(this.receiptId);
+
+        if (this.records != null) {
+            entity.setRecords(this.records.stream()
+                    .map(CompletionRecordDTO::toEntity)
+                    .collect(Collectors.toList()));
+        }
+
+        return entity;
+    }
 }

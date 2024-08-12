@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.StorageSnapshot;
 import lombok.*;
 
 import java.io.Serializable;
@@ -98,4 +99,20 @@ public class StorageSnapshotDTO implements Serializable {
                 ", dateTo=" + dateTo +
                 '}';
     }
+
+    public StorageSnapshot toEntity() {
+        StorageSnapshot entity = new StorageSnapshot();
+        entity.setId(this.id);
+        entity.setOne(this.one);
+        entity.setTwo(this.two);
+        entity.setThree(this.three);
+        entity.setFour(this.four);
+        entity.setFive(this.five);
+        entity.setSix(this.six);
+        entity.setSum(this.sum);
+        entity.setDateFrom(this.dateFrom);
+        entity.setDateTo(this.dateTo);
+        return entity;
+    }
+
 }

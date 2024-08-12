@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.Product;
 import hu.torma.deliveryapplication.entity.Unit;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -34,5 +35,20 @@ public class ProductDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, firstUnit, secondUnit, price, compPercent, tariffnum);
+    }
+
+    public Product toEntity() {
+        Product entity = new Product();
+        entity.setId(this.id);
+        entity.setPrice(this.price);
+        entity.setCompPercent(this.compPercent);
+        entity.setTariffnum(this.tariffnum);
+        if (this.firstUnit != null) {
+            entity.setFirstUnit(this.firstUnit.toEntity());
+        }
+        if (this.secondUnit != null) {
+            entity.setSecondUnit(this.secondUnit.toEntity());
+        }
+        return entity;
     }
 }

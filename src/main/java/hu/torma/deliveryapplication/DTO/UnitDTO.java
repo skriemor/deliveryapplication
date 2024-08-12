@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.Unit;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -23,4 +24,12 @@ public class UnitDTO implements Serializable {
     public int hashCode() {
         return Objects.hash(id, unitName);
     }
+
+    public Unit toEntity() {
+        Unit entity = new Unit();
+        entity.setId(this.id);
+        entity.setUnitName(this.unitName);
+        return entity;
+    }
+
 }

@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A DTO for the {@link Mediator} entity
@@ -26,5 +27,16 @@ public class MediatorDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public Mediator toEntity() {
+        Mediator entity = new Mediator();
+        entity.setId(this.id);
+        if (this.buyers != null) {
+            entity.setBuyers(this.buyers.stream()
+                    .map(VendorDTO::toEntity)
+                    .collect(Collectors.toList()));
+        }
+        return entity;
     }
 }

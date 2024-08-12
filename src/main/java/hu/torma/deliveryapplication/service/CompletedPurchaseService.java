@@ -11,7 +11,7 @@ public interface CompletedPurchaseService {
     List<CompletedPurchaseDTO> getAllCompletedPurchases();
     CompletedPurchaseDTO getCompletedPurchaseById(Integer id);
 
-    List<CompletedPurchaseListingDTO> getCompletedPurchasesForListing();
+    List<CompletedPurchaseDTO> getCompletedPurchasesForListing();
     List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords();
 
     CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
@@ -19,7 +19,7 @@ public interface CompletedPurchaseService {
     CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
 
     @Transactional
-    CompletedPurchaseWithMinimalsDTO saveCompletedPurchase(CompletedPurchaseWithMinimalsDTO dto);
+    CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO dto);
 
     Date getEarliestPurchaseDate(Integer id);
 

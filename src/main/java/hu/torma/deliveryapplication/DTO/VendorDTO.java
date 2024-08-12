@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.Vendor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -49,4 +50,32 @@ public class VendorDTO implements Serializable {
                 ", vendorName='" + vendorName + '\'' +
                 '}';
     }
+
+    public Vendor toEntity() {
+        Vendor entity = new Vendor();
+        entity.setTaxId(this.taxId);
+        entity.setTaxNumber(this.taxNumber);
+        entity.setVendorName(this.vendorName);
+        entity.setBirthName(this.birthName);
+        entity.setNameOfMother(this.nameOfMother);
+        entity.setBirthPlace(this.birthPlace);
+        entity.setBirthDate(this.birthDate);
+        entity.setAccountNumber(this.accountNumber);
+        entity.setCity(this.city);
+        entity.setPostalCode(this.postalCode);
+        entity.setAddress(this.address);
+        entity.setQualification(this.qualification);
+        entity.setTaj(this.taj);
+        entity.setActivity(this.activity);
+        entity.setFileNumber(this.fileNumber);
+        entity.setFelir(this.felir);
+        entity.setGgn(this.ggn);
+        entity.setPhone(this.phone);
+        entity.setContract(this.contract);
+        if (this.mediator != null) {
+            entity.setMediator(this.mediator.toEntity());
+        }
+        return entity;
+    }
+
 }

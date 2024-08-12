@@ -38,4 +38,17 @@ public class CompletionRecordDTO implements Serializable {
         if (that.id == null || this.id == null) return false;
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchase, that.purchase) && Objects.equals(completedPurchase, that.completedPurchase);
     }
+
+    public CompletionRecord toEntity() {
+        CompletionRecord entity = new CompletionRecord();
+        entity.setId(this.id);
+        entity.setOne(this.one);
+        entity.setTwo(this.two);
+        entity.setThree(this.three);
+        entity.setFour(this.four);
+        entity.setFive(this.five);
+        entity.setSix(this.six);
+        entity.setPrice(this.price);
+        return entity;
+    }
 }
