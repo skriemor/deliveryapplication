@@ -7,6 +7,10 @@
         xmlns:f="http://java.sun.com/jsf/core"
         xmlns:p="http://primefaces.org/ui">
 
+<f:metadata>
+    <f:event type="preRenderView" listener="#{completedPurchaseController.updateAvailablePurchases()}" />
+</f:metadata>
+
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
 
     <h:outputStylesheet name="deliveries.css" library="css"/>

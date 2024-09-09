@@ -26,6 +26,11 @@ public class VendorServiceImpl implements VendorService {
     }
 
     @Override
+    public List<VendorDTO> getAllVendorsWithMediators() {
+        return new ArrayList<>(repo.findAllWithMediatorFetch().stream().map(vendor -> vendor.toDTO(true)).toList());
+    }
+
+    @Override
     public VendorDTO getVendor(VendorDTO vendorDTO) {
         return repo.findById(vendorDTO.getTaxId()).map(vendor -> vendor.toDTO(true)).orElse(null);
     }

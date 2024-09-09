@@ -9,4 +9,9 @@ import java.util.List;
 
 public interface VendorRepository extends JpaRepository<Vendor, String> {
     Vendor findVendorByVendorName(String s);
+
+    @Query(value = "select v from Vendor v left join fetch v.mediator m")
+    List<Vendor> findAllWithMediatorFetch();
+
+
 }

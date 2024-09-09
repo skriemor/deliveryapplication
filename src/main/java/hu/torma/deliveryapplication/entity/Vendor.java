@@ -79,6 +79,7 @@ public class Vendor {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediator_id")
+    @ToString.Exclude
     private Mediator mediator;
 
     public VendorDTO toDTO(boolean includeMediator) {

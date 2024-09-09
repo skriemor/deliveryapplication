@@ -84,7 +84,7 @@ order by cp.receipt_date asc NULLS LAST
     @Query(value = "SELECT cp FROM CompletedPurchase cp LEFT JOIN FETCH cp.records recs LEFT JOIN FETCH recs.completedPurchase LEFT JOIN FETCH recs.purchase purchase LEFT JOIN FETCH cp.vendor vendor LEFT JOIN FETCH cp.site site WHERE cp.id = :idParam ")
     CompletedPurchase findAndFetchRecordsById(@Param("idParam") Integer id);
 
-    @Query(value = "select cp from CompletedPurchase cp left join fetch cp.site left join fetch cp.vendor v left join fetch cp.records r left join fetch r.purchase p")
+    @Query(value = "select distinct cp from CompletedPurchase cp left join fetch cp.site left join fetch cp.vendor v left join fetch cp.records r left join fetch r.purchase p")
     List<CompletedPurchase> findAllForCpListing();
 
 

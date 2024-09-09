@@ -248,8 +248,8 @@ public class CompletedPurchaseController implements Serializable {
         if (purchaseFromDb != null && purchaseFromDb.getRecords() != null) {
             purchaseFromDb.getRecords()
                     .stream()
-                    .filter(afterEditRecord -> !updatedIds.contains(afterEditRecord.getPurchase().getId()))
                     .map(CompletionRecord::getPurchase)
+                    .filter(purchase -> !updatedIds.contains(purchase.getId()))
                     .mapToInt(Purchase::getId)
                     .forEach(this::updateRemainingPrice);
         }
@@ -386,9 +386,7 @@ public class CompletedPurchaseController implements Serializable {
         if (this.purchaseDTO.getId() == null) {
             return;
         }
-        if (this.dto.getRecords() == null) {
-            this.dto.setRecords(new ArrayList<>());
-        }
+
         var recordDTO = new CompletionRecordDTO();
         StringBuilder sB = new StringBuilder();
 
@@ -411,11 +409,12 @@ public class CompletedPurchaseController implements Serializable {
         recordDTO.setFive(quantities.get(4).getNum());
         recordDTO.setSix(quantities.get(5).getNum());
         recordDTO.setPurchase(purchaseDTO);
+        recordDTO.setPurchaseId(purchaseDTO.getId());
 
         recordDTO.setCompletedPurchase(this.dto);
 
         recordDTO.setPrice(getSixTotal());
-        tempRecords = new ArrayList<>(tempRecords.stream().filter(a -> recordDTO.getPurchase().getId().equals(a.getPurchase().getId())).toList());
+        tempRecords = new ArrayList<>(tempRecords.stream().filter(tempRecord -> !Objects.equals(recordDTO.getPurchaseId(), tempRecord.getPurchaseId())).toList());
         tempRecords.add(recordDTO);
         this.purchaseDTO = new PurchaseDTO();
         emptySix();

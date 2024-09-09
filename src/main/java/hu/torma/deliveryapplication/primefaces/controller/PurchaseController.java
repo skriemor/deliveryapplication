@@ -1,6 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.*;
+import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
@@ -27,7 +29,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -168,11 +169,12 @@ public class PurchaseController implements Serializable {
     }
 
     public void getAllPurchases() {
-        dtoList = service.getAllPurchasesForListing();
+        dtoList = service.getAllForListing();
     }
 
-    private void copyPurchasedProductsIntoPurchaseDto(PurchasedProductDTO... dtos) {
+    private void fixUpPPs(PurchasedProductDTO... dtos) {
         dto.setProductList(new ArrayList<>());
+
         Arrays.stream(dtos).forEach(pp -> {
             if (pp.getUnitPrice() == null) pp.setUnitPrice(0);
             if (pp.getQuantity() == null) pp.setQuantity(0);
@@ -193,33 +195,65 @@ public class PurchaseController implements Serializable {
         }
     }
 
-    private void evaluateAndSetPurchaseRemainingPrice() {
-        if (dto.getId() != null) {
-            Tuple priceAndSerials = service.getConcatedSerialsAndMaskedPricesById(dto.getId());
-            dto.setRemainingPrice(dto.getTotalPrice() - Double.parseDouble(priceAndSerials.get(0).toString()));
-            dto.setReceiptId(priceAndSerials.get(1).toString());
-        } else {
-            dto.setRemainingPrice(dto.getTotalPrice());
-        }
+    private void evaluateAndSetPurchaseRemainingPrice(Purchase entity) {
+        Tuple priceAndSerials = service.getConcatedSerialsAndMaskedPricesById(entity.getId());
+        boolean noCompletedPurchaseExistsForPurchase = priceAndSerials == null;
+        entity.setRemainingPrice(noCompletedPurchaseExistsForPurchase ? entity.getTotalPrice() : entity.getTotalPrice() - Double.parseDouble(priceAndSerials.get(0).toString()));
+        entity.setReceiptId(noCompletedPurchaseExistsForPurchase ? "" : priceAndSerials.get(1).toString());
     }
 
-    private void preparePurhcaseSite() {
+    private void preparePurchaseSite() {
         if (dto.getSite() == null) {
             dto.setSite(siteService.getSiteById("-"));
         }
     }
 
+    private void copyPPDataToEntityPPs(Purchase entity, PurchasedProductDTO... pps) {
+        List<PurchasedProduct> entityPps = entity.getProductList();
+        for (int i = 0; i < pps.length; i++) {
+            PurchasedProductDTO pp = pps[i];
+            PurchasedProduct epp = entityPps.get(i);
+
+            epp.setQuantity(pp.getQuantity());
+            epp.setUnitPrice(pp.getUnitPrice());
+            epp.setCorrPercent(pp.getCorrPercent());
+            epp.setQuantity2(pp.getQuantity2());
+            epp.setTotalPrice(pp.getTotalPrice());
+        }
+    }
+
+    private void copyBasicPurchaseDataToEntity(Purchase entity) {
+        entity.setVendor(dto.getVendor().toEntity(false));
+        entity.setSite(dto.getSite().toEntity());
+        entity.setNotes(dto.getNotes());
+        entity.setReceiptDate(dto.getReceiptDate());
+        entity.setRemainingPrice(dto.getRemainingPrice());
+        entity.setTotalPrice(dto.getTotalPrice());
+    }
+
     public void uiSavePurchase(boolean shouldPrint) {
-        copyPurchasedProductsIntoPurchaseDto(one, two, three, four, five, six);
+        fixUpPPs(one, two, three, four, five, six);
         calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
-        evaluateAndSetPurchaseRemainingPrice();
-        preparePurhcaseSite();
-        dto = service.savePurchase(dto);
+        preparePurchaseSite();
+
+        boolean update = dto.getId() != null;
+
+        if (update) { // ha modosit letezot
+            Purchase entity = service.getPurchaseWithPurchasedProductsById(dto.getId());
+            copyPPDataToEntityPPs(entity, one, two, three, four, five, six);
+            copyBasicPurchaseDataToEntity(entity);
+            evaluateAndSetPurchaseRemainingPrice(entity);
+            entity = service.savePurchase(entity);
+            dto = entity.toDTO(true, false, true);
+        } else { // ha elso rogzites
+            dto.setRemainingPrice(dto.getTotalPrice());
+            service.savePurchase(dto);
+        }
+
         pdf(shouldPrint);
         getAllPurchases();
         newPurchase();
-        //completedPurchaseController.updateAvailablePurchases();
     }
 
     private void calculateAndSetTotalPrice() {

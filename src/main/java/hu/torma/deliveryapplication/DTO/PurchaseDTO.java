@@ -33,7 +33,7 @@ public class PurchaseDTO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PurchaseDTO that = (PurchaseDTO) o;
-        return Objects.equals(id, that.id)  && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(remainingPrice, that.remainingPrice) && Objects.equals(bookedDate, that.bookedDate) && Objects.equals(receiptId, that.receiptId);
+        return Objects.equals(id, that.id) && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(remainingPrice, that.remainingPrice) && Objects.equals(bookedDate, that.bookedDate) && Objects.equals(receiptId, that.receiptId);
     }
 
     @Override
@@ -41,20 +41,20 @@ public class PurchaseDTO implements Serializable {
         return Objects.hash(id, productList, vendor, receiptDate, site, notes, totalPrice, remainingPrice, bookedDate, receiptId);
     }
 
-    public String getFormattedTotalPrice(){
-        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(","," ");
+    public String getFormattedTotalPrice() {
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",", " ");
     }
 
     public String getFormattedRemainingPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(this.remainingPrice).replaceAll(","," ");
+        return NumberFormat.getNumberInstance(Locale.US).format(this.remainingPrice).replaceAll(",", " ");
     }
 
     public String getIntedTotalPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",","");
+        return NumberFormat.getNumberInstance(Locale.US).format(this.totalPrice).replaceAll(",", "");
     }
 
 
-    public Purchase toEntity(boolean includeVendor, boolean includeRecords) {
+    public Purchase toEntity(boolean includeVendor, boolean includeRecords, boolean includePPs) {
         Purchase entity = new Purchase();
         entity.setId(this.id);
         entity.setReceiptDate(this.receiptDate);
@@ -65,7 +65,7 @@ public class PurchaseDTO implements Serializable {
         entity.setBookedDate(this.bookedDate);
 
         if (includeVendor && this.vendor != null) {
-            entity.setVendor(this.vendor.toEntity(false)); // Avoid recursion in Vendor
+            entity.setVendor(this.vendor.toEntity(false));
         }
 
         if (this.site != null) {
@@ -74,8 +74,16 @@ public class PurchaseDTO implements Serializable {
 
         if (includeRecords && this.records != null) {
             entity.setRecords(this.records.stream()
-                    .map(record -> record.toEntity(false, false)) // Avoid recursion in CompletionRecord
+                    .map(record -> record.toEntity(false, false))
                     .collect(Collectors.toList()));
+        }
+
+        if (includePPs && this.productList != null) {
+            entity.setProductList(
+                    this.productList.stream()
+                            .map(pp -> pp.toEntity(true, true, true))
+                            .toList()
+            );
         }
 
         return entity;

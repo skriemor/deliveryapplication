@@ -54,7 +54,7 @@ public class CompletionRecordDTO implements Serializable {
         entity.setPrice(this.price);
 
         if (includePurchase && this.purchase != null) {
-            entity.setPurchase(this.purchase.toEntity(false, false)); // Avoid looping back by passing false
+            entity.setPurchase(this.purchase.toEntity(false, false, false)); // Avoid looping back by passing false
         }
 
         if (includeCompletedPurchase && this.completedPurchase != null) {

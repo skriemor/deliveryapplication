@@ -59,7 +59,7 @@ public class PurchasedProductDTO implements Serializable {
         }
 
         if (includePurchase && this.purchase != null) {
-            entity.setPurchase(this.purchase.toEntity(false, false)); // Avoid recursion in Purchase
+            entity.setPurchase(this.purchase.toEntity(false, false, false)); // Avoid recursion in Purchase
         }
 
         if (includeSale && this.sale != null) {
