@@ -43,18 +43,18 @@ public class PurchaseController implements Serializable {
     @Autowired PurchaseService service;
     @Autowired PurchasedProductService purchasedProductService;
     @Autowired SiteService siteService;
-    @Getter @Setter private PurchasedProductForPurchaseDTO one;
-    @Getter @Setter private PurchasedProductForPurchaseDTO two;
-    @Getter @Setter private PurchasedProductForPurchaseDTO three;
-    @Getter @Setter private PurchasedProductForPurchaseDTO four;
-    @Getter @Setter private PurchasedProductForPurchaseDTO five;
-    @Getter @Setter private PurchasedProductForPurchaseDTO six;
+    @Getter @Setter private PurchasedProductDTO one;
+    @Getter @Setter private PurchasedProductDTO two;
+    @Getter @Setter private PurchasedProductDTO three;
+    @Getter @Setter private PurchasedProductDTO four;
+    @Getter @Setter private PurchasedProductDTO five;
+    @Getter @Setter private PurchasedProductDTO six;
     @Getter private StreamedContent file;
     Logger logger = Logger.getLogger("BOOL");
     @Getter @Setter private List<SortMeta> sortBy;
     @Getter private Boolean isSafeToDelete;
-    @Setter private PurchaseWithoutRecordsDTO dto;
-    @Getter @Setter private List<PurchaseMinimalDTO> dtoList;
+    @Setter private PurchaseDTO dto;
+    @Getter @Setter private List<PurchaseDTO> dtoList;
 
 
     public Double getNetAvgPrice() {
@@ -77,7 +77,7 @@ public class PurchaseController implements Serializable {
         return (double) Math.round(getGrossTotal() / 1.12);
     }
 
-    public Integer getNetOf(PurchasedProductForPurchaseDTO dto) {
+    public Integer getNetOf(PurchasedProductDTO dto) {
         if (dto.getQuantity() == null || dto.getCorrPercent() == null) {
             return 0;
         }
@@ -85,11 +85,11 @@ public class PurchaseController implements Serializable {
         return dto.getQuantity2();
     }
 
-    public String getFormattedPriceOf(PurchasedProductForPurchaseDTO i) {
+    public String getFormattedPriceOf(PurchasedProductDTO i) {
         return NumberFormat.getNumberInstance(Locale.US).format(calculateSetAndGetTotalPriceOf(i)).replaceAll(",", " ");
     }
 
-    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductForPurchaseDTO dto_) {
+    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
         if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
         Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
@@ -97,7 +97,7 @@ public class PurchaseController implements Serializable {
         return sum;
     }
 
-    private int setAndSumPurchasedProductDtoPrices(PurchasedProductForPurchaseDTO... dtos) {
+    private int setAndSumPurchasedProductDtoPrices(PurchasedProductDTO... dtos) {
         return Arrays.stream(dtos).mapToInt(d -> {
             if (d.getQuantity() != null && d.getProduct().getCompPercent() != null && d.getUnitPrice() != null) {
                 d.setQuantity2(getNetOf(d));
@@ -121,37 +121,37 @@ public class PurchaseController implements Serializable {
     }
 
     private void setupPurchasedProducts() {
-        one = new PurchasedProductForPurchaseDTO();
+        one = new PurchasedProductDTO();
         one.setProduct(pService.getProductById("I.OSZTÁLYÚ"));
         one.setCorrPercent(5);
         one.setUnitPrice(one.getProduct().getPrice());
         one.setQuantity(null);
 
-        two = new PurchasedProductForPurchaseDTO();
+        two = new PurchasedProductDTO();
         two.setProduct(pService.getProductById("II.OSZTÁLYÚ"));
         two.setUnitPrice(two.getProduct().getPrice());
         two.setCorrPercent(5);
         two.setQuantity(null);
 
-        three = new PurchasedProductForPurchaseDTO();
+        three = new PurchasedProductDTO();
         three.setProduct(pService.getProductById("III.OSZTÁLYÚ"));
         three.setUnitPrice(three.getProduct().getPrice());
         three.setCorrPercent(5);
         three.setQuantity(null);
 
-        four = new PurchasedProductForPurchaseDTO();
+        four = new PurchasedProductDTO();
         four.setProduct(pService.getProductById("IV.OSZTÁLYÚ"));
         four.setUnitPrice(four.getProduct().getPrice());
         four.setCorrPercent(5);
         four.setQuantity(null);
 
-        five = new PurchasedProductForPurchaseDTO();
+        five = new PurchasedProductDTO();
         five.setProduct(pService.getProductById("GYÖKÉR"));
         five.setUnitPrice(five.getProduct().getPrice());
         five.setCorrPercent(5);
         five.setQuantity(null);
 
-        six = new PurchasedProductForPurchaseDTO();
+        six = new PurchasedProductDTO();
         six.setProduct(pService.getProductById("IPARI"));
         six.setCorrPercent(8);
         six.setUnitPrice(six.getProduct().getPrice());
@@ -162,16 +162,16 @@ public class PurchaseController implements Serializable {
     public void init() {
         setupPurchasedProducts();
         newPurchase();
+        getAllPurchases();
         sortBy = new ArrayList<>();
         sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
     }
 
-    @PostConstruct
     public void getAllPurchases() {
         dtoList = service.getAllPurchasesForListing();
     }
 
-    private void copyPurchasedProductsIntoPurchaseDto(PurchasedProductForPurchaseDTO... dtos) {
+    private void copyPurchasedProductsIntoPurchaseDto(PurchasedProductDTO... dtos) {
         dto.setProductList(new ArrayList<>());
         Arrays.stream(dtos).forEach(pp -> {
             if (pp.getUnitPrice() == null) pp.setUnitPrice(0);
@@ -223,7 +223,7 @@ public class PurchaseController implements Serializable {
     }
 
     private void calculateAndSetTotalPrice() {
-        dto.setTotalPrice((double) dto.getProductList().stream().map(PurchasedProductForPurchaseDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
+        dto.setTotalPrice((double) dto.getProductList().stream().map(PurchasedProductDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
     }
 
     public void deletePurchase() {
@@ -243,12 +243,12 @@ public class PurchaseController implements Serializable {
 
     public void newPurchase() {
         setupPurchasedProducts();
-        dto = new PurchaseWithoutRecordsDTO();
+        dto = new PurchaseDTO();
     }
 
-    public PurchaseWithoutRecordsDTO getDto() {
+    public PurchaseDTO getDto() {
         if (dto == null) {
-            dto = new PurchaseWithoutRecordsDTO();
+            dto = new PurchaseDTO();
         }
         return dto;
     }
@@ -266,7 +266,7 @@ public class PurchaseController implements Serializable {
 
     public int getNetSum() {
         return Stream.of(one, two, three, four, five, six)
-                .mapToInt(PurchasedProductForPurchaseDTO::getNetOf)
+                .mapToInt(PurchasedProductDTO::getNetOf)
                 .sum();
     }
 
@@ -303,7 +303,7 @@ public class PurchaseController implements Serializable {
         }
     }
 
-    public void onRowSelect(SelectEvent<PurchaseMinimalDTO> event) {
+    public void onRowSelect(SelectEvent<PurchaseDTO> event) {
         dto = service.getPurchaseAndFetchPPsById(event.getObject().getId());
         isSafeToDelete = !recordService.existsByPurchaseId(dto.getId());
         editSix();

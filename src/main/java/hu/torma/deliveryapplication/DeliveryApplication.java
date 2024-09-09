@@ -8,7 +8,6 @@ import hu.torma.deliveryapplication.repository.SecureUserRepository;
 import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.SiteService;
 import hu.torma.deliveryapplication.service.UnitService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -42,10 +41,6 @@ public class DeliveryApplication {
 		return srb;
 	}
 
-	@Bean
-	public ModelMapper modelMapper() {
-		return ModelMapperConfig.modelMapper();
-	}
 
 	@Component("dbInit")
 	public class DBInit {

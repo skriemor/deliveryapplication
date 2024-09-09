@@ -16,15 +16,16 @@ public interface PurchaseService {
     PurchaseDTO getPurchase(PurchaseDTO PurchaseDTO);
 
     PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO);
-    PurchaseWithoutRecordsDTO savePurchase(PurchaseWithoutRecordsDTO PurchaseDTO);
+    Purchase savePurchase(Purchase purchase);
 
     void deletePurchase(PurchaseDTO PurchaseDTO);
-    void deletePurchase(PurchaseWithoutRecordsDTO PurchaseDTO);
-
 
     PurchaseDTO addProductToPurchase(PurchaseDTO PurchaseDTO, PurchasedProductDTO PurchasedProductDTO);
 
     PurchaseDTO getPurchaseById(Integer id);
+
+    Purchase getPurchaseEntityById(Integer id);
+
     PurchaseDTO getPurchaseForSelectionById(Integer id);
     List<PurchaseDTO> getAllPurchasesForSelection();
 
@@ -43,9 +44,9 @@ public interface PurchaseService {
 
     Tuple getConcatedSerialsAndMaskedPricesById(Integer id);
 
-    List<PurchaseWithoutRecordsDTO> getAllPurchasesAndFetchPPs();
+    List<PurchaseDTO> getAllPurchasesAndFetchPPs();
 
-    List<PurchaseMinimalDTO> getAllPurchasesForListing();
+    List<PurchaseDTO> getAllPurchasesForListing();
 
-    PurchaseWithoutRecordsDTO getPurchaseAndFetchPPsById(Integer id);
+    PurchaseDTO getPurchaseAndFetchPPsById(Integer id);
 }

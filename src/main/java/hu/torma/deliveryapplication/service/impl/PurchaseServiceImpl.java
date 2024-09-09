@@ -6,7 +6,6 @@ import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.PurchaseRepository;
 import hu.torma.deliveryapplication.service.PurchaseService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,37 +25,31 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDTO getRecordlessPurchaseById(Integer id) {
-        return mapper.map(repo.findAndFetchPPsById(id), PurchaseDTO.class);
+        return repo.findAndFetchPPsById(id).map(purchase -> purchase.toDTO(false, false, true)).orElse(null);
     }
 
     @Override
     public List<PurchaseDTO> getAllPurchases() {
-        return new ArrayList<>(repo.findAll().stream().map(c -> mapper.map(c, PurchaseDTO.class)).toList());
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> purchase.toDTO(true, true, false)).toList());
     }
 
     @Override
-    public PurchaseDTO getPurchase(PurchaseDTO PurchaseDTO) {
-        return mapper.map(repo.findById(PurchaseDTO.getId()), PurchaseDTO.class);
+    public PurchaseDTO getPurchase(PurchaseDTO dto) {
+        return repo.findById(dto.getId()).map(purchase -> purchase.toDTO(true, true, false)).orElse(null);
     }
 
     @Override
     @Transactional
-    public PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO) {
+    public PurchaseDTO savePurchase(PurchaseDTO purchaseDto) {
         logger.info("Save was called");
-        for (var v : PurchaseDTO.getProductList())
-            v.setPurchase(PurchaseDTO); //to make relations work by assigning purchase to each of purchased products' ends
-        var g = mapper.map(repo.save(mapper.map(PurchaseDTO, Purchase.class)), PurchaseDTO.class);
-        return g;
+        for (var v : purchaseDto.getProductList())
+            v.setPurchase(purchaseDto); //to make relations work by assigning purchase to each of purchased products' ends
+        return repo.save(purchaseDto.toEntity(true, true)).toDTO(true,true, true);
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public PurchaseWithoutRecordsDTO savePurchase(PurchaseWithoutRecordsDTO dto) {
-        logger.info("Save was called");
-        for (var v : dto.getProductList())
-            v.setPurchase(dto); //to make relations work by assigning purchase to each of purchased products' ends
-        var g = mapper.map(repo.save(mapper.map(dto, Purchase.class)), PurchaseWithoutRecordsDTO.class);
-        return g;
+    public Purchase savePurchase(Purchase purchase) {
+        return repo.save(purchase);
     }
 
 
@@ -67,12 +60,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    @Transactional
-    public void deletePurchase(PurchaseWithoutRecordsDTO dto) {
-        repo.deleteById(dto.getId());
-    }
-
-    @Override
     public PurchaseDTO addProductToPurchase(PurchaseDTO PurchaseDTO, PurchasedProductDTO PurchasedProductDTO) {
         PurchaseDTO.getProductList().add(PurchasedProductDTO);
         return PurchaseDTO;
@@ -80,33 +67,36 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     public PurchaseDTO getPurchaseById(Integer id) {
-        var g = mapper.map(repo.findById(id).orElseGet(() -> {
+        return repo.findAndFetchPPsById(id).orElseGet(() -> {
             Purchase p = new Purchase();
             p.setRemainingPrice(0.0);
             p.setTotalPrice(0.0);
             p.setProductList(null);
             p.setId(-1);
             return p;
-        }), PurchaseDTO.class);
-        //logger.info("found " + g.getId()+ " <-- id,    size of completeddtolist: "+g.getPurchaseDTOS().size());
-        return g;
+        }).toDTO(true, true, true);
+    }
+
+    @Override
+    public Purchase getPurchaseEntityById(Integer id) {
+        return repo.findPurchaseFetchAllById(id).orElse(null);
     }
 
     @Override
     public PurchaseDTO getPurchaseForSelectionById(Integer id) {
-        return mapper.map(repo.findById(id), PurchaseDTO.class);
+        return repo.findAndFetchPPsById(id).map(purchase -> purchase.toDTO(true, true, true)).orElseThrow(() -> new RuntimeException("id: " + id + " not found in db"));
     }
 
     @Override
     public List<PurchaseDTO> getAllPurchasesForSelection() {
-        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseDTO.class)).toList());
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> purchase.toDTO(true, true, true)).toList());
     }
 
     @Override
     public List<PurchaseDTO> getPsByStartingDate(Date startDate) {
         return new ArrayList<PurchaseDTO>(
                 repo.findAllByReceiptDateAfter(startDate).stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
+                        purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );
     }
@@ -115,7 +105,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseDTO> getPsByEndingDate(Date endDate) {
         return new ArrayList<PurchaseDTO>(
                 repo.findAllByReceiptDateBefore(endDate).stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
+                        purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );
     }
@@ -124,7 +114,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseDTO> getPsByBothDates(Date startDate, Date endDate) {
         return new ArrayList<PurchaseDTO>(
                 repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
+                        purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );
     }
@@ -133,7 +123,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseDTO> getPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId) {
         return new ArrayList<PurchaseDTO>(
                 repo.getPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
+                        purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );
     }
@@ -142,7 +132,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     public List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly) {
         return new ArrayList<PurchaseDTO>(
                 repo.applyFilterChainAndReturnPurchases(name, startDate, endDate, unPaidOnly).stream().map(
-                        c -> mapper.map(c, PurchaseDTO.class)
+                        purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );
     }
@@ -150,7 +140,7 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     public List<Integer> getPricesOnLastPurchase(String vendorId) {
         List<Integer> ints = repo.getLastPurchasePricesByVendorTaxId(vendorId);
-        return ints.size() > 0 ? ints : Arrays.asList(0, 0, 0, 0, 0, 0);
+        return !ints.isEmpty() ? ints : Arrays.asList(0, 0, 0, 0, 0, 0);
     }
 
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
@@ -183,17 +173,17 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<PurchaseWithoutRecordsDTO> getAllPurchasesAndFetchPPs() {
-        return new ArrayList<>(repo.getAllAndFetchPPs().stream().map(purchase -> mapper.map(purchase, PurchaseWithoutRecordsDTO.class)).toList());
+    public List<PurchaseDTO> getAllPurchasesAndFetchPPs() {
+        return new ArrayList<>(repo.getAllAndFetchPPs().stream().map(purchase -> purchase.toDTO(true, true, true)).toList());
     }
 
     @Override
-    public List<PurchaseMinimalDTO> getAllPurchasesForListing() {
-        return new ArrayList<>(repo.findAll().stream().map(purchase -> mapper.map(purchase, PurchaseMinimalDTO.class)).toList());
+    public List<PurchaseDTO> getAllPurchasesForListing() {
+        return new ArrayList<>(repo.findAll().stream().map(purchase -> purchase.toDTO(true, true, true)).toList());
     }
 
     @Override
-    public PurchaseWithoutRecordsDTO getPurchaseAndFetchPPsById(Integer id) {
-        return mapper.map(repo.findAndFetchPPsById(id), PurchaseWithoutRecordsDTO.class);
+    public PurchaseDTO getPurchaseAndFetchPPsById(Integer id) {
+        return repo.findAndFetchPPsById(id).map(purchase -> purchase.toDTO(true, true, true)).orElseThrow(() -> new RuntimeException("id: " + id + " not found in db"));
     }
 }

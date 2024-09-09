@@ -54,38 +54,31 @@ public class PurchaseDTO implements Serializable {
     }
 
 
-    public Purchase toEntity() {
+    public Purchase toEntity(boolean includeVendor, boolean includeRecords) {
         Purchase entity = new Purchase();
         entity.setId(this.id);
-
-        if (this.productList != null) {
-            entity.setProductList(this.productList.stream()
-                    .map(PurchasedProductDTO::toEntity)
-                    .collect(Collectors.toList()));
-        }
-
-        if (this.vendor != null) {
-            entity.setVendor(this.vendor.toEntity());
-        }
-
         entity.setReceiptDate(this.receiptDate);
+        entity.setNotes(this.notes);
+        entity.setReceiptId(this.receiptId);
+        entity.setTotalPrice(this.totalPrice);
+        entity.setRemainingPrice(this.remainingPrice);
+        entity.setBookedDate(this.bookedDate);
+
+        if (includeVendor && this.vendor != null) {
+            entity.setVendor(this.vendor.toEntity(false)); // Avoid recursion in Vendor
+        }
 
         if (this.site != null) {
             entity.setSite(this.site.toEntity());
         }
 
-        entity.setNotes(this.notes);
-        entity.setTotalPrice(this.totalPrice);
-        entity.setRemainingPrice(this.remainingPrice);
-        entity.setBookedDate(this.bookedDate);
-        entity.setReceiptId(this.receiptId);
-
-        if (this.records != null) {
+        if (includeRecords && this.records != null) {
             entity.setRecords(this.records.stream()
-                    .map(CompletionRecordDTO::toEntity)
+                    .map(record -> record.toEntity(false, false)) // Avoid recursion in CompletionRecord
                     .collect(Collectors.toList()));
         }
 
         return entity;
     }
+
 }

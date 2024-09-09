@@ -3,6 +3,7 @@ package hu.torma.deliveryapplication.entity;
 import hu.torma.deliveryapplication.DTO.CompletionRecordDTO;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -42,7 +43,8 @@ public class CompletionRecord {
     private CompletedPurchase completedPurchase;
 
 
-    public CompletionRecordDTO toDTO() {
+
+    public CompletionRecordDTO toDTO(boolean includePurchase, boolean includeCompletedPurchase) {
         CompletionRecordDTO dto = new CompletionRecordDTO();
         dto.setId(this.id);
         dto.setOne(this.one);
@@ -52,6 +54,24 @@ public class CompletionRecord {
         dto.setFive(this.five);
         dto.setSix(this.six);
         dto.setPrice(this.price);
+
+        if (this.completedPurchase != null && Hibernate.isInitialized(this.completedPurchase) && !(this.completedPurchase instanceof HibernateProxy)) {
+            dto.setCompletedPurchaseId(this.completedPurchase.getId());
+        }
+
+        if (this.purchase != null && Hibernate.isInitialized(this.purchase) && !(this.purchase instanceof HibernateProxy)) {
+            dto.setPurchaseId(this.purchase.getId());
+        }
+
+        if (includePurchase && Hibernate.isInitialized(this.purchase) && !(this.purchase instanceof HibernateProxy) && this.purchase != null) {
+            dto.setPurchase(this.purchase.toDTO(false, false, true)); // Pass false to avoid recursion
+        }
+
+        if (includeCompletedPurchase && this.completedPurchase != null && Hibernate.isInitialized(this.completedPurchase) && !(this.completedPurchase instanceof HibernateProxy)) {
+            dto.setCompletedPurchase(this.completedPurchase.toDTO(false)); // Pass false to avoid recursion
+        }
+
         return dto;
     }
+
 }

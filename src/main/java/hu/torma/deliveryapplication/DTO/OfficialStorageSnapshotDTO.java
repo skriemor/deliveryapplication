@@ -148,7 +148,7 @@ public class OfficialStorageSnapshotDTO implements Serializable {
         return Objects.hash(id, one, two, three, four, five, six, sum, dateFrom, dateTo, previous);
     }
 
-    public OfficialStorageSnapshot toEntity() {
+    public OfficialStorageSnapshot toEntity(boolean includePrevious) {
         OfficialStorageSnapshot entity = new OfficialStorageSnapshot();
         entity.setId(this.id);
         entity.setOne(this.one);
@@ -160,9 +160,12 @@ public class OfficialStorageSnapshotDTO implements Serializable {
         entity.setSum(this.sum);
         entity.setDateFrom(this.dateFrom);
         entity.setDateTo(this.dateTo);
-        if (this.previous != null) {
-            entity.setPrevious(this.previous.toEntity());
+
+        if (includePrevious && this.previous != null) {
+            entity.setPrevious(this.previous.toEntity(false)); // Avoid recursion
         }
+
         return entity;
     }
+
 }

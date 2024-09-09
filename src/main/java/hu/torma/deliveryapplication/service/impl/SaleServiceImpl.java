@@ -1,12 +1,10 @@
 package hu.torma.deliveryapplication.service.impl;
 
-import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
-import hu.torma.deliveryapplication.entity.Sale;
+import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.SaleRepository;
 import hu.torma.deliveryapplication.service.SaleService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,24 +25,23 @@ public class SaleServiceImpl implements SaleService {
     public List<SaleDTO> getAllSales() {
         return new ArrayList<SaleDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, SaleDTO.class)
+                       sale -> sale.toDTO(true, true)
                 ).toList()
         );
     }
 
     @Override
-    public SaleDTO getSale(SaleDTO SaleDTO) {
-        return mapper.map(repo.findById(SaleDTO.getId()), SaleDTO.class);
+    public SaleDTO getSale(SaleDTO saledto) {
+        return repo.findById(saledto.getId()).map(sale -> sale.toDTO(true, true)).orElse(null);
     }
 
     @Override
     @Transactional
-    public SaleDTO saveSale(SaleDTO SaleDTO) {
+    public SaleDTO saveSale(SaleDTO dto) {
         logger.info("Save was called");
-        for (var v : SaleDTO.getProductList())
-            v.setSale(SaleDTO); //to make relations work by assigning purchase to each of purchased products' ends
-        var g = mapper.map(repo.save(mapper.map(SaleDTO, Sale.class)), SaleDTO.class);
-        return g;
+        for (var v : dto.getProductList())
+            v.setSale(dto); //to make relations work by assigning purchase to each of purchased products' ends
+        return repo.save(dto.toEntity(true, true)).toDTO(true, true);
     }
 
     @Override
@@ -54,8 +51,8 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleDTO addProductToSale(SaleDTO SaleDTO, PurchasedProductDTO SaledProductDTO) {
-        SaleDTO.getProductList().add(SaledProductDTO);
+    public SaleDTO addProductToSale(SaleDTO SaleDTO, PurchasedProductDTO saledProductDTO) {
+        SaleDTO.getProductList().add(saledProductDTO);
         return SaleDTO;
     }
 
@@ -63,7 +60,7 @@ public class SaleServiceImpl implements SaleService {
     public List<SaleDTO> getSalesByStartingDate(Date startDate) {
         return new ArrayList<SaleDTO>(
                 repo.findAllByReceiptDateAfter(startDate).stream().map(
-                        c -> mapper.map(c, SaleDTO.class)
+                        sale -> sale.toDTO(true, true)
                 ).toList()
         );
     }
@@ -72,7 +69,7 @@ public class SaleServiceImpl implements SaleService {
     public List<SaleDTO> getSalesByEndingDate(Date endDate) {
         return new ArrayList<SaleDTO>(
                 repo.findAllByReceiptDateBefore(endDate).stream().map(
-                        c -> mapper.map(c, SaleDTO.class)
+                        sale -> sale.toDTO(true, true)
                 ).toList()
         );
     }
@@ -81,7 +78,7 @@ public class SaleServiceImpl implements SaleService {
     public List<SaleDTO> getSalesByBothDates(Date startDate, Date endDate) {
         return new ArrayList<SaleDTO>(
                 repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
-                        c -> mapper.map(c, SaleDTO.class)
+                        sale -> sale.toDTO(true, true)
                 ).toList()
         );
     }
@@ -90,7 +87,7 @@ public class SaleServiceImpl implements SaleService {
     public List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly) {
         return new ArrayList<SaleDTO>(
                 repo.applyFilterChainAndReturnSales(name, currency, startDate, endDate, unPaidOnly, paper, letaiOnly, globalGapOnly).stream().map(
-                        c -> mapper.map(c, SaleDTO.class)
+                        sale -> sale.toDTO(true, true)
                 ).toList()
         );
     }
@@ -102,7 +99,7 @@ public class SaleServiceImpl implements SaleService {
         List<ProductWithQuantity> actual = new ArrayList<>();
         int it1 = 0, it2 = 0;
         while (it1 < 6 && it2 < 6) {
-            if (tmp.size() < 1 || tmp.size() <= it2 || !prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
+            if (tmp.isEmpty() || tmp.size() <= it2 || !prodStrings.get(it1).equals(tmp.get(it2).getProduct())) {
                 actual.add(new ProductWithQuantity(prodStrings.get(it1), 0));
                 it1++;
             } else {

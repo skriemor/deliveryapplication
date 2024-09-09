@@ -1,11 +1,9 @@
 package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.MediatorDTO;
-import hu.torma.deliveryapplication.entity.Mediator;
 import hu.torma.deliveryapplication.primefaces.sumutils.MediatorData;
 import hu.torma.deliveryapplication.repository.MediatorRepository;
 import hu.torma.deliveryapplication.service.MediatorService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,20 +20,20 @@ public class MediatorServiceImpl implements MediatorService {
     public List<MediatorDTO> getAllMediators() {
         return new ArrayList<MediatorDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, MediatorDTO.class)
+                    med -> med.toDTO(true)
                 ).toList()
         );
     }
 
     @Override
     public MediatorDTO getMediator(MediatorDTO mediatorDTO) {
-        return mapper.map(repo.findById(mediatorDTO.getId()), MediatorDTO.class);
+        return repo.findById(mediatorDTO.getId()).map(med -> med.toDTO(true)).orElse(null);
     }
 
     @Override
     @Transactional
     public MediatorDTO saveMediator(MediatorDTO mediatorDTO) {
-        return mapper.map(repo.save(mapper.map(mediatorDTO, Mediator.class)), MediatorDTO.class);
+        return repo.save(mediatorDTO.toEntity(true)).toDTO(true);
     }
 
     @Override
@@ -46,7 +44,7 @@ public class MediatorServiceImpl implements MediatorService {
 
     @Override
     public MediatorDTO getMediatorById(String s) {
-        return mapper.map(repo.findById(s), MediatorDTO.class);
+        return repo.findById(s).map(med -> med.toDTO(true)).orElse(null);
     }
 
     @Override

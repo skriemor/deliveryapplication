@@ -26,7 +26,6 @@ public class CompletedPurchaseDTO implements Serializable {
     SiteDTO site;
     String notes;
     int totalPrice;
-    Date bookedDate;
     String paymentMethod;
     Date paymentDate;
 
@@ -58,7 +57,6 @@ public class CompletedPurchaseDTO implements Serializable {
                 ", site=" + site +
                 ", notes='" + notes + '\'' +
                 ", totalPrice=" + totalPrice +
-                ", bookedDate=" + bookedDate +
                 ", paymentMethod='" + paymentMethod + '\'' +
                 ", paymentDate=" + paymentDate +
                 '}';
@@ -69,12 +67,12 @@ public class CompletedPurchaseDTO implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         CompletedPurchaseDTO that = (CompletedPurchaseDTO) o;
-        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice) && Objects.equals(bookedDate, that.bookedDate);
+        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(vendor, that.vendor) && Objects.equals(receiptDate, that.receiptDate) && Objects.equals(site, that.site) && Objects.equals(notes, that.notes) && Objects.equals(totalPrice, that.totalPrice);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice, bookedDate);
+        return Objects.hash(id, vendor, one, two, three, four, five, six, receiptDate, site, notes, totalPrice);
     }
 
 
@@ -111,12 +109,9 @@ public class CompletedPurchaseDTO implements Serializable {
         return this.records.stream().mapToInt(CompletionRecordDTO::getSix).sum();
     }
 
-    public CompletedPurchase toEntity() {
+    public CompletedPurchase toEntity(boolean includeVendor, boolean includeRecords) {
         CompletedPurchase entity = new CompletedPurchase();
         entity.setId(this.id);
-        if (this.vendor != null) {
-            entity.setVendor(this.vendor.toEntity());
-        }
         entity.setOne(this.one);
         entity.setTwo(this.two);
         entity.setThree(this.three);
@@ -127,17 +122,24 @@ public class CompletedPurchaseDTO implements Serializable {
         entity.setNewSerial(this.newSerial);
         entity.setReceiptDate(this.receiptDate);
         entity.setPaymentDate(this.paymentDate);
-        if (this.site != null) {
-            entity.setSite(this.site.toEntity());
-        }
         entity.setNotes(this.notes);
         entity.setPaymentMethod(this.paymentMethod);
         entity.setTotalPrice(this.totalPrice);
-        if (this.records != null) {
+
+        if (includeVendor && this.vendor != null) {
+            entity.setVendor(this.vendor.toEntity(false));
+        }
+
+        if (this.site != null) {
+            entity.setSite(this.site.toEntity());
+        }
+
+        if (includeRecords && this.records != null) {
             entity.setRecords(this.records.stream()
-                    .map(CompletionRecordDTO::toEntity)
+                    .map(record -> record.toEntity(false, false)) // Avoid recursion
                     .collect(Collectors.toList()));
         }
+
         return entity;
     }
 }

@@ -44,11 +44,11 @@ public class OfficialStorageSnapshot {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date dateTo;
 
-    @OneToOne(targetEntity = OfficialStorageSnapshot.class, orphanRemoval = false, optional = true)
+    @OneToOne(targetEntity = OfficialStorageSnapshot.class, fetch = FetchType.LAZY)
     @JoinColumn(name = "previous_id", nullable = true, referencedColumnName = "id")
     private OfficialStorageSnapshot previous;
 
-    public OfficialStorageSnapshotDTO toDTO() {
+    public OfficialStorageSnapshotDTO toDTO(boolean includePrevious) {
         OfficialStorageSnapshotDTO dto = new OfficialStorageSnapshotDTO();
         dto.setId(this.id);
         dto.setOne(this.one);
@@ -61,10 +61,11 @@ public class OfficialStorageSnapshot {
         dto.setDateFrom(this.dateFrom);
         dto.setDateTo(this.dateTo);
 
-        if (Hibernate.isInitialized(this.previous) && !(this.previous instanceof HibernateProxy)) {
-            dto.setPrevious(this.previous.toDTO());
+        if (includePrevious && Hibernate.isInitialized(this.previous) && !(this.previous instanceof HibernateProxy) && this.previous != null) {
+            dto.setPrevious(this.previous.toDTO(false)); // Avoid recursion by passing false
         }
 
         return dto;
     }
+
 }

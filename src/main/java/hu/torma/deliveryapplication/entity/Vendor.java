@@ -14,7 +14,6 @@ import java.util.Objects;
 @Entity
 @Data
 @Table(name = "vendor")
-@EqualsAndHashCode
 @ToString
 public class Vendor {
     @Id
@@ -78,19 +77,11 @@ public class Vendor {
     @Column(name = "contract")
     private String contract;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediator_id")
     private Mediator mediator;
 
-    public Mediator getMediator() {
-        return mediator;
-    }
-
-    public void setMediator(Mediator mediator) {
-        this.mediator = mediator;
-    }
-
-    public VendorDTO toDTO() {
+    public VendorDTO toDTO(boolean includeMediator) {
         VendorDTO dto = new VendorDTO();
         dto.setTaxId(this.taxId);
         dto.setTaxNumber(this.taxNumber);
@@ -112,10 +103,11 @@ public class Vendor {
         dto.setPhone(this.phone);
         dto.setContract(this.contract);
 
-        if (Hibernate.isInitialized(this.mediator) && !(this.mediator instanceof HibernateProxy)) {
-            dto.setMediator(this.mediator.toDTO());
+        if (includeMediator && this.mediator != null && Hibernate.isInitialized(this.mediator) && !(this.mediator instanceof HibernateProxy)) {
+            dto.setMediator(this.mediator.toDTO(false));
         }
 
         return dto;
     }
+
 }

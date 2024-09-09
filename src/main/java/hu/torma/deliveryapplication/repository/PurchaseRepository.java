@@ -88,6 +88,10 @@ public interface PurchaseRepository extends JpaRepository<Purchase, Integer> {
     @Query(value = "SELECT p FROM Purchase p JOIN FETCH p.productList")
     List<Purchase> getAllAndFetchPPs();
 
-    @Query(value = "SELECT p FROM Purchase p JOIN FETCH p.productList WHERE p.id = :id")
+    @Query(value = "SELECT p FROM Purchase p JOIN FETCH p.productList pl JOIN FETCH pl.product WHERE p.id = :id")
     Optional<Purchase> findAndFetchPPsById(@Param("id") Integer id);
+
+    @Query(value = "select p from Purchase p join fetch p.vendor v where p.id = :id")
+    Optional<Purchase> findPurchaseFetchAllById(@Param("id") Integer id);
+
 }

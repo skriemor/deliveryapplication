@@ -61,7 +61,7 @@ public class CompletedPurchase {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_name", nullable = false, referencedColumnName = "tax_id")
     private Vendor vendor;
 
@@ -96,7 +96,7 @@ public class CompletedPurchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date paymentDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
     private Site site;
 
@@ -126,12 +126,14 @@ public class CompletedPurchase {
         return getClass().hashCode();
     }
 
-    public CompletedPurchaseDTO toDTO() {
+    public CompletedPurchaseDTO toDTO(boolean includeVendor) {
         CompletedPurchaseDTO dto = new CompletedPurchaseDTO();
         dto.setId(this.id);
-        if (Hibernate.isInitialized(this.vendor) && !(this.vendor instanceof HibernateProxy)) {
-            dto.setVendor(this.vendor.toDTO());
+
+        if (includeVendor && Hibernate.isInitialized(this.vendor) && !(this.vendor instanceof HibernateProxy)) {
+            dto.setVendor(this.vendor.toDTO(false)); // Avoid looping back by passing false
         }
+
         dto.setOne(this.one);
         dto.setTwo(this.two);
         dto.setThree(this.three);
@@ -142,18 +144,22 @@ public class CompletedPurchase {
         dto.setNewSerial(this.newSerial);
         dto.setReceiptDate(this.receiptDate);
         dto.setPaymentDate(this.paymentDate);
-        if (Hibernate.isInitialized(this.site) && !(this.site instanceof HibernateProxy)) {
+
+        if (Hibernate.isInitialized(this.site) && !(this.site instanceof HibernateProxy) && this.site != null) {
             dto.setSite(this.site.toDTO());
         }
+
         dto.setNotes(this.notes);
         dto.setPaymentMethod(this.paymentMethod);
         dto.setTotalPrice(this.totalPrice);
-        if (Hibernate.isInitialized(this.records)) {
+
+        if (Hibernate.isInitialized(this.records) && this.records != null) {
             dto.setRecords(this.records.stream()
                     .filter(record -> Hibernate.isInitialized(record) && !(record instanceof HibernateProxy))
-                    .map(CompletionRecord::toDTO)
+                    .map(record -> record.toDTO(true, false))
                     .collect(Collectors.toList()));
         }
+
         return dto;
     }
 }

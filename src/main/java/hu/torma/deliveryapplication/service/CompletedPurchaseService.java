@@ -1,6 +1,7 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
+import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import javax.transaction.Transactional;
@@ -16,10 +17,8 @@ public interface CompletedPurchaseService {
 
     CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
 
-    CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
-
     @Transactional
-    CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO dto);
+    CompletedPurchase saveCompletedPurchase(CompletedPurchase completedPurchase);
 
     Date getEarliestPurchaseDate(Integer id);
 

@@ -44,7 +44,8 @@ public class PurchasedProductDTO implements Serializable {
         return Objects.hash(id, unitPrice, quantity, quantity2, corrPercent, totalPrice, purchase, product, sale);
     }
 
-    public PurchasedProduct toEntity() {
+
+    public PurchasedProduct toEntity(boolean includeProduct, boolean includePurchase, boolean includeSale) {
         PurchasedProduct entity = new PurchasedProduct();
         entity.setId(this.id);
         entity.setUnitPrice(this.unitPrice);
@@ -52,16 +53,28 @@ public class PurchasedProductDTO implements Serializable {
         entity.setQuantity2(this.quantity2);
         entity.setCorrPercent(this.corrPercent);
         entity.setTotalPrice(this.totalPrice);
-        if (this.product != null) {
-            entity.setProduct(this.product.toEntity());
+
+        if (includeProduct && this.product != null) {
+            entity.setProduct(this.product.toEntity(false)); // Avoid recursion in Product
         }
-        if (this.purchase != null) {
-            entity.setPurchase(this.purchase.toEntity());
+
+        if (includePurchase && this.purchase != null) {
+            entity.setPurchase(this.purchase.toEntity(false, false)); // Avoid recursion in Purchase
         }
-        if (this.sale != null) {
-            entity.setSale(this.sale.toEntity());
+
+        if (includeSale && this.sale != null) {
+            entity.setSale(this.sale.toEntity(true, true)); // Avoid recursion in Sale
         }
+
         return entity;
     }
 
+
+    public Integer getNetOf() {
+        if (this.quantity == null || this.corrPercent == null) {
+            return 0;
+        }
+        this.quantity2 = (int) (this.quantity * ((100 - this.corrPercent) / 100.0));
+        return this.quantity2;
+    }
 }

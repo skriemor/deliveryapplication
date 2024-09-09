@@ -1,10 +1,8 @@
 package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.ProductDTO;
-import hu.torma.deliveryapplication.entity.Product;
 import hu.torma.deliveryapplication.repository.ProductRepository;
 import hu.torma.deliveryapplication.service.ProductService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,27 +15,26 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     ProductRepository repo;
-    @Autowired
-    ModelMapper mapper;
 
     @Override
     public List<ProductDTO> getAllProducts() {
         return new ArrayList<ProductDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, ProductDTO.class)
+                        prod -> prod.toDTO(true)
                 ).toList()
         );
     }
 
     @Override
     public ProductDTO getProduct(ProductDTO ProductDTO) {
-        return mapper.map(repo.findById(ProductDTO.getId()), ProductDTO.class);
+        return repo.findById(ProductDTO.getId()).map(                        prod -> prod.toDTO(true)
+        ).orElse(null);
     }
 
     @Override
     @Transactional
-    public ProductDTO saveProduct(ProductDTO ProductDTO) {
-        return mapper.map(repo.save(mapper.map(ProductDTO, Product.class)), ProductDTO.class);
+    public ProductDTO saveProduct(ProductDTO dto) {
+        return repo.save(dto.toEntity(true)).toDTO(true);
     }
 
     @Override
@@ -48,7 +45,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductDTO getProductById(String s) {
-        return mapper.map(repo.findById(s), ProductDTO.class);
+        return repo.findById(s).map(prod -> prod.toDTO(true)).orElse(null);
     }
 
     @Override

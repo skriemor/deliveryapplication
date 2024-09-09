@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import lombok.Data;
 
@@ -22,6 +23,8 @@ public class CompletionRecordDTO implements Serializable {
     private int six;
     private PurchaseDTO purchase;
     private CompletedPurchaseDTO completedPurchase;
+    private Integer purchaseId;
+    private Integer completedPurchaseId;
 
     private int price;
 
@@ -39,7 +42,7 @@ public class CompletionRecordDTO implements Serializable {
         return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchase, that.purchase) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 
-    public CompletionRecord toEntity() {
+    public CompletionRecord toEntity(boolean includePurchase, boolean includeCompletedPurchase) {
         CompletionRecord entity = new CompletionRecord();
         entity.setId(this.id);
         entity.setOne(this.one);
@@ -49,6 +52,19 @@ public class CompletionRecordDTO implements Serializable {
         entity.setFive(this.five);
         entity.setSix(this.six);
         entity.setPrice(this.price);
+
+        if (includePurchase && this.purchase != null) {
+            entity.setPurchase(this.purchase.toEntity(false, false)); // Avoid looping back by passing false
+        }
+
+        if (includeCompletedPurchase && this.completedPurchase != null) {
+            entity.setCompletedPurchase(this.completedPurchase.toEntity(true, false)); // Avoid looping back by passing false
+        } else if (this.completedPurchaseId != null) {
+            CompletedPurchase completedPurchaseEntity = new CompletedPurchase();
+            completedPurchaseEntity.setId(this.completedPurchaseId);
+            entity.setCompletedPurchase(completedPurchaseEntity);
+        }
+
         return entity;
     }
 }

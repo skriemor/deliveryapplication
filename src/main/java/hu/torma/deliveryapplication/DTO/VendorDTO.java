@@ -12,7 +12,6 @@ import java.util.TimeZone;
 
 @Data
 @EqualsAndHashCode
-@ToString
 public class VendorDTO implements Serializable {
     private String taxId;
     private String taxNumber;
@@ -43,6 +42,7 @@ public class VendorDTO implements Serializable {
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
         return sdf.format(this.birthDate);
     }
+
     @Override
     public String toString() {
         return "VendorDTO{" +
@@ -51,7 +51,7 @@ public class VendorDTO implements Serializable {
                 '}';
     }
 
-    public Vendor toEntity() {
+    public Vendor toEntity(boolean includeMediator) {
         Vendor entity = new Vendor();
         entity.setTaxId(this.taxId);
         entity.setTaxNumber(this.taxNumber);
@@ -72,10 +72,13 @@ public class VendorDTO implements Serializable {
         entity.setGgn(this.ggn);
         entity.setPhone(this.phone);
         entity.setContract(this.contract);
-        if (this.mediator != null) {
-            entity.setMediator(this.mediator.toEntity());
+
+        if (includeMediator && this.mediator != null) {
+            entity.setMediator(this.mediator.toEntity(false)); // Avoid recursion in Mediator
         }
+
         return entity;
     }
+
 
 }

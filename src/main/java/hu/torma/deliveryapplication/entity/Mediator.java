@@ -67,16 +67,18 @@ public class Mediator {
     @OneToMany(mappedBy = "mediator", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Vendor> buyers;
 
-    public MediatorDTO toDTO() {
+    public MediatorDTO toDTO(boolean includeVendors) {
         MediatorDTO dto = new MediatorDTO();
         dto.setId(this.id);
 
-        if (Hibernate.isInitialized(this.buyers)) {
+        if (includeVendors && this.buyers != null && Hibernate.isInitialized(this.buyers)) {
             dto.setBuyers(this.buyers.stream()
-                    .filter(buyer -> Hibernate.isInitialized(buyer) && !(buyer instanceof HibernateProxy))
-                    .map(Vendor::toDTO)
+                    .filter(buyer -> buyer != null && Hibernate.isInitialized(buyer) && !(buyer instanceof HibernateProxy))
+                    .map(buyer -> buyer.toDTO(false)) // Pass `false` to avoid looping back to Mediator
                     .collect(Collectors.toList()));
         }
+
         return dto;
     }
+
 }

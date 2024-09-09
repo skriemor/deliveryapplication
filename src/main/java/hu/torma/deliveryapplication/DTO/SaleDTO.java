@@ -64,7 +64,7 @@ public class SaleDTO implements Serializable {
         return this.productList.stream().filter(pp->pp.getProduct().getId().equals("IPARI")).mapToInt(PurchasedProductDTO::getQuantity).sum();
     }
 
-    public Sale toEntity() {
+    public Sale toEntity(boolean includeProducts, boolean includeBuyer) {
         Sale entity = new Sale();
         entity.setId(this.id);
         entity.setCurrency(this.currency);
@@ -76,15 +76,19 @@ public class SaleDTO implements Serializable {
         entity.setCompletionDate(this.completionDate);
         entity.setReceiptDate(this.receiptDate);
         entity.setReceiptId(this.receiptId);
-        if (this.productList != null) {
+
+        if (includeProducts && this.productList != null) {
             entity.setProductList(this.productList.stream()
-                    .map(PurchasedProductDTO::toEntity)
+                    .map(product -> product.toEntity(false, false, false)) // Avoid recursion in PurchasedProduct
                     .collect(Collectors.toList()));
         }
-        if (this.buyer != null) {
-            entity.setBuyer(this.buyer.toEntity());
+
+        if (includeBuyer && this.buyer != null) {
+            entity.setBuyer(this.buyer.toEntity()); // Avoid recursion in Buyer
         }
+
         return entity;
     }
+
 
 }

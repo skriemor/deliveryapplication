@@ -37,18 +37,21 @@ public class ProductDTO implements Serializable {
         return Objects.hash(id, firstUnit, secondUnit, price, compPercent, tariffnum);
     }
 
-    public Product toEntity() {
+    public Product toEntity(boolean includeUnits) {
         Product entity = new Product();
         entity.setId(this.id);
         entity.setPrice(this.price);
         entity.setCompPercent(this.compPercent);
         entity.setTariffnum(this.tariffnum);
-        if (this.firstUnit != null) {
-            entity.setFirstUnit(this.firstUnit.toEntity());
+
+        if (includeUnits && this.firstUnit != null) {
+            entity.setFirstUnit(this.firstUnit.toEntity()); // Avoid recursion in Unit
         }
-        if (this.secondUnit != null) {
-            entity.setSecondUnit(this.secondUnit.toEntity());
+
+        if (includeUnits && this.secondUnit != null) {
+            entity.setSecondUnit(this.secondUnit.toEntity()); // Avoid recursion in Unit
         }
+
         return entity;
     }
 }

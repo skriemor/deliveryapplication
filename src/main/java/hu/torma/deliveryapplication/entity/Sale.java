@@ -113,7 +113,7 @@ public class Sale {
     @Column(nullable = true, name = "receipt_id")
     private String receiptId;
 
-    public SaleDTO toDTO() {
+    public SaleDTO toDTO(boolean includeProducts, boolean includeBuyer) {
         SaleDTO dto = new SaleDTO();
         dto.setId(this.id);
         dto.setCurrency(this.currency);
@@ -126,17 +126,18 @@ public class Sale {
         dto.setReceiptDate(this.receiptDate);
         dto.setReceiptId(this.receiptId);
 
-        if (Hibernate.isInitialized(this.productList)) {
+        if (includeProducts && Hibernate.isInitialized(this.productList) && this.productList != null) {
             dto.setProductList(this.productList.stream()
                     .filter(product -> Hibernate.isInitialized(product) && !(product instanceof HibernateProxy))
-                    .map(PurchasedProduct::toDTO)
+                    .map(product -> product.toDTO(false, true, false)) // Avoid recursion in PurchasedProduct
                     .collect(Collectors.toList()));
         }
 
-        if (Hibernate.isInitialized(this.buyer) && !(this.buyer instanceof HibernateProxy)) {
-            dto.setBuyer(this.buyer.toDTO());
+        if (includeBuyer && Hibernate.isInitialized(this.buyer) && !(this.buyer instanceof HibernateProxy) && this.buyer != null) {
+            dto.setBuyer(this.buyer.toDTO()); // Avoid recursion in Buyer
         }
 
         return dto;
     }
+
 }

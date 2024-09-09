@@ -29,14 +29,16 @@ public class MediatorDTO implements Serializable {
         return Objects.hash(id);
     }
 
-    public Mediator toEntity() {
+    public Mediator toEntity(boolean includeBuyers) {
         Mediator entity = new Mediator();
         entity.setId(this.id);
-        if (this.buyers != null) {
+
+        if (includeBuyers && this.buyers != null) {
             entity.setBuyers(this.buyers.stream()
-                    .map(VendorDTO::toEntity)
+                    .map(buyer -> buyer.toEntity(false)) // Avoid recursion in Vendor
                     .collect(Collectors.toList()));
         }
+
         return entity;
     }
 }

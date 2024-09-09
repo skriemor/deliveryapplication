@@ -10,10 +10,8 @@ import hu.torma.deliveryapplication.repository.PurchaseRepository;
 import hu.torma.deliveryapplication.repository.PurchasedProductRepository;
 import hu.torma.deliveryapplication.repository.SaleRepository;
 import hu.torma.deliveryapplication.service.StorageService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;

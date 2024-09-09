@@ -6,7 +6,6 @@ import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import hu.torma.deliveryapplication.repository.CompletedPurchaseRepository;
 import hu.torma.deliveryapplication.service.CompletedPurchaseService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +24,8 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Override
     public List<CompletedPurchaseDTO> getAllCompletedPurchases() {
         return new ArrayList<CompletedPurchaseDTO>(
-                repo.findAll().stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                repo.findAllForCpListing().stream().map(
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
@@ -34,50 +33,38 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     @Override
     public CompletedPurchaseDTO getCompletedPurchaseById(Integer id) {
         CompletedPurchase cp = repo.findAndFetchRecordsById(id);
-        CompletedPurchaseDTO mappedCP = cp.toDTO();
-        return mappedCP;
+        return cp.toDTO(true);
     }
 
     @Override
     public List<CompletedPurchaseDTO> getCompletedPurchasesForListing() {
         return new ArrayList<>(
                 repo.findAllAndFetchRecordsAndPurchases().stream().map(
-                        CompletedPurchase::toDTO
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
 
     @Override
     public List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords() {
-        List<CompletedPurchaseDTO> purchasesWithRecords = new ArrayList<>();
-        mapper.map(repo.findAllAndFetchRecords(), purchasesWithRecords);
-        return purchasesWithRecords;
+        return repo.findAllAndFetchRecords().stream().map(cp -> cp.toDTO(true)).toList();
     }
 
     @Override
     public CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
-        return mapper.map(repo.findById(CompletedPurchaseDTO.getId()), CompletedPurchaseDTO.class);
+        return repo.findById(CompletedPurchaseDTO.getId()).map(cp -> cp.toDTO(true)).orElse(null);
     }
 
-    @Override
     @Transactional
-    public CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
-        if (CompletedPurchaseDTO.getRecords() != null) {
-            for (var c : CompletedPurchaseDTO.getRecords())
-                c.setCompletedPurchase(CompletedPurchaseDTO);
-        }
-        var g = mapper.map(repo.save(mapper.map(CompletedPurchaseDTO, CompletedPurchase.class)), CompletedPurchaseDTO.class);
-        return g;
-    }
-
     @Override
-    @Transactional
-    public CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseWithMinimalsDTO dto) {
-        if (dto.getRecords() != null) {
-            for (var c : dto.getRecords())
-                c.setCompletedPurchase(dto.toIdOnly());
+    public CompletedPurchase saveCompletedPurchase(CompletedPurchase completedPurchase) {
+        if (completedPurchase.getRecords() != null) {
+            for (var c : completedPurchase.getRecords())
+                c.setCompletedPurchase(completedPurchase);
         }
-        return mapper.map(repo.save(mapper.map(dto, CompletedPurchase.class)), CompletedPurchaseWithMinimalsDTO.class);
+        CompletedPurchase saved = repo.save(completedPurchase);
+        repo.flush();
+        return saved;
     }
 
     @Override
@@ -100,7 +87,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     public List<CompletedPurchaseDTO> getCPsByStartingDate(Date startDate) {
         return new ArrayList<CompletedPurchaseDTO>(
                 repo.findAllByReceiptDateAfter(startDate).stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
@@ -109,7 +96,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     public List<CompletedPurchaseDTO> getCPsByEndingDate(Date endDate) {
         return new ArrayList<CompletedPurchaseDTO>(
                 repo.findAllByReceiptDateBefore(endDate).stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
@@ -118,7 +105,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     public List<CompletedPurchaseDTO> getCPsByBothDates(Date startDate, Date endDate) {
         return new ArrayList<CompletedPurchaseDTO>(
                 repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
@@ -127,7 +114,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial1, String numSerial2, Boolean notPaidOnly, String paymentMethod) {
         return new ArrayList<CompletedPurchaseDTO>(
                 repo.applyFilterChainAndReturnResults(name, startDate, endDate, numSerial1, numSerial2, notPaidOnly, paymentMethod).stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
@@ -136,7 +123,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     public List<CompletedPurchaseDTO> getCompletedPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId) {
         return new ArrayList<CompletedPurchaseDTO>(
                 repo.getCompletedPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
-                        c -> mapper.map(c, CompletedPurchaseDTO.class)
+                        cp -> cp.toDTO(true)
                 ).toList()
         );
     }
