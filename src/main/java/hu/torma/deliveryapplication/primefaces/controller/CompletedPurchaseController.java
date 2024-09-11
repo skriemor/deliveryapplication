@@ -44,7 +44,7 @@ public class CompletedPurchaseController implements Serializable {
     @Autowired private CompletionRecordService recordService;
     @Getter @Setter private PurchaseDTO pItemForSelectOneMenu;
     @Getter @Setter private List<CompletionRecordDTO> tempRecords;
-    @Getter @Setter List<CompletionRecordDTO> validRecords = new ArrayList<>();
+    @Getter @Setter List<CompletionRecordDTO> recordsThatSubTheSelectedPurchase = new ArrayList<>();
     List<CompletionRecordDTO> beforeEditList;
     @Setter private Integer selectionCounter;
     private final List<String> tempNamesList = new ArrayList<>(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
@@ -306,7 +306,7 @@ public class CompletedPurchaseController implements Serializable {
             acquireQuants();
             this.pItemForSelectOneMenu = purchaseDTO;
         } else {
-            validRecords = new ArrayList<>();
+            recordsThatSubTheSelectedPurchase = new ArrayList<>();
             purchaseDTO = null;
         }
         updateAvailablePurchases();
@@ -360,12 +360,12 @@ public class CompletedPurchaseController implements Serializable {
         int toSub = 0;
 
         switch (i) {
-            case 0 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getOne).sum();
-            case 1 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
-            case 2 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getThree).sum();
-            case 3 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFour).sum();
-            case 4 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getFive).sum();
-            case 5 -> toSub = validRecords.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+            case 0 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+            case 1 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+            case 2 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+            case 3 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+            case 4 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+            case 5 -> toSub = recordsThatSubTheSelectedPurchase.stream().mapToInt(CompletionRecordDTO::getSix).sum();
         }
         return original - toSub;
     }
@@ -474,10 +474,8 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void acquireRecords() {
-       if (dto != null && dto.getRecords() != null && dto.getId() != null) {
-            validRecords = dto.getRecords().stream()
-                    .filter(record -> !Objects.equals(record.getCompletedPurchaseId(), dto.getId()))
-                    .toList();
+       if (purchaseDTO != null && purchaseDTO.getId() != null) {
+            recordsThatSubTheSelectedPurchase = recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), dto == null || dto.getId() == null ? -1 : dto.getId());
        }
     }
 }
