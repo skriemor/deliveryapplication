@@ -2,17 +2,17 @@ package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.DTO.SaleDTO;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
+import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
+import hu.torma.deliveryapplication.repository.PurchasedProductRepository;
 import hu.torma.deliveryapplication.repository.SaleRepository;
 import hu.torma.deliveryapplication.service.SaleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Logger;
 
 @Service
@@ -20,6 +20,9 @@ public class SaleServiceImpl implements SaleService {
     Logger logger = Logger.getLogger("SaleLogger");
     @Autowired
     SaleRepository repo;
+
+    @Autowired
+    PurchasedProductRepository ppRepo;
 
     @Override
     public List<SaleDTO> getAllSales() {
@@ -31,17 +34,23 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public SaleDTO getSale(SaleDTO saledto) {
-        return repo.findById(saledto.getId()).map(sale -> sale.toDTO(true, true)).orElse(null);
+    @Transactional
+    public void saveSale(SaleDTO dto) {
+        Sale dbEntity = repo.save(dto.toEntity(false, true));
+        List<PurchasedProduct> detachedPPs = dto
+                .getProductList()
+                .stream()
+                .map(pp -> {
+                    PurchasedProduct dbPP = pp.toEntity(true, false, false);
+                    dbPP.setSale(dbEntity);
+                    return dbPP;
+                }).toList();
+        ppRepo.saveAll(detachedPPs);
     }
 
     @Override
-    @Transactional
-    public SaleDTO saveSale(SaleDTO dto) {
-        logger.info("Save was called");
-        for (var v : dto.getProductList())
-            v.setSale(dto); //to make relations work by assigning purchase to each of purchased products' ends
-        return repo.save(dto.toEntity(true, true)).toDTO(true, true);
+    public Sale save(Sale sale) {
+        return repo.save(sale);
     }
 
     @Override
@@ -121,5 +130,15 @@ public class SaleServiceImpl implements SaleService {
     public List<ProductWithQuantity> getOfficialSalesByDates(Date date1, Date date2) {
         List<ProductWithQuantity> tmp = repo.getOfficialProductsWithQuantitiesByDates(date1, date2);
         return getGeneralizedQuantities(tmp);
+    }
+
+    @Override
+    public Optional<SaleDTO> getSaleById(int id) {
+        return repo.getSaleById(id).map(sale -> sale.toDTO(true, true));
+    }
+
+    @Override
+    public Optional<Sale> getSaleEntityById(int id) {
+        return repo.getSaleById(id);
     }
 }

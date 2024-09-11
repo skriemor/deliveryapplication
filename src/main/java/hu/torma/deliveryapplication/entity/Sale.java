@@ -129,7 +129,7 @@ public class Sale {
         if (includeProducts && Hibernate.isInitialized(this.productList) && this.productList != null) {
             dto.setProductList(this.productList.stream()
                     .filter(product -> Hibernate.isInitialized(product) && !(product instanceof HibernateProxy))
-                    .map(product -> product.toDTO(false, true, false)) // Avoid recursion in PurchasedProduct
+                    .map(product -> product.toDTO(true, true, false)) // Avoid recursion in PurchasedProduct
                     .collect(Collectors.toList()));
         }
 

@@ -7,6 +7,10 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
+<f:metadata>
+    <f:event type="preRenderView" listener="#{saleController.getAllSales()}" />
+</f:metadata>
+
 <h:form id="saleForm" style="overflow-y: scroll; margin: 80px auto;">
 
     <script type="application/javascript">
@@ -217,13 +221,6 @@
                 </tr>
                 </tbody>
             </table>
-
-                    <h:commandButton value="Mentés" tabindex="14"
-                                     action="#{saleController.sixSave}"
-                                     style="width: 14em;height: 2.6em">
-                        <f:ajax execute="saleForm:fixProductPanel" render="saleForm:fixProductPanel     " />
-                    </h:commandButton>
-
     </p:panel>
 
     <hr/>
@@ -253,7 +250,7 @@
                  lazy="false" sortBy="#{saleController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
-                 selection="#{saleController.dto}" rowKey="#{sale.id}">
+                 rowKey="#{sale.id}">
         <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel      saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="exact"  >
             <h:outputText value="#{sale.id}" id="id"/>
