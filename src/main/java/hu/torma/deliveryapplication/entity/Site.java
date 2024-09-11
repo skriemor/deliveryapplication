@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.SiteDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -23,4 +24,10 @@ public class Site {
     @Column(name = "site_name", nullable = false)
     private String siteName;
 
+    public SiteDTO toDTO() {
+        SiteDTO dto = new SiteDTO();
+        dto.setId(this.id);
+        dto.setSiteName(this.siteName);
+        return dto;
+    }
 }

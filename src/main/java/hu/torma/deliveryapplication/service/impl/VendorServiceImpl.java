@@ -1,10 +1,8 @@
 package hu.torma.deliveryapplication.service.impl;
 
 import hu.torma.deliveryapplication.DTO.VendorDTO;
-import hu.torma.deliveryapplication.entity.Vendor;
 import hu.torma.deliveryapplication.repository.VendorRepository;
 import hu.torma.deliveryapplication.service.VendorService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,26 +15,30 @@ public class VendorServiceImpl implements VendorService {
 
     @Autowired
     VendorRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<VendorDTO> getAllVendors() {
         return new ArrayList<VendorDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, VendorDTO.class)
+                        vendor -> vendor.toDTO(true)
                 ).toList()
         );
     }
 
     @Override
+    public List<VendorDTO> getAllVendorsWithMediators() {
+        return new ArrayList<>(repo.findAllWithMediatorFetch().stream().map(vendor -> vendor.toDTO(true)).toList());
+    }
+
+    @Override
     public VendorDTO getVendor(VendorDTO vendorDTO) {
-        return mapper.map(repo.findById(vendorDTO.getTaxId()), VendorDTO.class);
+        return repo.findById(vendorDTO.getTaxId()).map(vendor -> vendor.toDTO(true)).orElse(null);
     }
 
     @Override
     @Transactional
     public VendorDTO saveVendor(VendorDTO vendorDTO) {
-        return mapper.map(repo.save(mapper.map(vendorDTO, Vendor.class)), VendorDTO.class);
+        return repo.save(vendorDTO.toEntity(true)).toDTO(true);
     }
 
     @Override
@@ -47,6 +49,6 @@ public class VendorServiceImpl implements VendorService {
 
     @Override
     public VendorDTO getVendorById(String s) {
-        return mapper.map(repo.findById(s), VendorDTO.class);
+        return repo.findById(s).map(vendor -> vendor.toDTO(true)).orElse(null);
     }
 }

@@ -13,17 +13,12 @@ public interface CompletionRecordRepository extends JpaRepository<CompletionReco
 
     List<CompletionRecord> findAllByPurchaseId(Integer l);
 
-    @Query(value = "SELECT * FROM records r WHERE r.purchase_id =?1 AND r.completed_id <> ?2",
-            nativeQuery = true)
+    @Query(value = "SELECT r FROM CompletionRecord r WHERE r.purchase.id = ?1 AND r.completedPurchase.id <> ?2")
     List<CompletionRecord> findAllByPurchaseIdExclusive(Integer id1, Integer id2);
-
 
     @Modifying
     @Query(value = "UPDATE purchase p  SET p.remaining_price = (SELECT SUM(r.price) FROM records r WHERE r.purchase_id = ?1) WHERE p.id = ?1", nativeQuery = true)
     Integer updateRemainingPriceById(Integer id);
-
-
-
 
     boolean existsByPurchaseId(Integer id);
 }

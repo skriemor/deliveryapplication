@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.DTO;
 
+import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.entity.CompletionRecord;
 import lombok.Data;
 
@@ -20,8 +21,10 @@ public class CompletionRecordDTO implements Serializable {
     private int four;
     private int five;
     private int six;
-    private Integer purchaseId;
+    private PurchaseDTO purchase;
     private CompletedPurchaseDTO completedPurchase;
+    private Integer purchaseId;
+    private Integer completedPurchaseId;
 
     private int price;
 
@@ -36,22 +39,32 @@ public class CompletionRecordDTO implements Serializable {
         if (o == null || getClass() != o.getClass()) return false;
         CompletionRecordDTO that = (CompletionRecordDTO) o;
         if (that.id == null || this.id == null) return false;
-        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchaseId, that.purchaseId) && Objects.equals(completedPurchase, that.completedPurchase);
+        return one == that.one && two == that.two && three == that.three && four == that.four && five == that.five && six == that.six && Objects.equals(id, that.id) && Objects.equals(purchase, that.purchase) && Objects.equals(completedPurchase, that.completedPurchase);
     }
 
-    @Override
-    public String toString() {
-        return "CompletionRecordDTO{" +
-                "id=" + id +
-                ", one=" + one +
-                ", two=" + two +
-                ", three=" + three +
-                ", four=" + four +
-                ", five=" + five +
-                ", six=" + six +
-                ", purchaseId=" + purchaseId +
-                ", completedPurchase=" + completedPurchase +
-                ", price=" + price +
-                '}';
+    public CompletionRecord toEntity(boolean includePurchase, boolean includeCompletedPurchase) {
+        CompletionRecord entity = new CompletionRecord();
+        entity.setId(this.id);
+        entity.setOne(this.one);
+        entity.setTwo(this.two);
+        entity.setThree(this.three);
+        entity.setFour(this.four);
+        entity.setFive(this.five);
+        entity.setSix(this.six);
+        entity.setPrice(this.price);
+
+        if (includePurchase && this.purchase != null) {
+            entity.setPurchase(this.purchase.toEntity(false, false, false)); // Avoid looping back by passing false
+        }
+
+        if (includeCompletedPurchase && this.completedPurchase != null) {
+            entity.setCompletedPurchase(this.completedPurchase.toEntity(true, false)); // Avoid looping back by passing false
+        } else if (this.completedPurchaseId != null) {
+            CompletedPurchase completedPurchaseEntity = new CompletedPurchase();
+            completedPurchaseEntity.setId(this.completedPurchaseId);
+            entity.setCompletedPurchase(completedPurchaseEntity);
+        }
+
+        return entity;
     }
 }

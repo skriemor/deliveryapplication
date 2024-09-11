@@ -1,6 +1,8 @@
 package hu.torma.deliveryapplication.primefaces.controller;
 
 import hu.torma.deliveryapplication.DTO.*;
+import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
 import hu.torma.deliveryapplication.service.*;
 import hu.torma.deliveryapplication.utility.dateutil.DateConverter;
 import hu.torma.deliveryapplication.utility.pdf.PDFcreator;
@@ -10,7 +12,6 @@ import org.primefaces.event.SelectEvent;
 import org.primefaces.model.SortMeta;
 import org.primefaces.model.SortOrder;
 import org.primefaces.model.StreamedContent;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
 
@@ -28,6 +29,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 
 
 @ViewScoped
@@ -42,7 +44,6 @@ public class PurchaseController implements Serializable {
     @Autowired PurchaseService service;
     @Autowired PurchasedProductService purchasedProductService;
     @Autowired SiteService siteService;
-    @Autowired CompletedPurchaseController completedPurchaseController;
     @Getter @Setter private PurchasedProductDTO one;
     @Getter @Setter private PurchasedProductDTO two;
     @Getter @Setter private PurchasedProductDTO three;
@@ -120,52 +121,60 @@ public class PurchaseController implements Serializable {
         return DateConverter.toDottedDate(dt);
     }
 
-    @PostConstruct
-    public void init() {
-        newPurchase();
-        sortBy = new ArrayList<>();
-        sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
-    }
-
-    private void setUpFive() {
+    private void setupPurchasedProducts() {
         one = new PurchasedProductDTO();
         one.setProduct(pService.getProductById("I.OSZTÁLYÚ"));
         one.setCorrPercent(5);
         one.setUnitPrice(one.getProduct().getPrice());
+        one.setQuantity(null);
 
         two = new PurchasedProductDTO();
         two.setProduct(pService.getProductById("II.OSZTÁLYÚ"));
         two.setUnitPrice(two.getProduct().getPrice());
         two.setCorrPercent(5);
+        two.setQuantity(null);
 
         three = new PurchasedProductDTO();
         three.setProduct(pService.getProductById("III.OSZTÁLYÚ"));
         three.setUnitPrice(three.getProduct().getPrice());
         three.setCorrPercent(5);
+        three.setQuantity(null);
 
         four = new PurchasedProductDTO();
         four.setProduct(pService.getProductById("IV.OSZTÁLYÚ"));
         four.setUnitPrice(four.getProduct().getPrice());
         four.setCorrPercent(5);
+        four.setQuantity(null);
 
         five = new PurchasedProductDTO();
         five.setProduct(pService.getProductById("GYÖKÉR"));
         five.setUnitPrice(five.getProduct().getPrice());
         five.setCorrPercent(5);
+        five.setQuantity(null);
 
         six = new PurchasedProductDTO();
         six.setProduct(pService.getProductById("IPARI"));
         six.setCorrPercent(8);
         six.setUnitPrice(six.getProduct().getPrice());
+        six.setQuantity(null);
     }
 
     @PostConstruct
-    public void getAllPurchases() {
-        dtoList = service.getAllPurchases();
+    public void init() {
+        setupPurchasedProducts();
+        newPurchase();
+        getAllPurchases();
+        sortBy = new ArrayList<>();
+        sortBy.add(SortMeta.builder().field("id").order(SortOrder.ASCENDING).build());
     }
 
-    private void copyPurchasedProductsIntoPurchaseDto(PurchasedProductDTO... dtos) {
+    public void getAllPurchases() {
+        dtoList = service.getAllForListing();
+    }
+
+    private void fixUpPPs(PurchasedProductDTO... dtos) {
         dto.setProductList(new ArrayList<>());
+
         Arrays.stream(dtos).forEach(pp -> {
             if (pp.getUnitPrice() == null) pp.setUnitPrice(0);
             if (pp.getQuantity() == null) pp.setQuantity(0);
@@ -176,69 +185,86 @@ public class PurchaseController implements Serializable {
         });
     }
 
-
-    public void pdf() {
-        if (dto.getProductList() == null) {
-            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti!"));
-            return;
+    public void pdf(boolean shouldPrint) {
+        if (shouldPrint) {
+            if (dto.getProductList() == null) {
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti!"));
+                return;
+            }
+            file = pdFcreator.createDownload(dto);
         }
-        file = pdFcreator.createDownload(dto);
     }
 
-    private void checkNullSite() {
-        if (siteService.getSiteById("-") == null) {
-            SiteDTO siteDTO = new SiteDTO();
-            siteDTO.setId(0L);
-            siteDTO.setSiteName("-");
-            siteService.saveSite(siteDTO);
+    private void evaluateAndSetPurchaseRemainingPrice(Purchase entity) {
+        Tuple priceAndSerials = service.getConcatedSerialsAndMaskedPricesById(entity.getId());
+        boolean noCompletedPurchaseExistsForPurchase = priceAndSerials == null;
+        entity.setRemainingPrice(noCompletedPurchaseExistsForPurchase ? entity.getTotalPrice() : entity.getTotalPrice() - Double.parseDouble(priceAndSerials.get(0).toString()));
+        entity.setReceiptId(noCompletedPurchaseExistsForPurchase ? "" : priceAndSerials.get(1).toString());
+    }
+
+    private void preparePurchaseSite() {
+        if (dto.getSite() == null) {
+            dto.setSite(siteService.getSiteById("-"));
         }
+    }
+
+    private void copyPPDataToEntityPPs(Purchase entity, PurchasedProductDTO... pps) {
+        List<PurchasedProduct> entityPps = entity.getProductList();
+        for (int i = 0; i < pps.length; i++) {
+            PurchasedProductDTO pp = pps[i];
+            PurchasedProduct epp = entityPps.get(i);
+
+            epp.setQuantity(pp.getQuantity());
+            epp.setUnitPrice(pp.getUnitPrice());
+            epp.setCorrPercent(pp.getCorrPercent());
+            epp.setQuantity2(pp.getQuantity2());
+            epp.setTotalPrice(pp.getTotalPrice());
+        }
+    }
+
+    private void copyBasicPurchaseDataToEntity(Purchase entity) {
+        entity.setVendor(dto.getVendor().toEntity(false));
+        entity.setSite(dto.getSite().toEntity());
+        entity.setNotes(dto.getNotes());
+        entity.setReceiptDate(dto.getReceiptDate());
+        entity.setRemainingPrice(dto.getRemainingPrice());
+        entity.setTotalPrice(dto.getTotalPrice());
     }
 
     public void uiSavePurchase(boolean shouldPrint) {
-        copyPurchasedProductsIntoPurchaseDto(one, two, three, four, five, six);
-        if (dto.getProductList() == null) {
-            return;
-        }
-        calculateTotalPrice();
+        fixUpPPs(one, two, three, four, five, six);
+        calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
-        if (dto.getId() != null) {
-            Tuple priceAndSerials = service.getConcatedSerialsAndMaskedPricesById(dto.getId());
-            dto.setRemainingPrice(dto.getTotalPrice() - Double.valueOf(priceAndSerials.get(0).toString()));
-            dto.setReceiptId(priceAndSerials.get(1).toString());
-        } else {
+        preparePurchaseSite();
+
+        boolean update = dto.getId() != null;
+
+        if (update) { // ha modosit letezot
+            Purchase entity = service.getPurchaseWithPurchasedProductsById(dto.getId());
+            copyPPDataToEntityPPs(entity, one, two, three, four, five, six);
+            copyBasicPurchaseDataToEntity(entity);
+            evaluateAndSetPurchaseRemainingPrice(entity);
+            entity = service.savePurchase(entity);
+            dto = entity.toDTO(true, false, true);
+        } else { // ha elso rogzites
             dto.setRemainingPrice(dto.getTotalPrice());
+            service.savePurchase(dto);
         }
-        if (dto.getSite() == null) {
-            checkNullSite();
-            dto.setSite(siteService.getSiteById("-"));
-        }
-        dto = service.savePurchase(dto);
-        if (shouldPrint) {
-            pdf();
-        }
+
+        pdf(shouldPrint);
         getAllPurchases();
-        emptySix();
-        setDto(new PurchaseDTO());
-        setUpFive();
-        completedPurchaseController.updateAvailablePurchases();
+        newPurchase();
     }
 
-    private void calculateTotalPrice() {
-        if (dto.getProductList() == null) {
-            dto.setTotalPrice(0.0);
-        } else {
-            dto.setTotalPrice((double) dto.getProductList().stream().map(PurchasedProductDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
-        }
+    private void calculateAndSetTotalPrice() {
+        dto.setTotalPrice((double) dto.getProductList().stream().map(PurchasedProductDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
     }
 
     public void deletePurchase() {
         service.deletePurchase(dto);
         getAllPurchases();
-        dto = new PurchaseDTO();
-        emptySix();
-        completedPurchaseController.updateAvailablePurchases();
+        newPurchase();
     }
-
 
     private void editSix() {
         one = dto.getProductList().get(0);
@@ -249,27 +275,17 @@ public class PurchaseController implements Serializable {
         six = dto.getProductList().get(5);
     }
 
-    private void emptySix() {
-        setUpFive();
-        one.setQuantity(null);
-        two.setQuantity(null);
-        three.setQuantity(null);
-        four.setQuantity(null);
-        five.setQuantity(null);
-        six.setQuantity(null);
-    }
-
     public void newPurchase() {
-        emptySix();
+        setupPurchasedProducts();
         dto = new PurchaseDTO();
     }
+
     public PurchaseDTO getDto() {
         if (dto == null) {
             dto = new PurchaseDTO();
         }
         return dto;
     }
-
 
     public String getFormattedSixTotal() {
         return NumberFormat.getNumberInstance(Locale.US).format(getSixTotal()).replaceAll(",", " ");
@@ -283,39 +299,9 @@ public class PurchaseController implements Serializable {
     }
 
     public int getNetSum() {
-        int sum = 0;
-        sum += getNetOf(one);
-        sum += getNetOf(two);
-        sum += getNetOf(three);
-        sum += getNetOf(four);
-        sum += getNetOf(five);
-        sum += getNetOf(six);
-        return sum;
-
-    }
-
-    public void refreshReceipts() {
-        getAllPurchases();
-        for (var c : dtoList) {
-            var id = c.getId();
-            var temp = c;
-            var tempList = temp.getProductList();
-            var total = temp.getTotalPrice();
-            var records = recordService.findAllByPurchaseId(id);
-            var tempstring = "";
-            for (var r : records) {
-                total -= (int) (tempList.get(0).getUnitPrice() * r.getOne() * (1 + (0.01 * tempList.get(0).getProduct().getCompPercent())));
-                total -= (int) (tempList.get(1).getUnitPrice() * r.getTwo() * (1 + (0.01 * tempList.get(1).getProduct().getCompPercent())));
-                total -= (int) (tempList.get(2).getUnitPrice() * r.getThree() * (1 + (0.01 * tempList.get(2).getProduct().getCompPercent())));
-                total -= (int) (tempList.get(3).getUnitPrice() * r.getFour() * (1 + (0.01 * tempList.get(3).getProduct().getCompPercent())));
-                total -= (int) (tempList.get(4).getUnitPrice() * r.getFive() * (1 + (0.01 * tempList.get(4).getProduct().getCompPercent())));
-                total -= (int) (tempList.get(5).getUnitPrice() * r.getSix() * (1 + (0.01 * tempList.get(5).getProduct().getCompPercent())));
-                tempstring += r.getCompletedPurchase().getNewSerial() + " ";
-            }
-            temp.setReceiptId(tempstring);
-            temp.setRemainingPrice(total);
-            service.savePurchase(temp);
-        }
+        return Stream.of(one, two, three, four, five, six)
+                .mapToInt(PurchasedProductDTO::getNetOf)
+                .sum();
     }
 
     public void getLastPrices() {
@@ -332,8 +318,6 @@ public class PurchaseController implements Serializable {
 
     public void reConnectChildren() {
         List<PurchaseDTO> purchaseList = service.getAllPurchases();
-        List<PurchasedProductDTO> purchasedProductList = purchasedProductService.getAllPurchasedProducts();
-
         for (var c : purchaseList) {
             logger.info("Attempting to get children of " + c.getId());
             for (var d : c.getProductList()) {
@@ -354,9 +338,8 @@ public class PurchaseController implements Serializable {
     }
 
     public void onRowSelect(SelectEvent<PurchaseDTO> event) {
-        BeanUtils.copyProperties(event.getObject(), dto);
+        dto = service.getPurchaseAndFetchPPsById(event.getObject().getId());
         isSafeToDelete = !recordService.existsByPurchaseId(dto.getId());
         editSix();
-        logger.info(isSafeToDelete ? "Safe" : "Unsafe");
     }
 }

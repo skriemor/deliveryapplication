@@ -1,10 +1,12 @@
 package hu.torma.deliveryapplication;
 
 import hu.torma.deliveryapplication.DTO.ProductDTO;
+import hu.torma.deliveryapplication.DTO.SiteDTO;
 import hu.torma.deliveryapplication.DTO.UnitDTO;
 import hu.torma.deliveryapplication.entity.SecureUser;
 import hu.torma.deliveryapplication.repository.SecureUserRepository;
 import hu.torma.deliveryapplication.service.ProductService;
+import hu.torma.deliveryapplication.service.SiteService;
 import hu.torma.deliveryapplication.service.UnitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +14,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.faces.webapp.FacesServlet;
 import javax.servlet.ServletContext;
@@ -40,18 +41,37 @@ public class DeliveryApplication {
 		return srb;
 	}
 
+
 	@Component("dbInit")
 	public class DBInit {
 		private ProductService productService;
 		private UnitService unitService;
 		private SecureUserRepository userRepository;
+		private SiteService siteService;
+
 		@Autowired
-		public DBInit(UnitService unitService, ProductService productService, SecureUserRepository userRepository) {
+		public DBInit(UnitService unitService,
+					  ProductService productService,
+					  SecureUserRepository userRepository,
+					  SiteService siteService
+					  ) {
 			this.unitService = unitService;
 			this.productService = productService;
 			this.userRepository = userRepository;
+			this.siteService = siteService;
 			initProductsAndUnits();
 			initDefaultUserIfNotExists("username", "password");
+			initDefaultSite();
+		}
+
+		private void initDefaultSite() {
+			if (siteService.getSiteById("-") == null) {
+				logger.info("Initializing default '-' site.");
+				SiteDTO siteDTO = new SiteDTO();
+				siteDTO.setId(0L);
+				siteDTO.setSiteName("-");
+				siteService.saveSite(siteDTO);
+			}
 		}
 
 		private void initProductsAndUnits() {

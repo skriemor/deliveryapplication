@@ -1,14 +1,16 @@
 package hu.torma.deliveryapplication.entity;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
+import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
+import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @NamedNativeQuery(name = "supply_completed_purchases_with_dates", resultSetMapping = "product_with_quantity_mapping", query = """
 
@@ -48,8 +50,10 @@ values
 
 """)
 @Entity
-@Data
-@EqualsAndHashCode
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
 @Table(name = "completed_purchase")
 public class CompletedPurchase {
     @Id
@@ -57,7 +61,7 @@ public class CompletedPurchase {
     @Column(name = "id", nullable = false)
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vendor_name", nullable = false, referencedColumnName = "tax_id")
     private Vendor vendor;
 
@@ -92,7 +96,7 @@ public class CompletedPurchase {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date paymentDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "site", nullable = false, referencedColumnName = "site_id")
     private Site site;
 
@@ -105,9 +109,57 @@ public class CompletedPurchase {
     @Column(name = "total_price")
     private int totalPrice;
 
-    @LazyCollection(LazyCollectionOption.FALSE)
-    @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<CompletionRecord> records;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        CompletedPurchase that = (CompletedPurchase) o;
+        return id != null && Objects.equals(id, that.id);
+    }
 
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
+
+    public CompletedPurchaseDTO toDTO(boolean includeVendor) {
+        CompletedPurchaseDTO dto = new CompletedPurchaseDTO();
+        dto.setId(this.id);
+
+        if (includeVendor && Hibernate.isInitialized(this.vendor) && !(this.vendor instanceof HibernateProxy)) {
+            dto.setVendor(this.vendor.toDTO(false)); // Avoid looping back by passing false
+        }
+
+        dto.setOne(this.one);
+        dto.setTwo(this.two);
+        dto.setThree(this.three);
+        dto.setFour(this.four);
+        dto.setFive(this.five);
+        dto.setSix(this.six);
+        dto.setSerial(this.serial);
+        dto.setNewSerial(this.newSerial);
+        dto.setReceiptDate(this.receiptDate);
+        dto.setPaymentDate(this.paymentDate);
+
+        if (Hibernate.isInitialized(this.site) && !(this.site instanceof HibernateProxy) && this.site != null) {
+            dto.setSite(this.site.toDTO());
+        }
+
+        dto.setNotes(this.notes);
+        dto.setPaymentMethod(this.paymentMethod);
+        dto.setTotalPrice(this.totalPrice);
+
+        if (Hibernate.isInitialized(this.records) && this.records != null) {
+            dto.setRecords(this.records.stream()
+                    .filter(record -> Hibernate.isInitialized(record) && !(record instanceof HibernateProxy))
+                    .map(record -> record.toDTO(true, false))
+                    .collect(Collectors.toList()));
+        }
+
+        return dto;
+    }
 }

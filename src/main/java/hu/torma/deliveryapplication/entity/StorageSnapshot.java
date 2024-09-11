@@ -1,5 +1,6 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.StorageSnapshotDTO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -42,4 +43,18 @@ public class StorageSnapshot {
     @DateTimeFormat(pattern = "yyyy.MM.dd")
     private Date dateTo;
 
+    public StorageSnapshotDTO toDTO() {
+        StorageSnapshotDTO dto = new StorageSnapshotDTO();
+        dto.setId(this.id);
+        dto.setOne(this.one);
+        dto.setTwo(this.two);
+        dto.setThree(this.three);
+        dto.setFour(this.four);
+        dto.setFive(this.five);
+        dto.setSix(this.six);
+        dto.setSum(this.sum);
+        dto.setDateFrom(this.dateFrom);
+        dto.setDateTo(this.dateTo);
+        return dto;
+    }
 }

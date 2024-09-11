@@ -1,13 +1,11 @@
 package hu.torma.deliveryapplication.repository;
 
 import hu.torma.deliveryapplication.entity.CompletedPurchase;
-import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import javax.persistence.NamedNativeQuery;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +39,7 @@ public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurc
             ?6 is null or (?6 is false and cp.payment_date is not null) or (?6 is true and cp.payment_date is null)
         )
         and (
-            ?7 is null or cp.payment_method like %?7%
+            ?7 is null or cp.payment_method like CONCAT('%', ?7, '%')
         )
     """)
     List<CompletedPurchase> applyFilterChainAndReturnResults(String name, Date startDate, Date endDate, String numSerial1,String numSerial2,Boolean notPaidOnly, String paymentMethod);
@@ -77,6 +75,17 @@ order by cp.receipt_date asc NULLS LAST
             """)
     Optional<Date> getEarliestPurchaseDate(Integer id);
 
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records")
+    List<CompletedPurchase> findAllAndFetchRecords();
+
+    @Query(value = "SELECT cp FROM CompletedPurchase cp JOIN FETCH cp.records records JOIN FETCH records.purchase p")
+    List<CompletedPurchase> findAllAndFetchRecordsAndPurchases();
+
+    @Query(value = "SELECT cp FROM CompletedPurchase cp LEFT JOIN FETCH cp.records recs LEFT JOIN FETCH recs.completedPurchase LEFT JOIN FETCH recs.purchase purchase LEFT JOIN FETCH cp.vendor vendor LEFT JOIN FETCH cp.site site WHERE cp.id = :idParam ")
+    CompletedPurchase findAndFetchRecordsById(@Param("idParam") Integer id);
+
+    @Query(value = "select distinct cp from CompletedPurchase cp left join fetch cp.site left join fetch cp.vendor v left join fetch cp.records r left join fetch r.purchase p")
+    List<CompletedPurchase> findAllForCpListing();
 
 
     @Query(name = "supply_completed_purchases_with_dates", nativeQuery = true)

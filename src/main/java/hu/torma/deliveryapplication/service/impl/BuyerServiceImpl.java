@@ -4,7 +4,6 @@ import hu.torma.deliveryapplication.DTO.BuyerDTO;
 import hu.torma.deliveryapplication.entity.Buyer;
 import hu.torma.deliveryapplication.repository.BuyerRepository;
 import hu.torma.deliveryapplication.service.BuyerService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,26 +15,25 @@ import java.util.List;
 public class BuyerServiceImpl implements BuyerService {
     @Autowired
     BuyerRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<BuyerDTO> getAllBuyers() {
         return new ArrayList<BuyerDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, BuyerDTO.class)
+                        Buyer::toDTO
                 ).toList()
         );
     }
 
     @Override
     public BuyerDTO getBuyer(BuyerDTO vendorDTO) {
-        return mapper.map(repo.findById(vendorDTO.getAccountNum()), BuyerDTO.class);
+        return repo.findById(vendorDTO.getAccountNum()).map(Buyer::toDTO).orElse(null);
     }
 
     @Override
     @Transactional
     public BuyerDTO saveBuyer(BuyerDTO vendorDTO) {
-        return mapper.map(repo.save(mapper.map(vendorDTO, Buyer.class)), BuyerDTO.class);
+        return repo.save(vendorDTO.toEntity()).toDTO();
     }
 
     @Override
@@ -46,6 +44,6 @@ public class BuyerServiceImpl implements BuyerService {
 
     @Override
     public BuyerDTO getBuyerById(String s) {
-        return mapper.map(repo.findById(s), BuyerDTO.class);
+        return repo.findById(s).map(Buyer::toDTO).orElse(null);
     }
 }

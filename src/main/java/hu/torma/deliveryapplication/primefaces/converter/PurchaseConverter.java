@@ -13,30 +13,24 @@ import java.util.logging.Logger;
 @Service("purchaseConverter")
 public class PurchaseConverter implements Converter {
     Logger log = Logger.getLogger("PurchaseCLog");
-    @Autowired
-    private PurchaseService service;
+    @Autowired private PurchaseService service;
 
     @Override
     public Object getAsObject(FacesContext facesContext, UIComponent uiComponent, String s) {
-        if (s.contains("(")){
+        if (s.contains("(")) {
             var id = Integer.valueOf(s.substring(0, s.indexOf(" (")));
-            log.warning("string of purchase is " + id);
-            return service.getPurchaseById(id);
+            return service.getPurchaseForSelectionById(id);
         }
-        var g = service.getAllPurchases();
-        if (g !=null && g.size()>0) return service.getAllPurchases().get(0);
         return new PurchaseDTO();
     }
 
     @Override
     public String getAsString(FacesContext facesContext, UIComponent uiComponent, Object o) {
-        if (o instanceof PurchaseDTO) {
-            PurchaseDTO purchase = (PurchaseDTO) o;
+        if (o instanceof PurchaseDTO purchase) {
             return purchase.getId() + " (" + purchase.getRemainingPrice().intValue() + " HUF)";
         } else {
-            if (o==null) return "Válasszon";
-            String error =
-                    "The object is not an instance of PurchaseDTO";
+            if (o == null) return "Válasszon";
+            String error = "The object is not an instance of PurchaseDTO";
             throw new ClassCastException(error);
         }
     }

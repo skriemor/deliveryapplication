@@ -10,10 +10,8 @@ import hu.torma.deliveryapplication.repository.PurchaseRepository;
 import hu.torma.deliveryapplication.repository.PurchasedProductRepository;
 import hu.torma.deliveryapplication.repository.SaleRepository;
 import hu.torma.deliveryapplication.service.StorageService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +25,6 @@ public class StorageServiceImpl implements StorageService {
     List<String> prodStrings = Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI");
     Logger log = Logger.getLogger("Fos");
 
-    ModelMapper mapper = new ModelMapper();
 
     @Autowired
     private CompletionRecordRepository cRepo;

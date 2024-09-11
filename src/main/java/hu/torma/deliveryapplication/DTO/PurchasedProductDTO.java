@@ -2,6 +2,7 @@ package hu.torma.deliveryapplication.DTO;
 
 import hu.torma.deliveryapplication.entity.Product;
 import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -41,5 +42,39 @@ public class PurchasedProductDTO implements Serializable {
     @Override
     public int hashCode() {
         return Objects.hash(id, unitPrice, quantity, quantity2, corrPercent, totalPrice, purchase, product, sale);
+    }
+
+
+    public PurchasedProduct toEntity(boolean includeProduct, boolean includePurchase, boolean includeSale) {
+        PurchasedProduct entity = new PurchasedProduct();
+        entity.setId(this.id);
+        entity.setUnitPrice(this.unitPrice);
+        entity.setQuantity(this.quantity);
+        entity.setQuantity2(this.quantity2);
+        entity.setCorrPercent(this.corrPercent);
+        entity.setTotalPrice(this.totalPrice);
+
+        if (includeProduct && this.product != null) {
+            entity.setProduct(this.product.toEntity(false)); // Avoid recursion in Product
+        }
+
+        if (includePurchase && this.purchase != null) {
+            entity.setPurchase(this.purchase.toEntity(false, false, false)); // Avoid recursion in Purchase
+        }
+
+        if (includeSale && this.sale != null) {
+            entity.setSale(this.sale.toEntity(true, true)); // Avoid recursion in Sale
+        }
+
+        return entity;
+    }
+
+
+    public Integer getNetOf() {
+        if (this.quantity == null || this.corrPercent == null) {
+            return 0;
+        }
+        this.quantity2 = (int) (this.quantity * ((100 - this.corrPercent) / 100.0));
+        return this.quantity2;
     }
 }

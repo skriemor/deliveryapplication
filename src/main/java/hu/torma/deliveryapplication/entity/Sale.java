@@ -1,12 +1,16 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import lombok.Data;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @Data
@@ -108,5 +112,32 @@ public class Sale {
 
     @Column(nullable = true, name = "receipt_id")
     private String receiptId;
+
+    public SaleDTO toDTO(boolean includeProducts, boolean includeBuyer) {
+        SaleDTO dto = new SaleDTO();
+        dto.setId(this.id);
+        dto.setCurrency(this.currency);
+        dto.setPrice(this.price);
+        dto.setLetai(this.letai);
+        dto.setGlobalgap(this.globalgap);
+        dto.setBookingDate(this.bookingDate);
+        dto.setDeadLine(this.deadLine);
+        dto.setCompletionDate(this.completionDate);
+        dto.setReceiptDate(this.receiptDate);
+        dto.setReceiptId(this.receiptId);
+
+        if (includeProducts && Hibernate.isInitialized(this.productList) && this.productList != null) {
+            dto.setProductList(this.productList.stream()
+                    .filter(product -> Hibernate.isInitialized(product) && !(product instanceof HibernateProxy))
+                    .map(product -> product.toDTO(false, true, false)) // Avoid recursion in PurchasedProduct
+                    .collect(Collectors.toList()));
+        }
+
+        if (includeBuyer && Hibernate.isInitialized(this.buyer) && !(this.buyer instanceof HibernateProxy) && this.buyer != null) {
+            dto.setBuyer(this.buyer.toDTO()); // Avoid recursion in Buyer
+        }
+
+        return dto;
+    }
 
 }

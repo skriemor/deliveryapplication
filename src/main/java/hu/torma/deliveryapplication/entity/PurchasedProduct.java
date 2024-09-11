@@ -1,10 +1,14 @@
 package hu.torma.deliveryapplication.entity;
 
 import hu.torma.deliveryapplication.DTO.DisplayUnit;
+import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.primefaces.sumutils.SaleSumPojo;
-import lombok.Data;
+import lombok.*;
+import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @NamedNativeQueries({
@@ -178,7 +182,10 @@ select
                 )
         )
 })
-@Data
+@Getter
+@Setter
+@ToString
+@RequiredArgsConstructor
 @Table(name = "purchased_product")
 public class PurchasedProduct {
     @Id
@@ -202,17 +209,57 @@ public class PurchasedProduct {
     @Column(name = "total_price")
     private Integer totalPrice;
 
-    @ManyToOne
-    @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id") @ToString.Exclude
     private Product product;
-    @ManyToOne
-    @JoinColumn(name = "purchase_id", referencedColumnName = "id")
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_id", referencedColumnName = "id") @ToString.Exclude
     private Purchase purchase;
 
 
-    @ManyToOne
-    @JoinColumn(name = "sale_id", referencedColumnName = "id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "sale_id", referencedColumnName = "id") @ToString.Exclude
     private Sale sale;
 
+    public PurchasedProductDTO toDTO(boolean includeProduct, boolean includePurchase, boolean includeSale) {
+        PurchasedProductDTO dto = new PurchasedProductDTO();
+        dto.setId(this.Id);
+        dto.setUnitPrice(this.unitPrice);
+        dto.setQuantity(this.quantity);
+        dto.setQuantity2(this.quantity2);
+        dto.setCorrPercent(this.corrPercent);
+        dto.setTotalPrice(this.totalPrice);
 
+        if (includeProduct && Hibernate.isInitialized(this.product) && !(this.product instanceof HibernateProxy) && this.product != null) {
+            dto.setProduct(this.product.toDTO(true)); // Pass false to avoid potential recursion
+        }
+
+        if (includePurchase && Hibernate.isInitialized(this.purchase) && !(this.purchase instanceof HibernateProxy) && this.purchase != null) {
+            dto.setPurchase(this.purchase.toDTO(true, true, false)); // Pass false to avoid recursion in Purchase
+        }
+
+        if (includeSale && Hibernate.isInitialized(this.sale) && !(this.sale instanceof HibernateProxy) && this.sale != null) {
+            dto.setSale(this.sale.toDTO(false, true)); // Pass false to avoid recursion in Sale
+        }
+
+        return dto;
+    }
+
+
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
+        if (thisEffectiveClass != oEffectiveClass) return false;
+        PurchasedProduct that = (PurchasedProduct) o;
+        return getId() != null && Objects.equals(getId(), that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
 }

@@ -270,12 +270,9 @@
 
                     </p:commandButton>
 
-
-
-                    <p:commandButton value="Új"
+                    <p:commandButton value="Új" update="vendorForm:vendorPanel" resetValues="true" immediate="true"
                                      action="#{vendorController.newVendor}"
                                      style="width: 10em;height: 2.6em">
-                        <f:ajax render="vendorForm:vendorPanel" />
                     </p:commandButton>
                     <h:commandButton value="Töröl"
                                      action="#{vendorController.deleteVendor}"

@@ -1,7 +1,9 @@
 package hu.torma.deliveryapplication.entity;
 
+import hu.torma.deliveryapplication.DTO.VendorDTO;
 import lombok.*;
 import org.hibernate.Hibernate;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
@@ -12,7 +14,6 @@ import java.util.Objects;
 @Entity
 @Data
 @Table(name = "vendor")
-@EqualsAndHashCode
 @ToString
 public class Vendor {
     @Id
@@ -76,15 +77,38 @@ public class Vendor {
     @Column(name = "contract")
     private String contract;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mediator_id")
+    @ToString.Exclude
     private Mediator mediator;
 
-    public Mediator getMediator() {
-        return mediator;
+    public VendorDTO toDTO(boolean includeMediator) {
+        VendorDTO dto = new VendorDTO();
+        dto.setTaxId(this.taxId);
+        dto.setTaxNumber(this.taxNumber);
+        dto.setVendorName(this.vendorName);
+        dto.setBirthName(this.birthName);
+        dto.setNameOfMother(this.nameOfMother);
+        dto.setBirthPlace(this.birthPlace);
+        dto.setBirthDate(this.birthDate);
+        dto.setAccountNumber(this.accountNumber);
+        dto.setCity(this.city);
+        dto.setPostalCode(this.postalCode);
+        dto.setAddress(this.address);
+        dto.setQualification(this.qualification);
+        dto.setTaj(this.taj);
+        dto.setActivity(this.activity);
+        dto.setFileNumber(this.fileNumber);
+        dto.setFelir(this.felir);
+        dto.setGgn(this.ggn);
+        dto.setPhone(this.phone);
+        dto.setContract(this.contract);
+
+        if (includeMediator && this.mediator != null && Hibernate.isInitialized(this.mediator) && !(this.mediator instanceof HibernateProxy)) {
+            dto.setMediator(this.mediator.toDTO(false));
+        }
+
+        return dto;
     }
 
-    public void setMediator(Mediator mediator) {
-        this.mediator = mediator;
-    }
 }

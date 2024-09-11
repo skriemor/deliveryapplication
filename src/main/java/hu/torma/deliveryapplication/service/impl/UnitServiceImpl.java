@@ -4,7 +4,6 @@ import hu.torma.deliveryapplication.DTO.UnitDTO;
 import hu.torma.deliveryapplication.entity.Unit;
 import hu.torma.deliveryapplication.repository.UnitRepository;
 import hu.torma.deliveryapplication.service.UnitService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,26 +15,25 @@ import java.util.List;
 public class UnitServiceImpl implements UnitService {
     @Autowired
     UnitRepository repo;
-    ModelMapper mapper = new ModelMapper();
 
     @Override
     public List<UnitDTO> getAllUnits() {
         return new ArrayList<UnitDTO>(
                 repo.findAll().stream().map(
-                        c -> mapper.map(c, UnitDTO.class)
+                        Unit::toDTO
                 ).toList()
         );
     }
 
     @Override
-    public UnitDTO getUnit(UnitDTO UnitDTO) {
-        return mapper.map(repo.findById(UnitDTO.getId()), UnitDTO.class);
+    public UnitDTO getUnit(UnitDTO dto) {
+        return repo.findById(dto.getId()).map(Unit::toDTO).orElse(null);
     }
 
     @Override
     @Transactional
-    public UnitDTO saveUnit(UnitDTO UnitDTO) {
-        return mapper.map(repo.save(mapper.map(UnitDTO, Unit.class)), UnitDTO.class);
+    public UnitDTO saveUnit(UnitDTO dto) {
+        return repo.save(dto.toEntity()).toDTO();
     }
 
     @Override
@@ -46,12 +44,12 @@ public class UnitServiceImpl implements UnitService {
 
     @Override
     public UnitDTO getUnitByName(String s) {
-        return mapper.map(repo.findById(s), UnitDTO.class);
+        return repo.findById(s).map(Unit::toDTO).orElse(null);
     }
 
     @Override
     public UnitDTO getUnitById(String s) {
-        return mapper.map(repo.findById(s).get(), UnitDTO.class);
+        return repo.findById(s).map(Unit::toDTO).orElse(null);
     }
 
     @Override

@@ -7,6 +7,8 @@ import java.util.List;
 public interface VendorService {
     List<VendorDTO> getAllVendors();
 
+    List<VendorDTO> getAllVendorsWithMediators();
+
     VendorDTO getVendor(VendorDTO vendorDTO);
 
     VendorDTO saveVendor(VendorDTO vendorDTO);

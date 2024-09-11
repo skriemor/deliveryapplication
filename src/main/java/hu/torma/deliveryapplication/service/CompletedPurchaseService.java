@@ -1,22 +1,29 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.CompletedPurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
+import hu.torma.deliveryapplication.entity.CompletedPurchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 
 public interface CompletedPurchaseService {
     List<CompletedPurchaseDTO> getAllCompletedPurchases();
+    CompletedPurchaseDTO getCompletedPurchaseById(Integer id);
+
+    List<CompletedPurchaseDTO> getCompletedPurchasesForListing();
+    List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords();
 
     CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
 
-    CompletedPurchaseDTO saveCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
+    @Transactional
+    CompletedPurchase saveCompletedPurchase(CompletedPurchase completedPurchase);
 
     Date getEarliestPurchaseDate(Integer id);
 
     void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO);
+    void deleteCompletedPurchaseById(Integer id);
 
     List<CompletedPurchaseDTO> getCPsByStartingDate(Date startDate);
 

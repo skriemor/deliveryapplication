@@ -1,8 +1,6 @@
 package hu.torma.deliveryapplication.service;
 
 import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchaseDTO;
-import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.entity.Purchase;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
@@ -13,21 +11,20 @@ import java.util.List;
 public interface PurchaseService {
     List<PurchaseDTO> getAllPurchases();
 
-    PurchaseDTO getPurchase(PurchaseDTO PurchaseDTO);
-
-    PurchaseDTO savePurchase(PurchaseDTO PurchaseDTO);
+    void savePurchase(PurchaseDTO PurchaseDTO);
+    Purchase savePurchase(Purchase purchase);
 
     void deletePurchase(PurchaseDTO PurchaseDTO);
 
-    PurchaseDTO addProductToPurchase(PurchaseDTO PurchaseDTO, PurchasedProductDTO PurchasedProductDTO);
-
     PurchaseDTO getPurchaseById(Integer id);
 
-    List<PurchaseDTO> getPsByStartingDate(Date startDate);
+    Purchase getPurchaseEntityById(Integer id);
 
-    List<PurchaseDTO> getPsByEndingDate(Date endDate);
+    PurchaseDTO getPurchaseForSelectionById(Integer id);
+    List<PurchaseDTO> getAllPurchasesForSelection();
 
-    List<PurchaseDTO> getPsByBothDates(Date startDate, Date endDate);
+    List<PurchaseDTO> getAllForListing();
+
 
     List<PurchaseDTO> getPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId);
     List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly);
@@ -37,4 +34,8 @@ public interface PurchaseService {
     List<ProductWithQuantity> getPurchasesByDates(Date date1, Date date2);
 
     Tuple getConcatedSerialsAndMaskedPricesById(Integer id);
+
+    PurchaseDTO getPurchaseAndFetchPPsById(Integer id);
+
+    Purchase getPurchaseWithPurchasedProductsById(Integer id);
 }
