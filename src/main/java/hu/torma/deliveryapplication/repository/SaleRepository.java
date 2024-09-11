@@ -1,7 +1,6 @@
 package hu.torma.deliveryapplication.repository;
 
 import hu.torma.deliveryapplication.entity.Sale;
-import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface SaleRepository extends JpaRepository<Sale, Integer> {
     List<Sale> findAllByReceiptDateAfter(Date date);
@@ -59,4 +59,7 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
             @Param("date1") Date date1,
             @Param("date2") Date date2
     );
+
+    @Query(value = "select s from Sale s left join fetch s.productList pl left join fetch pl.product where s.id = :id ")
+    Optional<Sale> getSaleById(@Param("id") int id);
 }

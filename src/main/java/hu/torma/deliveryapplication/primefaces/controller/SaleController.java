@@ -4,6 +4,9 @@ import hu.torma.deliveryapplication.DTO.ProductDTO;
 import hu.torma.deliveryapplication.DTO.PurchasedProductDTO;
 import hu.torma.deliveryapplication.DTO.SaleDTO;
 import hu.torma.deliveryapplication.DTO.UnitDTO;
+import hu.torma.deliveryapplication.entity.Purchase;
+import hu.torma.deliveryapplication.entity.PurchasedProduct;
+import hu.torma.deliveryapplication.entity.Sale;
 import hu.torma.deliveryapplication.service.ProductService;
 import hu.torma.deliveryapplication.service.SaleService;
 import hu.torma.deliveryapplication.service.StorageService;
@@ -26,10 +29,7 @@ import java.sql.Date;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.logging.Logger;
 
 @SessionScope
@@ -41,18 +41,10 @@ public class SaleController implements Serializable {
     @Autowired UnitService uService;
     @Autowired SaleService service;
 
-    String errorMessage = "";
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
+    @Setter @Getter String errorMessage = "";
 
     Logger log = Logger.getLogger("Validatorlog");
-    private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
+    @Setter private ArrayList<ProductDTO> listFiveProduct = new ArrayList<>();
 
 
     @Getter @Setter private PurchasedProductDTO one;
@@ -63,7 +55,7 @@ public class SaleController implements Serializable {
     @Getter @Setter private PurchasedProductDTO six;
 
 
-    private List<SortMeta> sortBy;
+    @Setter private List<SortMeta> sortBy;
 
     public int getWeightSum() {
         int sum = 0;
@@ -85,17 +77,9 @@ public class SaleController implements Serializable {
 
     private String label;
 
-    public String getLabel2() {
-        return label2;
-    }
-
-    public void setLabel2(String label2) {
-        this.label2 = label2;
-    }
-
-    private String label2;
-    private SaleDTO dto;
-    private List<SaleDTO> dtoList;
+    @Getter @Setter private String label2;
+    @Setter private SaleDTO dto;
+    @Setter private List<SaleDTO> dtoList;
     @Setter private PurchasedProductDTO productDTO;
 
     public PurchasedProductDTO getProductDTO() {
@@ -156,18 +140,6 @@ public class SaleController implements Serializable {
         this.setLabel2("Termék hozzáadása");
     }
 
-    public void setDto(SaleDTO dto) {
-        this.dto = dto;
-    }
-
-    public void setDtoList(List<SaleDTO> dtoList) {
-        this.dtoList = dtoList;
-    }
-
-    public void setSortBy(List<SortMeta> sortBy) {
-        this.sortBy = sortBy;
-    }
-
     private Boolean checkQuantity(PurchasedProductDTO dtoe) {
         if (dtoe.getQuantity() == null) return true;
         if (dtoe.getQuantity() > sService.getSupplyOf(dtoe.getProduct(), dto)) return false;
@@ -198,54 +170,84 @@ public class SaleController implements Serializable {
         return DateConverter.toDottedDate(dt);
     }
 
-    public void sixSave() {
+    private void copyPPDataToEntityPPs(Sale entity, PurchasedProductDTO... pps) {
+        List<PurchasedProduct> entityPps = entity.getProductList();
+        for (PurchasedProductDTO pp : pps) {
+            Optional<PurchasedProduct> ppWithGivenProduct = entityPps.stream().filter(
+                    entityPP -> Objects.equals(entityPP.getProduct().getId(), pp.getProduct().getId())
+            ).findFirst();
 
-        this.dto.setProductList(new ArrayList<>());
-        if (one.getUnitPrice() != null && one.getQuantity() != null) {
-            this.setProductDTO(one);
-            uiSaveProduct();
-        }
-        if (two.getUnitPrice() != null && two.getQuantity() != null) {
-            this.setProductDTO(two);
-            uiSaveProduct();
-        }
-        if (three.getUnitPrice() != null && three.getQuantity() != null) {
-            this.setProductDTO(three);
-            uiSaveProduct();
-        }
-        if (four.getUnitPrice() != null && four.getQuantity() != null) {
-            this.setProductDTO(four);
-            uiSaveProduct();
-        }
-        if (five.getUnitPrice() != null && five.getQuantity() != null) {
-            this.setProductDTO(five);
-            uiSaveProduct();
-        }
-        if (six.getUnitPrice() != null && six.getQuantity() != null) {
-            this.setProductDTO(six);
-            uiSaveProduct();
+            if (ppWithGivenProduct.isPresent()) {
+                ppWithGivenProduct.get().setQuantity(pp.getQuantity());
+            } else {
+                PurchasedProduct ppEntity = pp.toEntity(true, false, false);
+                ppEntity.setSale(entity);
+                if (ppEntity.getQuantity() == null) {
+                    ppEntity.setQuantity(0);
+                }
+                if (ppEntity.getQuantity2() == null) {
+                    ppEntity.setQuantity2(0);
+                }
+                entity.getProductList().add(ppEntity);
+            }
         }
     }
 
-    public void uiSaveProduct() {
-        if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
-        if (this.dto.getProductList().contains(this.productDTO)) this.dto.getProductList().remove(this.productDTO);
-        this.dto.getProductList().add(this.productDTO);
-        this.productDTO = new PurchasedProductDTO();
-        this.setLabel2("Termék hozzáadása");
+    private void copyBasicPurchaseDataToEntity(Sale entity) {
+        entity.setBuyer(dto.getBuyer().toEntity());
+        entity.setCurrency(dto.getCurrency());
+        entity.setPrice(dto.getPrice());
+        entity.setReceiptId(dto.getReceiptId());
+        entity.setReceiptDate(dto.getReceiptDate());
+        entity.setDeadLine(dto.getDeadLine());
+        entity.setCompletionDate(dto.getCompletionDate());
+        entity.setGlobalgap(dto.getGlobalgap());
+        entity.setLetai(dto.getLetai());
     }
 
+    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
+        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
+        dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
+        Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
+        dto_.setTotalPrice(sum);
+        return sum;
+    }
+
+    private void fixUpPPs(PurchasedProductDTO... dtos) {
+        dto.setProductList(new ArrayList<>());
+
+        Arrays.stream(dtos).forEach(pp -> {
+            if (pp.getUnitPrice() == null) pp.setUnitPrice(0);
+            if (pp.getQuantity() == null) pp.setQuantity(0);
+            if (pp.getTotalPrice() == null) {
+                pp.setTotalPrice(calculateSetAndGetTotalPriceOf(pp));
+            }
+            dto.getProductList().add(pp);
+        });
+    }
 
     public void uiSaveSale() {
-        //if (!validateStorage()) return;  kiszedve, hogy lehessen negatív
-        if (this.dto.getProductList() == null) this.dto.setProductList(new ArrayList<>());
-        java.sql.Date date = new Date(System.currentTimeMillis());
-        this.dto.setBookingDate(date);
-        service.saveSale(this.dto);
-        getAllSales();
+        boolean update = dto.getId() != null;
+
+        this.dto.setBookingDate(new Date(System.currentTimeMillis()));
+
+        if (update) { // modosul
+            Sale entity = service.getSaleEntityById(dto.getId()).orElseThrow(
+                () -> new RuntimeException("A módosítandó eladás ID alapján nem található az adatbázisban")
+            );
+            copyPPDataToEntityPPs(entity, one, two, three, four, five, six);
+            copyBasicPurchaseDataToEntity(entity);
+            entity = service.save(entity);
+            dto = entity.toDTO(true, true);
+        } else { // uj eladas
+            fixUpPPs(one, two, three, four, five, six);
+            service.saveSale(this.dto);
+        }
+
         this.setDto(new SaleDTO());
         this.setProductDTO(new PurchasedProductDTO());
         this.errorMessage = "";
+        getAllSales();
         nullQuants();
     }
 
@@ -268,12 +270,19 @@ public class SaleController implements Serializable {
         errorMessage = "";
     }
 
-    public void editSale(SelectEvent<SaleDTO> _dto) {
+    public void editSale(SelectEvent<SaleDTO> clickEvent) {
+        SaleDTO sale = clickEvent.getObject() == null ? null : clickEvent.getObject();
+
+        if (sale == null) {
+            throw new RuntimeException("A kijelölt sor üres objektummal, vagy üres objektumId-vel tért vissza.");
+        }
+
+        dto = service.getSaleById(sale.getId()).orElseThrow(() -> new RuntimeException("A kijelölt sorhoz nem tartozik DB bejegyzés"));
+
         emptySix();
-        this.setLabel("Módosítás");
-        BeanUtils.copyProperties(_dto.getObject(), this.getDto());
         setQuants();
         errorMessage = "";
+        this.setLabel("Módosítás");
     }
 
     private void emptySix() {
@@ -301,7 +310,6 @@ public class SaleController implements Serializable {
     public void editProduct(SelectEvent<PurchasedProductDTO> _dto) {
         this.setLabel2("Módosítás");
         BeanUtils.copyProperties(_dto.getObject(), this.getProductDTO());
-
     }
 
     public void newSale() {
@@ -355,10 +363,6 @@ public class SaleController implements Serializable {
 
     public ArrayList<ProductDTO> getListFiveProduct() {
         return listFiveProduct;
-    }
-
-    public void setListFiveProduct(ArrayList<ProductDTO> listFiveProduct) {
-        this.listFiveProduct = listFiveProduct;
     }
 
 }

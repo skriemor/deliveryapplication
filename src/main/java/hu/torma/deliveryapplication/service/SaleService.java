@@ -7,13 +7,14 @@ import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface SaleService {
     List<SaleDTO> getAllSales();
 
-    SaleDTO getSale(SaleDTO SaleDTO);
+    void saveSale(SaleDTO SaleDTO);
 
-    SaleDTO saveSale(SaleDTO SaleDTO);
+    Sale save(Sale sale);
 
     void deleteSale(SaleDTO SaleDTO);
 
@@ -29,4 +30,8 @@ public interface SaleService {
     List<ProductWithQuantity> getSalesByDates(Date date1, Date date2);
 
     List<ProductWithQuantity> getOfficialSalesByDates(Date date1, Date date2);
+
+    Optional<SaleDTO> getSaleById(int id);
+
+    Optional<Sale> getSaleEntityById(int id);
 }

@@ -37,7 +37,6 @@ public class PurchaseServiceImpl implements PurchaseService {
     @Override
     @Transactional
     public void savePurchase(PurchaseDTO purchaseDto) {
-        //to make relations work by assigning purchase to each of purchased products' ends
         Purchase dbEntity = repo.save(purchaseDto.toEntity(true, false, false));
         List<PurchasedProduct> detachedPPs = purchaseDto
                 .getProductList()

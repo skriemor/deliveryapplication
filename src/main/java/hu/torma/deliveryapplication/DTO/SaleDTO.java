@@ -79,7 +79,7 @@ public class SaleDTO implements Serializable {
 
         if (includeProducts && this.productList != null) {
             entity.setProductList(this.productList.stream()
-                    .map(product -> product.toEntity(false, false, false)) // Avoid recursion in PurchasedProduct
+                    .map(product -> product.toEntity(true, false, false))
                     .collect(Collectors.toList()));
         }
 

@@ -375,7 +375,7 @@
                  lazy="false" sortBy="#{purchaseController.sortBy}" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
-                  rowKey="#{purchase.id}">
+                 rowKey="#{purchase.id}">
         <p:ajax event="rowSelect" listener="#{purchaseController.onRowSelect}" immediate="true" onsuccess="javascript:window.location='#purchaseForm'"
                 update=":purchaseForm:newSaveButton purchaseForm:purchasePanel purchaseForm:fixProductPanel purchaseForm:deleteButton purchaseForm:confirmer purchaseForm:conf"/>
 
