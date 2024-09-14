@@ -266,7 +266,7 @@ public class CompletedPurchaseController implements Serializable {
 
         List<CompletionRecord> recordsToSave = tempRecords.stream().map(record -> record.toEntity(true, true)).toList();
         entity.setRecords(recordsToSave);
-        entity.setTotalPrice(entity.getRecords() == null || entity.getRecords().isEmpty() ? 0.0  : dtoTotalV);
+        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : dtoTotalV);
 
         CompletedPurchase purchaseFromDb = cService.saveCompletedPurchase(entity);
 
@@ -420,6 +420,7 @@ public class CompletedPurchaseController implements Serializable {
         this.purchaseDTO = new PurchaseDTO();
         emptySix();
         updateAvailablePurchases();
+        reInitCalculatedNumbers();
     }
 
     public String toDottedDate(java.util.Date dt) {
