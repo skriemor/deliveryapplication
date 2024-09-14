@@ -25,7 +25,7 @@ public class CompletedPurchaseDTO implements Serializable {
     Date receiptDate;
     SiteDTO site;
     String notes;
-    int totalPrice;
+    Double totalPrice;
     String paymentMethod;
     Date paymentDate;
 
@@ -86,27 +86,27 @@ public class CompletedPurchaseDTO implements Serializable {
     }
 
     public int getOne() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getOne).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getOne).sum();
     }
 
     public int getTwo() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getTwo).sum();
     }
 
     public int getThree() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getThree).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getThree).sum();
     }
 
     public int getFour() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getFour).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getFour).sum();
     }
 
     public int getFive() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getFive).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getFive).sum();
     }
 
     public int getSix() {
-        return this.records.stream().mapToInt(CompletionRecordDTO::getSix).sum();
+        return this.records == null ? 0 : this.records.stream().mapToInt(CompletionRecordDTO::getSix).sum();
     }
 
     public CompletedPurchase toEntity(boolean includeVendor, boolean includeRecords) {

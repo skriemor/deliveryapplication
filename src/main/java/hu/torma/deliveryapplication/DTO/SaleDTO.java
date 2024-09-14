@@ -23,7 +23,7 @@ public class SaleDTO implements Serializable {
     private String currency;
     private Date bookingDate;
     private String receiptId;
-    private int price;
+    private Double price;
     private Date deadLine;
     private Date completionDate;
     private Date receiptDate;

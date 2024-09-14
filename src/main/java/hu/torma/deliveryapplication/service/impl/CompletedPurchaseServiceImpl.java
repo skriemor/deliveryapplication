@@ -111,9 +111,9 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
-    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String name, Date startDate, Date endDate, String numSerial1, String numSerial2, Boolean notPaidOnly, String paymentMethod) {
-        return new ArrayList<CompletedPurchaseDTO>(
-                repo.applyFilterChainAndReturnResults(name, startDate, endDate, numSerial1, numSerial2, notPaidOnly, paymentMethod).stream().map(
+    public List<CompletedPurchaseDTO> getFilteredListOfCPs(String taxId, Date startDate, Date endDate, String numSerial1, String numSerial2, Boolean notPaidOnly, String paymentMethod) {
+        return new ArrayList<>(
+                repo.applyFilterChainAndReturnResults(taxId, startDate, endDate, numSerial1, numSerial2, notPaidOnly, paymentMethod).stream().map(
                         cp -> cp.toDTO(true)
                 ).toList()
         );

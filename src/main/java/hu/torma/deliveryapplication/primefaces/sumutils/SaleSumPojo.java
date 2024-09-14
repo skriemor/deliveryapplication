@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class SaleSumPojo   {
 
     Integer one,two,three,four,five,six;
-    Map<String, Integer> currencyMap;
+    Map<String, Double> currencyMap;
     String priceTotal;
 
     public SaleSumPojo(Integer one, Integer two, Integer three, Integer four, Integer five, Integer six) {
@@ -41,7 +41,7 @@ public class SaleSumPojo   {
         this.currencyMap = list.stream().collect(
                 Collectors.groupingBy(
                         SaleDTO::getCurrency,
-                        Collectors.summingInt(SaleDTO::getPrice)
+                        Collectors.summingDouble(SaleDTO::getPrice)
                 )
         );
 
@@ -53,7 +53,7 @@ public class SaleSumPojo   {
     /**
      * To be refactored
      */
-    public String getFormattedNumber(int num) {
+    public String getFormattedNumber(Double num) {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 }

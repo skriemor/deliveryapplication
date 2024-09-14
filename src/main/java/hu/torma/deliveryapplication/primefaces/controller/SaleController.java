@@ -205,10 +205,10 @@ public class SaleController implements Serializable {
         entity.setLetai(dto.getLetai());
     }
 
-    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
-        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
+    public Double calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
+        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0.0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
-        Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
+        Double sum = (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
         dto_.setTotalPrice(sum);
         return sum;
     }

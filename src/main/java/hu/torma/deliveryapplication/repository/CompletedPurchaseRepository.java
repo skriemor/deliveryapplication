@@ -16,48 +16,57 @@ public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurc
 
     List<CompletedPurchase> findAllByReceiptDateBetween(Date startDate, Date endDate);
 
-    @Query(nativeQuery = true,value = """
-        SELECT cp.*
-        FROM COMPLETED_PURCHASE cp
-        where (?1 is null or LOWER(cp.vendor_name) like LOWER(CONCAT('%', ?1 , '%')))
-        and (
-         (cp.receipt_date is null and ?2 is null and ?3 is null)
-           
-                or (?2 is not null and ?3 is not null and cp.receipt_date between ?2  and ?3)
-                or (?2 is not null and ?3 is null and  cp.receipt_date >= ?2 )
-                or (?3 is not null and ?2 is null and  cp.receipt_date <  ?3 )
-                or (?2 is null and  ?3 is null)
-        )
-        and (
-        cp.new_serial is null
-                or (?4 is not null and ?5 is not null and cp.new_serial between ?4  and ?5)
-                or (?4 is not null and ?5 is null and  cp.new_serial >= ?4 )
-                or (?5 is not null and ?4 is null and  cp.new_serial <  ?5 )
-                or (?4 is null and  ?5 is null)
-        )
-        and (
-            ?6 is null or (?6 is false and cp.payment_date is not null) or (?6 is true and cp.payment_date is null)
-        )
-        and (
-            ?7 is null or cp.payment_method like CONCAT('%', ?7, '%')
-        )
-    """)
-    List<CompletedPurchase> applyFilterChainAndReturnResults(String name, Date startDate, Date endDate, String numSerial1,String numSerial2,Boolean notPaidOnly, String paymentMethod);
-
-
-    @Query(nativeQuery = true, value = """
-select cp.*
-from completed_purchase cp
-join vendor v on v.tax_id = cp.vendor_name
-where (v.mediator_id = ?3 OR ?3 is null)
-and (
-(?1 is not null and ?2 is not null and cp.receipt_date between ?1  and ?2)
-                or (?1 is not null and ?2 is null and  cp.receipt_date >= ?1 )
-                or (?2 is not null and ?1 is null and  cp.receipt_date <  ?2 )
-                or (?1 is null and  ?2 is null)
-)
-order by cp.receipt_date asc NULLS LAST 
+    @Query("""
+    SELECT DISTINCT cp
+    FROM CompletedPurchase cp
+    LEFT JOIN FETCH cp.vendor v
+    LEFT JOIN FETCH cp.records recs
+    WHERE (:taxId IS NULL OR v.taxId = :taxId)
+    AND (
+        (cp.receiptDate IS NULL AND :startDate IS NULL AND :endDate IS NULL)
+        OR (:startDate IS NOT NULL AND :endDate IS NOT NULL AND cp.receiptDate BETWEEN :startDate AND :endDate)
+        OR (:startDate IS NOT NULL AND :endDate IS NULL AND cp.receiptDate >= :startDate)
+        OR (:endDate IS NOT NULL AND :startDate IS NULL AND cp.receiptDate < :endDate)
+        OR (:startDate IS NULL AND :endDate IS NULL)
+    )
+    AND (
+        cp.newSerial IS NULL
+        OR (:serialBegin IS NOT NULL AND :serialEnd IS NOT NULL AND cp.newSerial BETWEEN :serialBegin AND :serialEnd)
+        OR (:serialBegin IS NOT NULL AND :serialEnd IS NULL AND cp.newSerial >= :serialBegin)
+        OR (:serialEnd IS NOT NULL AND :serialBegin IS NULL AND cp.newSerial < :serialEnd)
+        OR (:serialBegin IS NULL AND :serialEnd IS NULL)
+    )
+    AND (
+        :notPaidOnly IS NULL OR (:notPaidOnly = false AND cp.paymentDate IS NOT NULL) OR (:notPaidOnly = true AND cp.paymentDate IS NULL)
+    )
+    AND (
+        :paymentMethod IS NULL OR cp.paymentMethod LIKE CONCAT('%', :paymentMethod, '%')
+    )
 """)
+    List<CompletedPurchase> applyFilterChainAndReturnResults(
+            @Param("taxId") String taxId,
+            @Param("startDate") Date startDate,
+            @Param("endDate") Date endDate,
+            @Param("serialBegin") String serialBegin,
+            @Param("serialEnd") String serialEnd,
+            @Param("notPaidOnly") Boolean notPaidOnly,
+            @Param("paymentMethod") String paymentMethod
+    );
+
+
+    @Query(value = """
+        select DISTINCT cp
+        from  CompletedPurchase cp
+        LEFT JOIN FETCH cp.vendor v
+        where (v.mediator.id = ?3 OR ?3 is null)
+        and (
+            (?1 is not null and ?2 is not null and cp.receiptDate between ?1  and ?2)
+                            or (?1 is not null and ?2 is null and  cp.receiptDate >= ?1 )
+                            or (?2 is not null and ?1 is null and  cp.receiptDate <  ?2 )
+                            or (?1 is null and  ?2 is null)
+        )
+        order by cp.receiptDate asc NULLS LAST
+    """)
     List<CompletedPurchase> getCompletedPurchasesByMediatorAndDate(Date startDate, Date endDate, String mediatorId);
 
     @Query(nativeQuery = true, value = """

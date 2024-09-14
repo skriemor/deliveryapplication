@@ -207,7 +207,7 @@ public class PurchasedProduct {
 
 
     @Column(name = "total_price")
-    private Integer totalPrice;
+    private Double totalPrice;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "p_id", nullable = false, referencedColumnName = "product_id") @ToString.Exclude

@@ -14,39 +14,47 @@ public interface SaleRepository extends JpaRepository<Sale, Integer> {
     List<Sale> findAllByReceiptDateAfter(Date date);
     List<Sale> findAllByReceiptDateBefore(Date date);
     List<Sale> findAllByReceiptDateBetween(Date startDate, Date endDate);
-    @Query(nativeQuery = true,value = """
-        SELECT s.*
-        FROM sale s
-        join BUYER b on b.ID = s.BUYER_NAME
-        where (
-            ?1 is null or LOWER(s.BUYER_NAME) like LOWER(CONCAT('%', ?1 , '%'))
-        )
-        and (
-           ?2 is null or LOWER(s.CURRENCY) like LOWER(CONCAT('%', ?2, '%'))
-        )
-        and (
-         (s.receipt_date is null and ?2 is null and ?3 is null)
-            
-                or (?3 is not null and ?4 is not null and s.receipt_date between ?3  and ?4)
-                or (?3 is not null and ?4 is null and  s.receipt_date >= ?3 )
-                or (?4 is not null and ?3 is null and  s.receipt_date <  ?4 )
-                or (?3 is null and  ?4 is null)
-        )
-        and (
-            ?5 is null or (?5 is false and s.COMPLETION_DATE is not NULL) or (s.COMPLETION_DATE is null and ?5 is true)
-        )
-         and (
-            ?6 is null or ?6 like '' or b.PAPER = ?6
-        )
-        and (
-            ?7 is null or s.LETAI = ?7
-        )
-        and (
-            ?8 is null or s.GLOBALGAP = ?8
-        )
-       
-    """)
-    List<Sale> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
+
+    @Query("""
+    SELECT DISTINCT s
+    FROM Sale s
+    LEFT JOIN FETCH s.buyer b
+    LEFT JOIN FETCH s.productList pl
+    LEFT JOIN FETCH pl.product prod
+    WHERE (
+        :bankAccountNum IS NULL OR b.accountNum = :bankAccountNum
+    )
+    AND (
+        :currency IS NULL OR LOWER(s.currency) LIKE LOWER(CONCAT('%', :currency, '%'))
+    )
+    AND (
+        (s.receiptDate IS NULL AND :startDate IS NULL AND :endDate IS NULL)
+        OR (:startDate IS NOT NULL AND :endDate IS NOT NULL AND s.receiptDate BETWEEN :startDate AND :endDate)
+        OR (:startDate IS NOT NULL AND :endDate IS NULL AND s.receiptDate >= :startDate)
+        OR (:endDate IS NOT NULL AND :startDate IS NULL AND s.receiptDate < :endDate)
+        OR (:startDate IS NULL AND :endDate IS NULL)
+    )
+    AND (
+        :unPaidOnly IS NULL OR (:unPaidOnly = false AND s.completionDate IS NOT NULL) OR (s.completionDate IS NULL AND :unPaidOnly = true)
+    )
+    AND (
+        :paper IS NULL OR :paper = '' OR b.paper = :paper
+    )
+    AND (
+        :letaiOnly IS NULL OR s.letai = :letaiOnly
+    )
+    AND (
+        :globalGapOnly IS NULL OR s.globalgap = :globalGapOnly
+    )
+""")
+    List<Sale> applyFilterChainAndReturnSales(@Param("bankAccountNum") String bankAccountNum,
+                                              @Param("currency") String currency,
+                                              @Param("startDate") Date startDate,
+                                              @Param("endDate") Date endDate,
+                                              @Param("unPaidOnly") Boolean unPaidOnly,
+                                              @Param("paper") String paper,
+                                              @Param("letaiOnly") Boolean letaiOnly,
+                                              @Param("globalGapOnly") Boolean globalGapOnly);
 
     @Query(name = "supply_products_with_quantity_sale", nativeQuery = true)
     List<ProductWithQuantity> getProductsWithQuantitiesByDates(

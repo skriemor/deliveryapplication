@@ -21,7 +21,7 @@ public class PurchaseConverter implements Converter {
             var id = Integer.valueOf(s.substring(0, s.indexOf(" (")));
             return service.getPurchaseForSelectionById(id);
         }
-        return new PurchaseDTO();
+        return null;
     }
 
     @Override

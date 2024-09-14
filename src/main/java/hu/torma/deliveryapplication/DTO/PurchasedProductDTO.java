@@ -20,7 +20,7 @@ public class PurchasedProductDTO implements Serializable {
 
     private Integer corrPercent;
 
-    private Integer totalPrice;
+    private Double totalPrice;
 
     private PurchaseDTO purchase;
 
