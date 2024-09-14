@@ -176,7 +176,7 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public Integer getPriceOf(int i) {
-        if (quantities.get(i).getNum() == 0 || purchaseDTO.getProductList() == null) return 0;
+        if (quantities.get(i).getNum() == 0 || purchaseDTO == null || purchaseDTO.getProductList() == null) return 0;
         var g = purchaseDTO.getProductList().get(i);
         return (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
     }
@@ -224,6 +224,7 @@ public class CompletedPurchaseController implements Serializable {
         purchaseDTO = new PurchaseDTO();
         updateAvailablePurchases();
         emptySix();
+        selectionCounter = 0;
     }
 
 
@@ -283,7 +284,7 @@ public class CompletedPurchaseController implements Serializable {
     public void deletePurchase() {
         cService.deleteCompletedPurchaseById(dto.getId());
         updateRemainingPrices(null);
-        newCP();
+        newPurchase();
         selectionCounter = 0;
     }
 
@@ -329,14 +330,9 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void newPurchase() {
-        tempRecords.clear();
-        emptySix();
         newCP();
-        this.purchaseDTO = new PurchaseDTO();
-        this.dto = new CompletedPurchaseDTO();
+        reInitCalculatedNumbers();
         this.setLabel("Felv. jegy Hozzáadása");
-        updateAvailablePurchases();
-        selectionCounter = 0;
     }
 
     public CompletedPurchaseDTO getDto() {
@@ -436,7 +432,7 @@ public class CompletedPurchaseController implements Serializable {
 
     public void updateAvailablePurchases() {
         List<Integer> usedIDs = tempRecords != null && !tempRecords.isEmpty() ?
-                tempRecords.stream().map(CompletionRecordDTO::getPurchase).map(PurchaseDTO::getId).toList() :
+                tempRecords.stream().map(CompletionRecordDTO::getPurchaseId).toList() :
                 Collections.emptyList();
 
         availablePurchases = new ArrayList<>(OPservice.getAllPurchasesForSelection().stream()

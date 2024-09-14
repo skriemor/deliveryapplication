@@ -225,7 +225,7 @@
 
     <hr/>
     <p:outputLabel id="error" value="#{saleController.errorMessage}" style="color:red;"/><br/>
-    <h:commandButton value="#{saleController.label}" tabindex="15"
+    <h:commandButton value="Mentés" tabindex="15"
                      action="#{saleController.uiSaveSale}"
                      style="width: 10em;height: 2.6em">
         <f:ajax execute="saleForm:salePanel" render="saleList saleForm:error salePanel       saleForm:fixProductPanel" />
@@ -251,7 +251,10 @@
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
                  rowKey="#{sale.id}">
-        <p:ajax event="rowSelect"  listener="#{saleController.editSale}" update="saleForm:salePanel      saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"/>
+        <p:ajax event="rowSelect" listener="#{saleController.editSale}"
+                update="saleForm:salePanel saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"
+                onsuccess="javascript:window.location='#saleForm'"
+        />
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="exact"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>

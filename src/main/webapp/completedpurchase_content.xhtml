@@ -9,6 +9,7 @@
 
 <f:metadata>
     <f:event type="preRenderView" listener="#{completedPurchaseController.updateAvailablePurchases()}" />
+    <f:event type="preRenderView" listener="#{completedPurchaseController.getAllPurchases()}" />
 </f:metadata>
 
 <h:form id="purchaseForm" style="overflow-y: scroll; margin: 80px auto;">
@@ -491,7 +492,8 @@
                 </p:commandButton>
                 <p:commandButton value="Törlés" id="deleteCPButton" actionListener="#{completedPurchaseController.deletePurchase()}"
                                  style="color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black"
-                                 resetValues="true" update="purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:pur purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
+                                 resetValues="true"
+                                 update="purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:pur purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
 
                 </p:commandButton>
 
@@ -698,7 +700,8 @@
             <p:panel id="buttonPanel2">
                 <p:commandButton value="Kiválasztott törlése" id="deleteCPButton2" actionListener="#{completedPurchaseController.deletePurchase()}"
                                  style="color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black"
-                                 resetValues="true" update="purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:pur purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
+                                 resetValues="true"
+                                 update="purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:pur purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 purchaseForm:purchaseList purchaseForm:cPTabs:purchasePanel purchaseForm:cPTabs:purchasePanelV purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:purchasePanelV">
                 </p:commandButton>
             </p:panel>
         </p:tab>
