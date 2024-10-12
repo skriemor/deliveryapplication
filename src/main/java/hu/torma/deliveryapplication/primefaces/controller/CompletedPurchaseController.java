@@ -23,6 +23,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.Tuple;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -45,7 +46,7 @@ public class CompletedPurchaseController implements Serializable {
     @Getter @Setter private PurchaseDTO pItemForSelectOneMenu;
     @Getter @Setter private List<CompletionRecordDTO> tempRecords;
     @Getter @Setter List<CompletionRecordDTO> recordsThatSubTheSelectedPurchase = new ArrayList<>();
-    List<CompletionRecordDTO> beforeEditList;
+    private List<CompletionRecordDTO> beforeEditList;
     @Setter private Integer selectionCounter;
     private final List<String> tempNamesList = new ArrayList<>(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
     @Getter @Setter private ArrayList<Quant> quantities = new ArrayList<>(Arrays.asList(new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0)));
@@ -205,11 +206,12 @@ public class CompletedPurchaseController implements Serializable {
         Purchase purchase = purchaseService.getPurchaseEntityById(id);
         if (purchase != null) {
             Tuple priceAndSerials = purchaseService.getConcatedSerialsAndMaskedPricesById(id);
-            if (priceAndSerials != null) {
-                purchase.setRemainingPrice(purchase.getTotalPrice() - Double.parseDouble(priceAndSerials.get(0).toString()));
-                purchase.setReceiptId(priceAndSerials.get(1).toString());
-                purchaseService.savePurchase(purchase);
-            }
+            Double newRemainingPrice = priceAndSerials == null ? purchase.getTotalPrice() : purchase.getTotalPrice() - ((BigInteger) priceAndSerials.get(0)).doubleValue();
+            String newConcatenatedReceipt = priceAndSerials == null ? "" : (String) priceAndSerials.get(1);
+
+            purchase.setRemainingPrice(newRemainingPrice);
+            purchase.setReceiptId(newConcatenatedReceipt);
+            purchaseService.savePurchase(purchase);
         }
     }
 
