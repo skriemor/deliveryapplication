@@ -18,8 +18,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<ProductDTO> getAllProducts() {
-        return new ArrayList<ProductDTO>(
-                repo.findAll().stream().map(
+        return new ArrayList<>(
+                repo.findAllFetchAll().stream().map(
                         prod -> prod.toDTO(true)
                 ).toList()
         );
