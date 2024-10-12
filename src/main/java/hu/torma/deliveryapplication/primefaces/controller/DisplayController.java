@@ -10,20 +10,15 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
-
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
-import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import java.io.Serializable;
 import java.text.NumberFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.logging.Logger;
+import java.util.*;
 
 @ViewScoped // TODO: fix incorrect annotations
-@ManagedBean(name = "displayController")
+@ManagedBean("displayController")
 @DependsOn("dbInit")
 public class DisplayController implements Serializable {
     @Autowired CompletionRecordService recordService;
@@ -61,7 +56,9 @@ public class DisplayController implements Serializable {
     @Getter @Setter PurchaseSumObj cpSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
     @Getter @Setter PurchaseSumObj splitCPSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
     @Getter @Setter PurchaseSumObj summage = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+    @Getter @Setter PurchaseSumObj purchaseSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
     @Getter @Setter Boolean felvJegy;
+
 
     @Autowired StorageService storageService;
     @Autowired CompletedPurchaseService CPService;
@@ -92,7 +89,7 @@ public class DisplayController implements Serializable {
     }
 
     public ArrayList<CompletedPurchaseDTO> refreshCPDTOS() {
-        CPDTOS = CPService.getFilteredListOfCPs(filterName4 == null ? null : filterName4.getTaxId(), filterDateFrom4, filterDateTo4, numSerial1 == "" ? null : numSerial1, numSerial2 == "" ? null : numSerial2, paidOnly, filterPaymentMethodCP);
+        CPDTOS = CPService.getFilteredListOfCPs(filterName4 == null ? null : filterName4.getTaxId(), filterDateFrom4, filterDateTo4, Objects.equals(numSerial1, "") ? null : numSerial1, Objects.equals(numSerial2, "") ? null : numSerial2, paidOnly, filterPaymentMethodCP);
         cpSumObj = getSumsOfCPs(CPDTOS);
         return new ArrayList<>(CPDTOS);
     }
@@ -116,23 +113,27 @@ public class DisplayController implements Serializable {
         return DateConverter.toDottedDate(dt);
     }
 
-    public String getFormattedNumber(int num) {
+    public String getFormattedNumber(Double num) {
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 
-    PurchaseSumObj purchaseSumObj = new PurchaseSumObj();
 
     public PurchaseSumObj sumPurchases(List<PurchaseDTO> pDTOs) {
+        if (pDTOs == null) {
+            return new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+        }
+
         int ones = 0, twos = 0, threes = 0, fours = 0, fives = 0, sixes = 0;
         Double totalPriceSum = 0.0, remainingpriceSum = 0.0;
 
         for (var pur : pDTOs) {
-            ones += pur.getProductList().get(0).getQuantity2();
-            twos += pur.getProductList().get(1).getQuantity2();
-            threes += pur.getProductList().get(2).getQuantity2();
-            fours += pur.getProductList().get(3).getQuantity2();
-            fives += pur.getProductList().get(4).getQuantity2();
-            sixes += pur.getProductList().get(5).getQuantity2();
+            List<PurchasedProductDTO> productList = pur.getProductList();
+            ones +=     productList.get(0).getQuantity2();
+            twos +=     productList.get(1).getQuantity2();
+            threes +=   productList.get(2).getQuantity2();
+            fours +=    productList.get(3).getQuantity2();
+            fives +=    productList.get(4).getQuantity2();
+            sixes +=    productList.get(5).getQuantity2();
 
             totalPriceSum += pur.getTotalPrice();
             remainingpriceSum += pur.getRemainingPrice();
@@ -147,9 +148,19 @@ public class DisplayController implements Serializable {
     }
 
     public PurchaseSumObj getSumsOfCPs(List<CompletedPurchaseDTO> cps) {
-        var recs = cps.stream().flatMap(cp -> cp.getRecords().stream()).toList();
+        if (cps == null) {
+            return new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
+        }
+
+        var recs = cps.stream()
+                .flatMap(cp -> Optional.ofNullable(cp.getRecords())
+                .stream()
+                .flatMap(List::stream))
+                .toList();
+
+
         int ones = 0, twos = 0, threes = 0, fours = 0, fives = 0, sixes = 0;
-        Double totalPriceSum = 0.0;
+        double totalPriceSum = cps.stream().mapToDouble(CompletedPurchaseDTO::getTotalPrice).sum();
 
         for (var pur : recs) {
             ones += pur.getOne();
@@ -158,8 +169,6 @@ public class DisplayController implements Serializable {
             fours += pur.getFour();
             fives += pur.getFive();
             sixes += pur.getSix();
-
-            totalPriceSum += pur.getPrice();
         }
         return new PurchaseSumObj(ones, twos, threes, fours, fives, sixes, totalPriceSum, 0.0);
     }

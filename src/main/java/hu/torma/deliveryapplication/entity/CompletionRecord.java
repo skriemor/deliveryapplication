@@ -31,7 +31,7 @@ public class CompletionRecord {
     private int six;
 
     @Column(name = "price")
-    private int price;
+    private Double price;
 
 
     @ManyToOne(fetch = FetchType.LAZY)

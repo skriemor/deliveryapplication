@@ -55,15 +55,15 @@ public class CompletedPurchaseController implements Serializable {
     @Getter @Setter private String label;
     @Getter List<CompletedPurchaseDTO> dtoList;
     @Setter private CompletedPurchaseDTO dto;
-    @Getter private Integer sixTotal;
+    @Getter private Double sixTotal;
     @Getter private Double netAvgPrice;
     @Getter private Double diff;
     @Getter private Double grossTotal;
     @Getter private Double grossAvgPrice;
     @Getter private Double netTotal;
-    @Getter private Integer netSum;
+    @Getter private Double netSum;
     @Getter private Integer dtoWeight;
-    @Getter private Integer dtoTotalV;
+    @Getter private Double dtoTotalV;
     @Getter private Double netTotalV;
     @Getter private Double grossTotalV;
     @Getter private Double grossAvgPriceV;
@@ -114,13 +114,13 @@ public class CompletedPurchaseController implements Serializable {
         diffV = calculateDiffV();
     }
 
-    private Integer calculateSixTotal() {
+    private Double calculateSixTotal() {
         if (purchaseDTO == null || purchaseDTO.getProductList() == null) {
-            return 0;
+            return 0.0;
         }
 
         List<PurchasedProductDTO> list = purchaseDTO.getProductList();
-        return IntStream.range(0, Math.min(6, list.size())).map(i -> (int) (list.get(i).getUnitPrice() * quantities.get(i).getNum() * (1 + 0.01 * list.get(i).getProduct().getCompPercent()))).sum();
+        return IntStream.range(0, Math.min(6, list.size())).mapToDouble(i -> (list.get(i).getUnitPrice() * quantities.get(i).getNum() * (1 + 0.01 * list.get(i).getProduct().getCompPercent()))).sum();
     }
 
     private Double calculateNetAvgPrice() {
@@ -143,16 +143,16 @@ public class CompletedPurchaseController implements Serializable {
         return (double) Math.round(grossTotal / 1.12);
     }
 
-    private Integer calculateNetSum() {
-        return quantities.stream().mapToInt(Quant::getNum).sum();
+    private Double calculateNetSum() {
+        return quantities.stream().mapToDouble(Quant::getNum).sum();
     }
 
     private Integer calculateDtoWeight() {
         return IntStream.range(0, Math.min(6, tempRecords.size())).map(this::getTotalAmountOf).sum();
     }
 
-    private Integer calculateDtoTotalV() {
-        return tempRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum();
+    private Double calculateDtoTotalV() {
+        return tempRecords.stream().mapToDouble(CompletionRecordDTO::getPrice).sum();
     }
 
     private Double calculateNetTotalV() {
@@ -190,9 +190,6 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public String getFormattedNumber(double num) {
-        if (num - (int) num == 0.0) {
-            return NumberFormat.getNumberInstance(Locale.US).format((int) num).replaceAll(",", " ");
-        }
         return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
     }
 
@@ -269,7 +266,7 @@ public class CompletedPurchaseController implements Serializable {
 
         List<CompletionRecord> recordsToSave = tempRecords.stream().map(record -> record.toEntity(true, true)).toList();
         entity.setRecords(recordsToSave);
-        entity.setTotalPrice(entity.getRecords() == null || entity.getRecords().isEmpty() ? 0  : calculateDtoTotalV());
+        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : dtoTotalV);
 
         CompletedPurchase purchaseFromDb = cService.saveCompletedPurchase(entity);
 
@@ -279,6 +276,7 @@ public class CompletedPurchaseController implements Serializable {
         emptySix();
         newCP();
         getAllPurchases();
+        reInitCalculatedNumbers();
     }
 
     public void deletePurchase() {
@@ -309,6 +307,7 @@ public class CompletedPurchaseController implements Serializable {
         } else {
             recordsThatSubTheSelectedPurchase = new ArrayList<>();
             purchaseDTO = null;
+            pItemForSelectOneMenu = null;
         }
         updateAvailablePurchases();
         selectionCounter = 0;
@@ -379,7 +378,13 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public void addRecord() {
-        if (this.purchaseDTO.getId() == null) {
+        if (this.purchaseDTO == null || this.purchaseDTO.getId() == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                    FacesMessage.SEVERITY_ERROR,
+                    "Hiba",
+                    "Kérem válasszon egy mérlegjegyet a folytatáshoz!"
+                )
+            );
             return;
         }
 
@@ -415,6 +420,7 @@ public class CompletedPurchaseController implements Serializable {
         this.purchaseDTO = new PurchaseDTO();
         emptySix();
         updateAvailablePurchases();
+        reInitCalculatedNumbers();
     }
 
     public String toDottedDate(java.util.Date dt) {
@@ -428,6 +434,8 @@ public class CompletedPurchaseController implements Serializable {
         emptySix();
         updateAvailablePurchases();
         selectionCounter = 0;
+        purchaseDTO = null;
+        reInitCalculatedNumbers();
     }
 
     public void updateAvailablePurchases() {
@@ -462,7 +470,7 @@ public class CompletedPurchaseController implements Serializable {
                     priceRecords = recordService.findAllByPurchaseId(a.getPurchase().getId());
                     purchaseDTO1 = OPservice.getPurchaseForSelectionById(a.getPurchase().getId());
 
-                    purchaseDTO1.setRemainingPrice(purchaseDTO1.getTotalPrice() - (double) priceRecords.stream().mapToInt(CompletionRecordDTO::getPrice).sum() + a.getPrice());
+                    purchaseDTO1.setRemainingPrice(purchaseDTO1.getTotalPrice() - priceRecords.stream().mapToDouble(CompletionRecordDTO::getPrice).sum() + a.getPrice());
                     availablePurchases.add(purchaseDTO1);
                 }
             }

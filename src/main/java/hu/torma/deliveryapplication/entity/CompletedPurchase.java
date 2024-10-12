@@ -107,7 +107,7 @@ public class CompletedPurchase {
     private String paymentMethod;
 
     @Column(name = "total_price")
-    private int totalPrice;
+    private Double totalPrice;
 
     @OneToMany(mappedBy = "completedPurchase", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @ToString.Exclude

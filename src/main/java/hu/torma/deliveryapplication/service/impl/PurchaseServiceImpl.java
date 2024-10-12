@@ -104,9 +104,9 @@ public class PurchaseServiceImpl implements PurchaseService {
     }
 
     @Override
-    public List<PurchaseDTO> applyFilterChainAndReturnPurchases(String name, Date startDate, Date endDate, Boolean unPaidOnly) {
+    public List<PurchaseDTO> applyFilterChainAndReturnPurchases(String taxId, Date startDate, Date endDate, Boolean unPaidOnly) {
         return new ArrayList<PurchaseDTO>(
-                repo.applyFilterChainAndReturnPurchases(name, startDate, endDate, unPaidOnly).stream().map(
+                repo.applyFilterChainAndReturnPurchases(taxId, startDate, endDate, unPaidOnly).stream().map(
                         purchase -> purchase.toDTO(true, true, true)
                 ).toList()
         );

@@ -90,26 +90,26 @@ public class PurchaseController implements Serializable {
         return NumberFormat.getNumberInstance(Locale.US).format(calculateSetAndGetTotalPriceOf(i)).replaceAll(",", " ");
     }
 
-    public Integer calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
-        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0;
+    public Double calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
+        if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0.0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
-        Integer sum = (int) (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
+        Double sum = (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getProduct().getCompPercent())));
         dto_.setTotalPrice(sum);
         return sum;
     }
 
-    private int setAndSumPurchasedProductDtoPrices(PurchasedProductDTO... dtos) {
-        return Arrays.stream(dtos).mapToInt(d -> {
+    private Double setAndSumPurchasedProductDtoPrices(PurchasedProductDTO... dtos) {
+        return Arrays.stream(dtos).mapToDouble(d -> {
             if (d.getQuantity() != null && d.getProduct().getCompPercent() != null && d.getUnitPrice() != null) {
                 d.setQuantity2(getNetOf(d));
-                d.setTotalPrice((int) (d.getUnitPrice() * d.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent()))));
+                d.setTotalPrice((d.getUnitPrice() * d.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent()))));
                 return d.getTotalPrice();
             }
             return 0;
         }).sum();
     }
 
-    public Integer getSixTotal() {
+    public Double getSixTotal() {
         return setAndSumPurchasedProductDtoPrices(one, two, three, four, five, six);
     }
 
@@ -257,7 +257,7 @@ public class PurchaseController implements Serializable {
     }
 
     private void calculateAndSetTotalPrice() {
-        dto.setTotalPrice((double) dto.getProductList().stream().map(PurchasedProductDTO::getTotalPrice).mapToInt(Integer::intValue).sum());
+        dto.setTotalPrice(dto.getProductList().stream().mapToDouble(PurchasedProductDTO::getTotalPrice).sum());
     }
 
     public void deletePurchase() {

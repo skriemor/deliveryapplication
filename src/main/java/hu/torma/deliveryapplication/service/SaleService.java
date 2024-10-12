@@ -25,7 +25,7 @@ public interface SaleService {
     List<SaleDTO> getSalesByEndingDate(Date endDate);
 
     List<SaleDTO> getSalesByBothDates(Date startDate, Date endDate);
-    List<SaleDTO> applyFilterChainAndReturnSales(String name, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
+    List<SaleDTO> applyFilterChainAndReturnSales(String accountNum, String currency, Date startDate, Date endDate, Boolean unPaidOnly, String paper, Boolean letaiOnly, Boolean globalGapOnly);
 
     List<ProductWithQuantity> getSalesByDates(Date date1, Date date2);
 

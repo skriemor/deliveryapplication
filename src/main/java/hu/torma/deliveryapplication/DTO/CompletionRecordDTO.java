@@ -26,7 +26,7 @@ public class CompletionRecordDTO implements Serializable {
     private Integer purchaseId;
     private Integer completedPurchaseId;
 
-    private int price;
+    private Double price;
 
     public String getFormattedPrice() {
         return NumberFormat.getNumberInstance(Locale.US).format(this.price).replaceAll(","," ");

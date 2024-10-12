@@ -61,15 +61,13 @@
         <p:tab title="Új felvásárlási jegy">
 
             <p:outputLabel for="pur" value="Felhasználható mérlegelési jegyek:"/><br/>
-            <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1" required="false"
-                             requiredMessage="Válasszon 1 jegyet" widgetVar="sMenu"
+            <p:selectOneMenu id="pur" value="#{completedPurchaseController.purchaseDTO}" tabindex="1" required="false" widgetVar="sMenu"
                              converter="#{purchaseConverter}" filter="true" filterMatchMode="contains"
                              panelStyle="overflow: scroll; left: 0;  position: static">
                 <p:ajax event="change" update="fixProductPanel"
                         listener="#{completedPurchaseController.acquireRecords()}"/>
 
-                <f:selectItem itemValue="#{completedPurchaseController.availablePurchases.get(0)}" itemLabel="Válasszon"
-                              noSelectionOption="true"/>
+                <f:selectItem itemValue="#{null}" itemLabel="Válasszon" noSelectionOption="true"/>
                 <f:selectItem itemValue="#{completedPurchaseController.getPItemForSelectOneMenu()}" itemLabel="Kiválasztott"
                               itemDisabled="#{completedPurchaseController.getPItemForSelectOneMenu().getId()==0}"/>
                 <f:selectItems value="#{completedPurchaseController.getAvailablePurchases()}" var="purchasevar"
@@ -96,7 +94,7 @@
                                 style="margin-left: 5px; font-size: 0.8em; width: 4em; height: 2.8em; padding: 0"
                                 value="Új"
                                 onclick="funcForWindowPopup()"/><br/>
-                            <p:selectOneMenu requiredMessage="Válasszon eladót!" id="vendor"
+                            <p:selectOneMenu requiredMessage="Válasszon eladót!" id="vendor" converterMessage="Eladó"
                                              value="#{completedPurchaseController.dto.vendor}"
                                              panelStyle="overflow: scroll; left: 0;  position: static"
                                              required="true" tabindex="2"
@@ -441,7 +439,7 @@
                                  action="#{completedPurchaseController.removeRecord2()}"
                                  style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
 
-                    <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
+                    <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel" immediate="true"
                             render="purchaseForm:cPTabs:recordRemoverButton purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2 pur"/>
                 </h:commandButton>
             </p:panel>
