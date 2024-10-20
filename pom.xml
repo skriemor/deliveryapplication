@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>hu.torma</groupId>
 	<artifactId>deliveryapplication</artifactId>
-	<version>0.7.0</version>
+	<version>0.7.3</version>
 	<name>deliveryapplication</name>
 	<description>Webapp for delivery letter management</description>
 	<properties>
