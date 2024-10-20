@@ -8,6 +8,6 @@ public class DateConverter {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
         sdf.setTimeZone(TimeZone.getTimeZone("GMT+01"));
 
-        return dt==null?"0000.01.01":sdf.format(dt);
+        return dt == null ? "0000.01.01" : sdf.format(dt);
     }
 }

@@ -36,25 +36,6 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
         return cp.toDTO(true);
     }
 
-    @Override
-    public List<CompletedPurchaseDTO> getCompletedPurchasesForListing() {
-        return new ArrayList<>(
-                repo.findAllAndFetchRecordsAndPurchases().stream().map(
-                        cp -> cp.toDTO(true)
-                ).toList()
-        );
-    }
-
-    @Override
-    public List<CompletedPurchaseDTO> getAllCompletedPurchasesWithRecords() {
-        return repo.findAllAndFetchRecords().stream().map(cp -> cp.toDTO(true)).toList();
-    }
-
-    @Override
-    public CompletedPurchaseDTO getCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
-        return repo.findById(CompletedPurchaseDTO.getId()).map(cp -> cp.toDTO(true)).orElse(null);
-    }
-
     @Transactional
     @Override
     public CompletedPurchase saveCompletedPurchase(CompletedPurchase completedPurchase) {
@@ -68,46 +49,8 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
     }
 
     @Override
-    public Date getEarliestPurchaseDate(Integer id) {
-        return repo.getEarliestPurchaseDate(id).orElseGet(Date::new);
-    }
-
-    @Override
-    @Transactional
-    public void deleteCompletedPurchase(CompletedPurchaseDTO CompletedPurchaseDTO) {
-        repo.deleteById(CompletedPurchaseDTO.getId());
-    }
-
-    @Override
     public void deleteCompletedPurchaseById(Integer id) {
         repo.deleteById(id);
-    }
-
-    @Override
-    public List<CompletedPurchaseDTO> getCPsByStartingDate(Date startDate) {
-        return new ArrayList<CompletedPurchaseDTO>(
-                repo.findAllByReceiptDateAfter(startDate).stream().map(
-                        cp -> cp.toDTO(true)
-                ).toList()
-        );
-    }
-
-    @Override
-    public List<CompletedPurchaseDTO> getCPsByEndingDate(Date endDate) {
-        return new ArrayList<CompletedPurchaseDTO>(
-                repo.findAllByReceiptDateBefore(endDate).stream().map(
-                        cp -> cp.toDTO(true)
-                ).toList()
-        );
-    }
-
-    @Override
-    public List<CompletedPurchaseDTO> getCPsByBothDates(Date startDate, Date endDate) {
-        return new ArrayList<CompletedPurchaseDTO>(
-                repo.findAllByReceiptDateBetween(startDate, endDate).stream().map(
-                        cp -> cp.toDTO(true)
-                ).toList()
-        );
     }
 
     @Override

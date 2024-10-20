@@ -127,20 +127,14 @@ public class OfficialStorageSnapshotDTO implements Serializable {
             return true;
         } else if (one.getId() == null || two.getId() == null) {
             return false;
-        } else if (one.getId().equals(two.getId())) {
-            return true;
-        }
-        return false;
+        } else return one.getId().equals(two.getId());
     }
     private boolean compareDateStackSafe(Date date1, Date date2) {
         if (date1 == null && date2 == null) {
             return true;
         } else if (date1 == null || date2 == null) {
             return false;
-        } else if (date1.getTime() == date2.getTime()) {
-            return true;
-        }
-        return false;
+        } else return date1.getTime() == date2.getTime();
     }
 
     @Override

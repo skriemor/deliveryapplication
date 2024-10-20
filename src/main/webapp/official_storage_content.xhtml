@@ -21,7 +21,7 @@
                     <p:selectOneMenu id="prevSelector" value="#{officialStorageView.prevDto}"
                                      converter="#{oSnapShotConverter}" filter="true" filterMatchMode="contains"
                                      panelStyle="overflow: scroll; left: 0;  position: static">
-                        <p:ajax update="@this" event="change"/>
+                        <p:ajax event="change" process="@this" update="@this storageForm:resultsPanel" immediate="true"/>
                         <f:selectItem  itemLabel="Válasszon!" itemValue="#{officialStorageView.nulledDto}" />
                         <f:selectItems value="#{officialStorageView.snapshotDTOs}" var="snapVar"
                                        itemLabel="#{snapVar.asSelectOneString}"
@@ -35,22 +35,25 @@
                     <p:inputMask mask="9999.99.99" id="dateFrom"
                                  value="#{officialStorageView.snapDto.dateFrom}">
                         <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                        <p:ajax event="blur" process="@this" />
                     </p:inputMask>
                     <p:outputLabel value="-tól "/>
                 </td>
             </tr>
             <tr>
-                <td></td>
-                <td><p:inputMask mask="9999.99.99" id="dateTo"
+                <td/>
+                <td>
+                    <p:inputMask mask="9999.99.99" id="dateTo"
                                  value="#{officialStorageView.snapDto.dateTo}">
-                    <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
-                </p:inputMask>
+                        <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
+                        <p:ajax event="blur" process="@this" />
+                    </p:inputMask>
                     <p:outputLabel value="-ig "/></td>
             </tr>
             <tr>
                 <td></td>
                 <td><p:commandButton resetValues="false" update="resultsPanel filterPanel"
-                                     style="font-size: 1.2em; width: 5em; background-color: blue; color: white"
+                                     style="font-size: 1.2em; width: 5em; background-color: blue; color: white" immediate="true"
                                      value="Szűrés" actionListener="#{officialStorageView.updateCols()}"/></td>
             </tr>
         </table>
@@ -203,7 +206,7 @@
                  lazy="false" sortMode="single"
                  allowUnsorting="true" style="overflow-x: scroll; margin-bottom: 5em"
                  selectionMode="single" emptyMessage="Nincs találat" resizableColumns="true"
-                 selection="#{officialStorageView.snapDto}" rowKey="#{snapshot.id}">
+                 rowKey="#{snapshot.id}">
         <p:ajax event="rowSelect" listener="#{officialStorageView.selectSnapshot}"
                 update="storageForm:resultsPanel storageForm:filterPanel"/>
 
