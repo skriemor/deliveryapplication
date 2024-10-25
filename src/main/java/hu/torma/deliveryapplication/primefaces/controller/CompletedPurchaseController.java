@@ -259,8 +259,24 @@ public class CompletedPurchaseController implements Serializable {
         }
     }
 
+    private boolean validateCompletedPurchaseDto() {
+        if (this.dto == null) {
+            return false;
+        }
+
+        if (dto.getVendor() == null || dto.getVendor().getVendorName() == null || dto.getVendor().getTaxId() == null) {
+            showErrorMessageToUser("Kérem válasszon termelőt a fenti választóban!");
+            return false;
+        }
+
+        return true;
+    }
+
     public void uiSaveCompletedPurchase() {
-        if (this.dto == null) return;
+        if (!validateCompletedPurchaseDto()) {
+            return;
+        }
+
         CompletedPurchase entity = dto.toEntity(true, true);
 
         if (entity.getSite() == null) {
@@ -489,5 +505,14 @@ public class CompletedPurchaseController implements Serializable {
        if (purchaseDTO != null && purchaseDTO.getId() != null) {
             recordsThatSubTheSelectedPurchase = recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), dto == null || dto.getId() == null ? -1 : dto.getId());
        }
+    }
+
+    private void showErrorMessageToUser(String errorMsg) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Hiba",
+                        errorMsg
+                )
+        );
     }
 }

@@ -132,7 +132,7 @@
                         <f:selectItem itemLabel="TRY" itemValue="TRY"/>
                     </p:selectOneMenu><br/>
                     <p:outputLabel for="sum" value="kifizetendő:"/><br/>
-                    <p:inputNumber  thousandSeparator="&nbsp;" id="sum" value="#{saleController.dto.price}" required="true" tabindex="3" /><br/>
+                    <p:inputNumber  thousandSeparator="&nbsp;" id="sum" value="#{saleController.dto.price}" required="true" tabindex="3" minFractionDigits="0" maxFractionDigits="0" type="integer"/><br/>
                     <p:outputLabel for="receiptId" value="Számla sorszáma: "/><h:message for="saleForm:receiptId" style="color:red"/><br/>
                     <p:inputText id="receiptId"  value="#{saleController.dto.receiptId}"  required="false" tabindex="4">
                     </p:inputText>

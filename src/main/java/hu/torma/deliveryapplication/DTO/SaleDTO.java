@@ -23,7 +23,7 @@ public class SaleDTO implements Serializable {
     private String currency;
     private Date bookingDate;
     private String receiptId;
-    private Double price;
+    private Long price;
     private Date deadLine;
     private Date completionDate;
     private Date receiptDate;
@@ -39,10 +39,10 @@ public class SaleDTO implements Serializable {
         return letai?"+":"-";
     }
     public String getFormattedPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(","," ");
+        return NumberFormat.getNumberInstance(Locale.US).format(price.longValue()).replaceAll(","," ");
     }
     public String getIntedPrice() {
-        return NumberFormat.getNumberInstance(Locale.US).format(price).replaceAll(",","");
+        return NumberFormat.getNumberInstance(Locale.US).format(price.longValue()).replaceAll(",","");
     }
 
     public Integer getOne() {

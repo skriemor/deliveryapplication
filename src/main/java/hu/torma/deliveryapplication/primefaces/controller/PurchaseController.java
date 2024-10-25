@@ -230,6 +230,10 @@ public class PurchaseController implements Serializable {
     }
 
     public void uiSavePurchase(boolean shouldPrint) throws IOException {
+        if (!validatePurchaseDto()) {
+            return;
+        }
+
         fixUpPPs(one, two, three, four, five, six);
         calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
@@ -342,5 +346,27 @@ public class PurchaseController implements Serializable {
         dto = service.getPurchaseAndFetchPPsById(event.getObject().getId());
         isSafeToDelete = !recordService.existsByPurchaseId(dto.getId());
         editSix();
+    }
+
+    private void showErrorMessageToUser(String errorMsg) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Hiba",
+                        errorMsg
+                )
+        );
+    }
+
+    private boolean validatePurchaseDto() {
+        if (this.dto == null) {
+            return false;
+        }
+
+        if (dto.getVendor() == null || dto.getVendor().getVendorName() == null || dto.getVendor().getTaxId() == null) {
+            showErrorMessageToUser("Kérem válasszon termelőt a fenti választóban!");
+            return false;
+        }
+
+        return true;
     }
 }
