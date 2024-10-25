@@ -11,7 +11,7 @@ import java.util.List;
 public interface PurchaseService {
     List<PurchaseDTO> getAllPurchases();
 
-    void savePurchase(PurchaseDTO PurchaseDTO);
+    Purchase savePurchase(PurchaseDTO PurchaseDTO);
     Purchase savePurchase(Purchase purchase);
 
     void deletePurchase(PurchaseDTO PurchaseDTO);

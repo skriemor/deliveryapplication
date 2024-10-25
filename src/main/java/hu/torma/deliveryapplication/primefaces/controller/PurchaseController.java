@@ -21,6 +21,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.Tuple;
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -38,9 +39,7 @@ import java.util.stream.Stream;
 public class PurchaseController implements Serializable {
     @Autowired CompletionRecordService recordService;
     @Autowired private PDFcreator pdFcreator;
-    @Autowired StorageService sService;
     @Autowired ProductService pService;
-    @Autowired UnitService uService;
     @Autowired PurchaseService service;
     @Autowired PurchasedProductService purchasedProductService;
     @Autowired SiteService siteService;
@@ -185,14 +184,13 @@ public class PurchaseController implements Serializable {
         });
     }
 
-    public void pdf(boolean shouldPrint) {
-        if (shouldPrint) {
-            if (dto.getProductList() == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti!"));
-                return;
-            }
-            file = pdFcreator.createDownload(dto);
+    public void pdf() throws IOException {
+        if (dto.getProductList() == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti, vagy használja a Mentés nyomtatással funciót!"));
+            file = null; // ne töltse le az előzőt
+            throw new RuntimeException("Nyomtatáshiba: a terméklista üres.");
         }
+        file = pdFcreator.createDownload(dto);
     }
 
     private void evaluateAndSetPurchaseRemainingPrice(Purchase entity) {
@@ -231,7 +229,7 @@ public class PurchaseController implements Serializable {
         entity.setTotalPrice(dto.getTotalPrice());
     }
 
-    public void uiSavePurchase(boolean shouldPrint) {
+    public void uiSavePurchase(boolean shouldPrint) throws IOException {
         fixUpPPs(one, two, three, four, five, six);
         calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
@@ -244,14 +242,16 @@ public class PurchaseController implements Serializable {
             copyPPDataToEntityPPs(entity, one, two, three, four, five, six);
             copyBasicPurchaseDataToEntity(entity);
             evaluateAndSetPurchaseRemainingPrice(entity);
-            entity = service.savePurchase(entity);
-            dto = entity.toDTO(true, false, true);
+            service.savePurchase(entity);
         } else { // ha elso rogzites
             dto.setRemainingPrice(dto.getTotalPrice());
-            service.savePurchase(dto);
+            service.savePurchase(dto).toDTO(true, true, true);
         }
 
-        pdf(shouldPrint);
+        if (shouldPrint) {
+            pdf();
+        }
+
         getAllPurchases();
         newPurchase();
     }

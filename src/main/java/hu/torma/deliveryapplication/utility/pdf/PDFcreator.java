@@ -13,13 +13,14 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.TimeZone;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
 @Service
@@ -190,7 +191,7 @@ public class PDFcreator {
         //avg price e40
 
         Double avgprice = (double) Math.round((totalp / (double) totalw * 100)) / 100;
-        log.info(avgprice + "");
+
         createRowCol(39, 4, avgprice);
         //f40
         var f40 = (int) Math.round(totalw * avgprice);
@@ -206,47 +207,64 @@ public class PDFcreator {
         createRowCol(40, 4, e41);
     }
 
-    public StreamedContent createDownload(PurchaseDTO pur) {
+    public StreamedContent createDownload(PurchaseDTO pur) throws IOException {
         populateExcel(pur);
 
-        try {
-           /*
-            String modifiedFileName = "merlegelesi_jegy_" + pur.getId() + ".xlsx";
-            var modifiedPath = new ClassPathResource(modifiedFileName, this.getClass().getClassLoader());
-            File modifiedFile = new File(modifiedPath.getPath());
-*/
-
-            String currentDirectory = System.getProperty("user.dir");
-            String modifiedFileName = "merlegelesi_jegy_" + pur.getId() + ".xlsx";
-            String filePath = currentDirectory + File.separator + modifiedFileName;
-
-            // Create the file object
-            File modifiedFile = new File(filePath);
-            log.info("Filepaths of excel are: \n" + filePath + "\n" + currentDirectory);
-            //FileOutputStream fos = new FileOutputStream(modifiedFile);
-            FileOutputStream fos = new FileOutputStream(modifiedFile);
-            workbook.write(fos);
-
-            fos.close();
-
-            // create the StreamedContent object
-            InputStream stream = new FileInputStream(modifiedFile);
-            StreamedContent file = DefaultStreamedContent.builder()
-                    .stream(() -> stream)
-                    .contentType("application/vnd.ms-excel")
-                    .name(modifiedFileName)
-                    .build();
-
-            // delete the modified file after it has been downloaded
-            modifiedFile.delete();
-
-            // close the workbook and return the StreamedContent object
-
-            return file;
-        } catch (Exception e) {
-            e.printStackTrace();
+        String todayAsString = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        String currentDirectory = System.getProperty("user.dir");
+        String modifiedFileName = "merlegelesi_jegy_"
+                                 + pur.getVendor().getVendorName().replace(" ", "_")
+                                 + "_" + todayAsString;
+        if (pur.getId() != null) {
+            modifiedFileName = modifiedFileName + "_" + pur.getId();
         }
-        return null;
+        modifiedFileName = modifiedFileName + ".xlsx";
+
+        String filePath = currentDirectory + File.separator + modifiedFileName;
+
+        File modifiedFile = new File(filePath);
+        log.info("Filepaths of excel are: \n" + filePath + "\n" + currentDirectory);
+
+        try (FileOutputStream fos = new FileOutputStream(modifiedFile)) {
+            workbook.write(fos);
+        }
+
+        InputStream stream = new FileInputStream(modifiedFile);
+
+        StreamedContent file = DefaultStreamedContent.builder()
+                .stream(() -> {
+                    try {
+                        return new FileInputStream(modifiedFile);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                        return null;
+                    }
+                })
+                .contentType("application/vnd.ms-excel")
+                .name(modifiedFileName)
+                .build();
+
+        scheduleFileDeletion(modifiedFile, stream);
+
+        return file;
+    }
+
+    private void scheduleFileDeletion(File file, InputStream stream) {
+        Executors.newSingleThreadScheduledExecutor().schedule(() -> {
+            try {
+                if (stream != null) {
+                    stream.close();
+                }
+
+                if (file.exists() && file.delete()) {
+                    log.info("Temporary file deleted: " + file.getName());
+                } else {
+                    log.warning("Failed to delete temporary file: " + file.getName());
+                }
+            } catch (IOException e) {
+                log.warning("Error closing stream or deleting file: " + e.getMessage());
+            }
+        }, 1, TimeUnit.MINUTES);
     }
 
 }

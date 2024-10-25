@@ -36,7 +36,7 @@ public class PurchaseServiceImpl implements PurchaseService {
 
     @Override
     @Transactional
-    public void savePurchase(PurchaseDTO purchaseDto) {
+    public Purchase savePurchase(PurchaseDTO purchaseDto) {
         Purchase dbEntity = repo.save(purchaseDto.toEntity(true, false, false));
         List<PurchasedProduct> detachedPPs = purchaseDto
                 .getProductList()
@@ -47,6 +47,7 @@ public class PurchaseServiceImpl implements PurchaseService {
                     return dbPP;
                 }).toList();
         ppRepo.saveAll(detachedPPs);
+        return dbEntity;
     }
 
     @Override

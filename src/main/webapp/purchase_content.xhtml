@@ -358,7 +358,7 @@
             <p:commandButton value="Letöltés excelként" ajax="false" id="excelButton" style=" color: black; background-color: lightgray; width: 10em;height: 3em; border-color: black; padding: 0; border-radius: 0;font-size: 15px;"
                              onclick="PrimeFaces.monitorDownload(start, stop);"
                              icon="pi pi-arrow-down" styleClass="mr-2"
-                             actionListener="#{purchaseController.pdf(true)}">
+                             actionListener="#{purchaseController.pdf()}">
                 <p:fileDownload value="#{purchaseController.file}"/>
             </p:commandButton>
         </div>
