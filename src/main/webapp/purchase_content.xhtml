@@ -18,14 +18,15 @@
                 event.preventDefault();
                 var $this = $(event.target);
                 var index = parseFloat($this.attr('tabindex'));
+
+                $this.trigger('change');
+
                 if (index == 11) {
                     $('[tabindex=12]').click();
                     $('[tabindex=13]').click().focus().select();
-
+                } else {
+                    $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
                 }
-
-                $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
-
             }
         });
 

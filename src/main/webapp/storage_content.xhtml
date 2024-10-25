@@ -9,6 +9,7 @@
 
 <h:form id="storageForm" style="overflow-y: scroll; margin: 80px auto;">
     <h:outputStylesheet name="deliveries.css" library="css"/>
+    <f:event type="preRenderView" listener="#{storageController.init()}" />
 
 
     <p:panel id="filterPanel">

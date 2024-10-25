@@ -15,7 +15,9 @@ import org.springframework.context.annotation.DependsOn;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -42,10 +44,16 @@ public class StorageController {
 
     @PostConstruct
     public void init() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null && facesContext.isPostback()) {
+            return;
+        }
+
         newSnapshot();
-        storageSnapshotDTO.setDateFrom(Date.from(Instant.now().minus(7, ChronoUnit.DAYS)));
-        storageSnapshotDTO.setDateTo(Date.from(Instant.now()));
+        storageSnapshotDTO.setDateFrom(Date.from(Instant.now()));
+        storageSnapshotDTO.setDateTo(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
         updateCols();
+        resetDatesOf(storageSnapshotDTO);
         updateDTOs();
     }
 

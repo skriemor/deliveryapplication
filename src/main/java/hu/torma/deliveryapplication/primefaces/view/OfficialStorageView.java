@@ -17,6 +17,7 @@ import org.springframework.context.annotation.DependsOn;
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -51,12 +52,20 @@ public class OfficialStorageView {
 
     @PostConstruct
     public void init() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null && facesContext.isPostback()) {
+            return;
+        }
+
         newSnapshot();
         nulledDto = generateEmptySnapshot();
         prevDto = generateEmptySnapshot();
-        snapDto.setDateFrom(Date.from(Instant.now().minus(7, ChronoUnit.DAYS)));
-        snapDto.setDateTo(Date.from(Instant.now()));
+
+        snapDto.setDateFrom(Date.from(Instant.now()));
+        snapDto.setDateTo(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+
         updateCols();
+        resetDatesOf(snapDto);
         updateDTOs();
     }
 
