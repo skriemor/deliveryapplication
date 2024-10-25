@@ -577,7 +577,7 @@
                         <td>
                             <p:outputLabel id="snquantity1" value="#{completedPurchaseController.getTotalAmountOf(0)}"/><br/>
                         </td>
-                        <td align="center" rowspan="7" style="vertical-align: bottom">
+                        <td align="center" rowspan="8" style="vertical-align: bottom">
                             <p:outputLabel style="font-size: 1.5em" id="stotalPricePerProduct1"
                                            value="#{completedPurchaseController.sumOfRecordPrices} HUF"/>
                         </td>
@@ -647,9 +647,6 @@
                         </td>
                         <td align="center"><p:outputLabel style="font-size: 1em" id="grossAvgPriceV"
                                                           value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.getGrossAvgPriceV())}"/>
-                        </td>
-                        <td align="center"><p:outputLabel style="font-size: 1em" id="grossTotalV"
-                                                          value="#{ completedPurchaseController.getFormattedNumber(completedPurchaseController.grossTotalV)}"/>
                         </td>
                     </tr>
                     <tr>

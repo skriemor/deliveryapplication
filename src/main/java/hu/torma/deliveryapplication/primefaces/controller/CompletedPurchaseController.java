@@ -35,11 +35,8 @@ import java.util.stream.IntStream;
 @ManagedBean("completedPurchaseController")
 @DependsOn("dbInit")
 public class CompletedPurchaseController implements Serializable {
-    @Autowired StorageService sService;
     @Autowired SiteService siteService;
     @Autowired CompletedPurchaseService cService;
-    @Autowired ProductService pService;
-    @Autowired UnitService uService;
     @Autowired PurchaseService OPservice;
     @Autowired private PurchaseService purchaseService;
     @Autowired private CompletionRecordService recordService;
@@ -310,6 +307,7 @@ public class CompletedPurchaseController implements Serializable {
             recordsThatSubTheSelectedPurchase = new ArrayList<>();
             purchaseDTO = null;
             pItemForSelectOneMenu = null;
+            quantities.forEach(q -> q.setNum(0));
         }
         updateAvailablePurchases();
         selectionCounter = 0;
@@ -416,7 +414,8 @@ public class CompletedPurchaseController implements Serializable {
 
         recordDTO.setCompletedPurchase(this.dto);
 
-        recordDTO.setPrice(getSixTotal());
+        recordDTO.setPrice(grossTotal);
+
         tempRecords = new ArrayList<>(tempRecords.stream().filter(tempRecord -> !Objects.equals(recordDTO.getPurchaseId(), tempRecord.getPurchaseId())).toList());
         tempRecords.add(recordDTO);
         this.purchaseDTO = new PurchaseDTO();
