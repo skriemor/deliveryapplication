@@ -146,7 +146,14 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private Integer calculateDtoWeight() {
-        return IntStream.range(0, Math.min(6, tempRecords.size())).map(this::getTotalAmountOf).sum();
+        return tempRecords.stream().mapToInt(record ->
+                  record.getOne()
+                + record.getTwo()
+                + record.getThree()
+                + record.getFour()
+                + record.getFive()
+                + record.getSix()
+        ).sum();
     }
 
     private Double calculateDtoTotalV() {
