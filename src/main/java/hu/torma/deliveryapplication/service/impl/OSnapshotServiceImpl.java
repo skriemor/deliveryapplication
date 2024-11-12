@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -18,17 +19,14 @@ public class OSnapshotServiceImpl implements OSnapshotService {
 
     @Override
     public List<OfficialStorageSnapshotDTO> getAllSnapshots() {
-        return repo.findAll().stream().map(
+        return repo.findAllFetchAll().stream().map(
                 snap -> snap.toDTO(true)
         ).toList();
     }
 
-
-    @Transactional
     @Override
-    public boolean saveSnapshot(OfficialStorageSnapshotDTO dto1) {
-        repo.save(dto1.toEntity(true));
-        return true;
+    public OfficialStorageSnapshot saveSnapshot(OfficialStorageSnapshotDTO dto1) {
+        return repo.save(dto1.toEntity(true));
     }
 
     @Transactional
@@ -40,11 +38,16 @@ public class OSnapshotServiceImpl implements OSnapshotService {
 
     @Override
     public OfficialStorageSnapshotDTO getSnapshotById(Long id) {
-        return repo.findById(id).map(snap -> snap.toDTO(true)).orElse(null);
+        return repo.findByIdFetchAll(id).map(snap -> snap.toDTO(true)).orElse(null);
     }
 
     @Override
     public OfficialStorageSnapshotDTO getAnySnapshot() {
         return repo.findFirst().orElseGet(OfficialStorageSnapshot::new).toDTO(true);
+    }
+
+    @Override
+    public Optional<OfficialStorageSnapshotDTO> getById(final long id) {
+        return repo.findByIdFetchAll(id).map(snap -> snap.toDTO(true));
     }
 }

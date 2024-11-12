@@ -23,6 +23,7 @@ import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.Tuple;
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Date;
 import java.text.NumberFormat;
 import java.time.LocalDate;
@@ -34,18 +35,15 @@ import java.util.stream.IntStream;
 @ManagedBean("completedPurchaseController")
 @DependsOn("dbInit")
 public class CompletedPurchaseController implements Serializable {
-    @Autowired StorageService sService;
     @Autowired SiteService siteService;
     @Autowired CompletedPurchaseService cService;
-    @Autowired ProductService pService;
-    @Autowired UnitService uService;
     @Autowired PurchaseService OPservice;
     @Autowired private PurchaseService purchaseService;
     @Autowired private CompletionRecordService recordService;
     @Getter @Setter private PurchaseDTO pItemForSelectOneMenu;
     @Getter @Setter private List<CompletionRecordDTO> tempRecords;
     @Getter @Setter List<CompletionRecordDTO> recordsThatSubTheSelectedPurchase = new ArrayList<>();
-    List<CompletionRecordDTO> beforeEditList;
+    private List<CompletionRecordDTO> beforeEditList;
     @Setter private Integer selectionCounter;
     private final List<String> tempNamesList = new ArrayList<>(Arrays.asList("I.OSZTÁLYÚ", "II.OSZTÁLYÚ", "III.OSZTÁLYÚ", "IV.OSZTÁLYÚ", "GYÖKÉR", "IPARI"));
     @Getter @Setter private ArrayList<Quant> quantities = new ArrayList<>(Arrays.asList(new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0), new Quant(0)));
@@ -148,7 +146,14 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     private Integer calculateDtoWeight() {
-        return IntStream.range(0, Math.min(6, tempRecords.size())).map(this::getTotalAmountOf).sum();
+        return tempRecords.stream().mapToInt(record ->
+                  record.getOne()
+                + record.getTwo()
+                + record.getThree()
+                + record.getFour()
+                + record.getFive()
+                + record.getSix()
+        ).sum();
     }
 
     private Double calculateDtoTotalV() {
@@ -190,7 +195,11 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public String getFormattedNumber(double num) {
-        return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replace(",", " ");
+    }
+
+    public String getFormattedNumber(Integer num) {
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replace(",", " ");
     }
 
     public String getFormattedSixTotal() {
@@ -205,11 +214,12 @@ public class CompletedPurchaseController implements Serializable {
         Purchase purchase = purchaseService.getPurchaseEntityById(id);
         if (purchase != null) {
             Tuple priceAndSerials = purchaseService.getConcatedSerialsAndMaskedPricesById(id);
-            if (priceAndSerials != null) {
-                purchase.setRemainingPrice(purchase.getTotalPrice() - Double.parseDouble(priceAndSerials.get(0).toString()));
-                purchase.setReceiptId(priceAndSerials.get(1).toString());
-                purchaseService.savePurchase(purchase);
-            }
+            Double newRemainingPrice = priceAndSerials == null ? purchase.getTotalPrice() : purchase.getTotalPrice() - ((BigInteger) priceAndSerials.get(0)).doubleValue();
+            String newConcatenatedReceipt = priceAndSerials == null ? "" : (String) priceAndSerials.get(1);
+
+            purchase.setRemainingPrice(newRemainingPrice);
+            purchase.setReceiptId(newConcatenatedReceipt);
+            purchaseService.savePurchase(purchase);
         }
     }
 
@@ -253,8 +263,24 @@ public class CompletedPurchaseController implements Serializable {
         }
     }
 
+    private boolean validateCompletedPurchaseDto() {
+        if (this.dto == null) {
+            return false;
+        }
+
+        if (dto.getVendor() == null || dto.getVendor().getVendorName() == null || dto.getVendor().getTaxId() == null) {
+            showErrorMessageToUser("Kérem válasszon termelőt a fenti választóban!");
+            return false;
+        }
+
+        return true;
+    }
+
     public void uiSaveCompletedPurchase() {
-        if (this.dto == null) return;
+        if (!validateCompletedPurchaseDto()) {
+            return;
+        }
+
         CompletedPurchase entity = dto.toEntity(true, true);
 
         if (entity.getSite() == null) {
@@ -266,7 +292,7 @@ public class CompletedPurchaseController implements Serializable {
 
         List<CompletionRecord> recordsToSave = tempRecords.stream().map(record -> record.toEntity(true, true)).toList();
         entity.setRecords(recordsToSave);
-        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : dtoTotalV);
+        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : grossTotalV);
 
         CompletedPurchase purchaseFromDb = cService.saveCompletedPurchase(entity);
 
@@ -308,6 +334,7 @@ public class CompletedPurchaseController implements Serializable {
             recordsThatSubTheSelectedPurchase = new ArrayList<>();
             purchaseDTO = null;
             pItemForSelectOneMenu = null;
+            quantities.forEach(q -> q.setNum(0));
         }
         updateAvailablePurchases();
         selectionCounter = 0;
@@ -414,7 +441,8 @@ public class CompletedPurchaseController implements Serializable {
 
         recordDTO.setCompletedPurchase(this.dto);
 
-        recordDTO.setPrice(getSixTotal());
+        recordDTO.setPrice(sixTotal);
+
         tempRecords = new ArrayList<>(tempRecords.stream().filter(tempRecord -> !Objects.equals(recordDTO.getPurchaseId(), tempRecord.getPurchaseId())).toList());
         tempRecords.add(recordDTO);
         this.purchaseDTO = new PurchaseDTO();
@@ -481,5 +509,14 @@ public class CompletedPurchaseController implements Serializable {
        if (purchaseDTO != null && purchaseDTO.getId() != null) {
             recordsThatSubTheSelectedPurchase = recordService.findAllByPurchaseIdExclusive(purchaseDTO.getId(), dto == null || dto.getId() == null ? -1 : dto.getId());
        }
+    }
+
+    private void showErrorMessageToUser(String errorMsg) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Hiba",
+                        errorMsg
+                )
+        );
     }
 }

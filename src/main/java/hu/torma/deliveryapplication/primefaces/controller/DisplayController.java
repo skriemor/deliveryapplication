@@ -10,9 +10,11 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.DependsOn;
+
 import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import java.io.Serializable;
 import java.text.NumberFormat;
 import java.util.*;
@@ -21,10 +23,8 @@ import java.util.*;
 @ManagedBean("displayController")
 @DependsOn("dbInit")
 public class DisplayController implements Serializable {
-    @Autowired CompletionRecordService recordService;
-    @Getter @Setter List<MediatorData> mediatorData;
-    @Getter @Setter List<CompletionRecordDTO> CPRecords;
-    @Getter @Setter String numSerial1, numSerial2;
+    @Getter @Setter String numSerial1;
+    @Getter @Setter String numSerial2;
     @Getter @Setter MediatorDTO mediator;
     @Getter @Setter private CompletedPurchaseDTO CPSums;
     @Getter @Setter private boolean shouldFilterByPaper;
@@ -53,27 +53,61 @@ public class DisplayController implements Serializable {
     @Getter @Setter private List<SaleDTO> saleDTOS;
     @Getter @Setter private List<PurchaseDTO> mediatorDisplaysP;
     @Getter @Setter private List<CompletedPurchaseDTO> mediatorDisplaysCP;
-    @Getter @Setter PurchaseSumObj cpSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
-    @Getter @Setter PurchaseSumObj splitCPSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
-    @Getter @Setter PurchaseSumObj summage = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
-    @Getter @Setter PurchaseSumObj purchaseSumObj = new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
-    @Getter @Setter Boolean felvJegy;
+    @Getter @Setter private List<MediatorData> mediatorData;
+    @Getter @Setter private PurchaseSumObj cpSumObj = generateEmptyPurchaseSumObj();
+    @Getter @Setter private PurchaseSumObj splitCPSumObj = generateEmptyPurchaseSumObj();
+    @Getter @Setter private PurchaseSumObj summage = generateEmptyPurchaseSumObj();
+    @Getter @Setter private PurchaseSumObj purchaseSumObj = generateEmptyPurchaseSumObj();
+    @Getter @Setter private Boolean felvJegy;
 
-
-    @Autowired StorageService storageService;
     @Autowired CompletedPurchaseService CPService;
-    @Autowired ProductService productService;
     @Autowired MediatorService mediatorService;
-    @Autowired UnitService unitService;
     @Autowired PurchaseService purchaseService;
     @Autowired SaleService saleService;
 
     @PostConstruct
     public void init() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null && facesContext.isPostback()) {
+            return;
+        }
+
         felvJegy = false;
         purchaseDTOS = new ArrayList<>();
         CPDTOS = new ArrayList<>();
         saleDTOS = new ArrayList<>();
+        mediatorData = new ArrayList<>();
+
+        cpSumObj = generateEmptyPurchaseSumObj();
+        splitCPSumObj = generateEmptyPurchaseSumObj();
+        summage = generateEmptyPurchaseSumObj();
+        purchaseSumObj = generateEmptyPurchaseSumObj();
+
+        numSerial1 = null;
+        numSerial2 = null;
+        mediator = null;
+        CPSums = null;
+        shouldFilterByPaper = false;
+        paidOnly = null;
+        filterPaymentMethodCP = null;
+        filterName = null;
+        filterName4 = null;
+        filterName2 = null;
+        saleSumPojo = null;
+        filterCurrency2 = null;
+        filterPaper2 = null;
+        filterUnpaidOnly2 = null;
+        filterLetaiOnly2 = null;
+        filterGlobalGapOnly2 = null;
+        fullyPaidFilter = null;
+        filterDateFrom = null;
+        filterDateFrom2 = null;
+        filterDateFrom3 = null;
+        filterDateFrom4 = null;
+        filterDateTo = null;
+        filterDateTo2 = null;
+        filterDateTo3 = null;
+        filterDateTo4 = null;
     }
 
     public List<PurchaseDTO> refreshPurchaseDTOS() {
@@ -128,12 +162,12 @@ public class DisplayController implements Serializable {
 
         for (var pur : pDTOs) {
             List<PurchasedProductDTO> productList = pur.getProductList();
-            ones +=     productList.get(0).getQuantity2();
-            twos +=     productList.get(1).getQuantity2();
-            threes +=   productList.get(2).getQuantity2();
-            fours +=    productList.get(3).getQuantity2();
-            fives +=    productList.get(4).getQuantity2();
-            sixes +=    productList.get(5).getQuantity2();
+            ones += productList.get(0).getQuantity2();
+            twos += productList.get(1).getQuantity2();
+            threes += productList.get(2).getQuantity2();
+            fours += productList.get(3).getQuantity2();
+            fives += productList.get(4).getQuantity2();
+            sixes += productList.get(5).getQuantity2();
 
             totalPriceSum += pur.getTotalPrice();
             remainingpriceSum += pur.getRemainingPrice();
@@ -154,8 +188,8 @@ public class DisplayController implements Serializable {
 
         var recs = cps.stream()
                 .flatMap(cp -> Optional.ofNullable(cp.getRecords())
-                .stream()
-                .flatMap(List::stream))
+                        .stream()
+                        .flatMap(List::stream))
                 .toList();
 
 
@@ -181,5 +215,9 @@ public class DisplayController implements Serializable {
     public Integer getSumOfSaleSum(SaleSumPojo obj) {
         if (obj == null) return 0;
         return obj.getOne() + obj.getTwo() + obj.getThree() + obj.getFour() + obj.getFive() + obj.getSix();
+    }
+
+    public PurchaseSumObj generateEmptyPurchaseSumObj() {
+        return new PurchaseSumObj(0, 0, 0, 0, 0, 0, 0.0, 0.0);
     }
 }

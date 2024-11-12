@@ -21,6 +21,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
 import javax.persistence.Tuple;
+import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Date;
 import java.text.NumberFormat;
@@ -38,9 +39,7 @@ import java.util.stream.Stream;
 public class PurchaseController implements Serializable {
     @Autowired CompletionRecordService recordService;
     @Autowired private PDFcreator pdFcreator;
-    @Autowired StorageService sService;
     @Autowired ProductService pService;
-    @Autowired UnitService uService;
     @Autowired PurchaseService service;
     @Autowired PurchasedProductService purchasedProductService;
     @Autowired SiteService siteService;
@@ -185,14 +184,13 @@ public class PurchaseController implements Serializable {
         });
     }
 
-    public void pdf(boolean shouldPrint) {
-        if (shouldPrint) {
-            if (dto.getProductList() == null) {
-                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti!"));
-                return;
-            }
-            file = pdFcreator.createDownload(dto);
+    public void pdf() throws IOException {
+        if (dto.getProductList() == null) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "HIBA", "Mentse a jegyet dátummal együtt, mielőtt letölti, vagy használja a Mentés nyomtatással funciót!"));
+            file = null; // ne töltse le az előzőt
+            throw new RuntimeException("Nyomtatáshiba: a terméklista üres.");
         }
+        file = pdFcreator.createDownload(dto);
     }
 
     private void evaluateAndSetPurchaseRemainingPrice(Purchase entity) {
@@ -228,12 +226,15 @@ public class PurchaseController implements Serializable {
         entity.setNotes(dto.getNotes());
         entity.setReceiptDate(dto.getReceiptDate());
         entity.setRemainingPrice(dto.getRemainingPrice());
-        entity.setTotalPrice(dto.getTotalPrice());
+        entity.setTotalPrice(getSixTotal());
     }
 
-    public void uiSavePurchase(boolean shouldPrint) {
+    public void uiSavePurchase(boolean shouldPrint) throws IOException {
+        if (!validatePurchaseDto()) {
+            return;
+        }
+
         fixUpPPs(one, two, three, four, five, six);
-        calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
         preparePurchaseSite();
 
@@ -244,20 +245,23 @@ public class PurchaseController implements Serializable {
             copyPPDataToEntityPPs(entity, one, two, three, four, five, six);
             copyBasicPurchaseDataToEntity(entity);
             evaluateAndSetPurchaseRemainingPrice(entity);
-            entity = service.savePurchase(entity);
-            dto = entity.toDTO(true, false, true);
+            service.savePurchase(entity);
         } else { // ha elso rogzites
-            dto.setRemainingPrice(dto.getTotalPrice());
-            service.savePurchase(dto);
+            dto.setRemainingPrice(getSixTotal());
+            dto.setTotalPrice(dto.getRemainingPrice());
+            service.savePurchase(dto).toDTO(true, true, true);
         }
 
-        pdf(shouldPrint);
+        if (shouldPrint) {
+            pdf();
+        }
+
         getAllPurchases();
         newPurchase();
     }
 
     private void calculateAndSetTotalPrice() {
-        dto.setTotalPrice(dto.getProductList().stream().mapToDouble(PurchasedProductDTO::getTotalPrice).sum());
+        dto.setTotalPrice(getSixTotal());
     }
 
     public void deletePurchase() {
@@ -341,5 +345,27 @@ public class PurchaseController implements Serializable {
         dto = service.getPurchaseAndFetchPPsById(event.getObject().getId());
         isSafeToDelete = !recordService.existsByPurchaseId(dto.getId());
         editSix();
+    }
+
+    private void showErrorMessageToUser(String errorMsg) {
+        FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(
+                        FacesMessage.SEVERITY_ERROR,
+                        "Hiba",
+                        errorMsg
+                )
+        );
+    }
+
+    private boolean validatePurchaseDto() {
+        if (this.dto == null) {
+            return false;
+        }
+
+        if (dto.getVendor() == null || dto.getVendor().getVendorName() == null || dto.getVendor().getTaxId() == null) {
+            showErrorMessageToUser("Kérem válasszon termelőt a fenti választóban!");
+            return false;
+        }
+
+        return true;
     }
 }

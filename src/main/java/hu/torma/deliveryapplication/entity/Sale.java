@@ -86,7 +86,7 @@ public class Sale {
     private String currency;
 
     @Column(nullable = false, name = "price")
-    private Double price;
+    private Long price;
 
     @Column(nullable = true, name = "letai")
     private Boolean letai;

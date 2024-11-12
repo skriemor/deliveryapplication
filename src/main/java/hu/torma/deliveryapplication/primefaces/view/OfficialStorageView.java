@@ -2,18 +2,22 @@ package hu.torma.deliveryapplication.primefaces.view;
 
 
 import hu.torma.deliveryapplication.DTO.OfficialStorageSnapshotDTO;
+import hu.torma.deliveryapplication.entity.OfficialStorageSnapshot;
 import hu.torma.deliveryapplication.primefaces.sumutils.ProductWithQuantity;
+import hu.torma.deliveryapplication.repository.OfficialStorageSnapshotRepository;
 import hu.torma.deliveryapplication.service.CompletedPurchaseService;
 import hu.torma.deliveryapplication.service.OSnapshotService;
 import hu.torma.deliveryapplication.service.SaleService;
 import lombok.Getter;
 import lombok.Setter;
 import org.primefaces.event.SelectEvent;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.context.annotation.DependsOn;
 
+import javax.annotation.ManagedBean;
 import javax.annotation.PostConstruct;
+import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -23,7 +27,9 @@ import java.util.logging.Logger;
 
 @Getter
 @Setter
-@Controller
+@ViewScoped
+@ManagedBean("officialStorageView")
+@DependsOn("dbInit")
 public class OfficialStorageView {
     /**
      * The new displays for official storage
@@ -41,15 +47,25 @@ public class OfficialStorageView {
     OSnapshotService snapshotService;
     @Autowired
     SaleService saleService;
+    @Autowired
+    private OfficialStorageSnapshotRepository officialStorageSnapshotRepository;
 
     @PostConstruct
     public void init() {
+        FacesContext facesContext = FacesContext.getCurrentInstance();
+        if (facesContext != null && facesContext.isPostback()) {
+            return;
+        }
+
         newSnapshot();
         nulledDto = generateEmptySnapshot();
         prevDto = generateEmptySnapshot();
-        snapDto.setDateFrom(Date.from(Instant.now().minus(7, ChronoUnit.DAYS)));
-        snapDto.setDateTo(Date.from(Instant.now()));
+
+        snapDto.setDateFrom(Date.from(Instant.now()));
+        snapDto.setDateTo(Date.from(Instant.now().minus(1, ChronoUnit.DAYS)));
+
         updateCols();
+        resetDatesOf(snapDto);
         updateDTOs();
     }
 
@@ -59,8 +75,6 @@ public class OfficialStorageView {
     }
     public void uiResetFields() {
         newSnapshot();
-        snapDto.setDateFrom(Date.from(Instant.now()));
-        snapDto.setDateTo(Date.from(Instant.now()));
         prevDto = generateEmptySnapshot();
         updateCols();
         resetDatesOf(snapDto);
@@ -92,6 +106,7 @@ public class OfficialStorageView {
         }
         return this.prevDto;
     }
+
     public void updateCols() {
         updatePurchaseColumn();
         updateSaleColumn();
@@ -109,12 +124,18 @@ public class OfficialStorageView {
 
 
     public void selectSnapshot(SelectEvent<OfficialStorageSnapshotDTO> snapDto) {
-        BeanUtils.copyProperties(snapDto.getObject(), this.snapDto);
-        if (snapDto.getObject().getPrevious() != null){
-            BeanUtils.copyProperties(snapDto.getObject().getPrevious(), this.getPrevDto());
+        OfficialStorageSnapshotDTO dto = snapshotService.getById(snapDto.getObject().getId()).orElseThrow(
+                () -> new RuntimeException("rowSelect id null or not found in db (OFFICIALSTRG)")
+        );
+
+        this.snapDto = dto;
+
+        if (dto.getPrevious() != null){
+            this.prevDto = dto.getPrevious();
         } else {
             this.prevDto = generateEmptySnapshot();
         }
+
         updateCols();
     }
 
@@ -137,13 +158,14 @@ public class OfficialStorageView {
     }
 
     public void saveSnapshot() {
-        if (snapDto.getDateFrom() == null
-                || snapDto.getDateTo() == null) {
+        if (snapDto.getDateFrom() == null || snapDto.getDateTo() == null) {
             return;
         }
-        if (prevDto != null && prevDto.getId() != null && prevDto.getId() != 0L){
+
+        if (prevDto != null && prevDto.getId() != null && !prevDto.getId().equals(snapDto.getId())) {
             snapDto.setPrevious(prevDto);
         }
+
         calculateAndSetSum(snapDto);
         snapshotService.saveSnapshot(snapDto);
         updateDTOs();
