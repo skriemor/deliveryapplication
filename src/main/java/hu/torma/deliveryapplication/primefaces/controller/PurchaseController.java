@@ -226,7 +226,7 @@ public class PurchaseController implements Serializable {
         entity.setNotes(dto.getNotes());
         entity.setReceiptDate(dto.getReceiptDate());
         entity.setRemainingPrice(dto.getRemainingPrice());
-        entity.setTotalPrice(getGrossTotal());
+        entity.setTotalPrice(getSixTotal());
     }
 
     public void uiSavePurchase(boolean shouldPrint) throws IOException {
@@ -235,7 +235,6 @@ public class PurchaseController implements Serializable {
         }
 
         fixUpPPs(one, two, three, four, five, six);
-        calculateAndSetTotalPrice();
         dto.setBookedDate(new Date(System.currentTimeMillis()));
         preparePurchaseSite();
 
@@ -248,8 +247,8 @@ public class PurchaseController implements Serializable {
             evaluateAndSetPurchaseRemainingPrice(entity);
             service.savePurchase(entity);
         } else { // ha elso rogzites
-            dto.setRemainingPrice(getGrossTotal());
-            dto.setTotalPrice(getGrossTotal());
+            dto.setRemainingPrice(getSixTotal());
+            dto.setTotalPrice(dto.getRemainingPrice());
             service.savePurchase(dto).toDTO(true, true, true);
         }
 
@@ -262,7 +261,7 @@ public class PurchaseController implements Serializable {
     }
 
     private void calculateAndSetTotalPrice() {
-        dto.setTotalPrice(dto.getProductList().stream().mapToDouble(PurchasedProductDTO::getTotalPrice).sum());
+        dto.setTotalPrice(getSixTotal());
     }
 
     public void deletePurchase() {

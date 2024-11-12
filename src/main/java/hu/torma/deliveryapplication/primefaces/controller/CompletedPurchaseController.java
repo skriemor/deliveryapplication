@@ -195,7 +195,11 @@ public class CompletedPurchaseController implements Serializable {
     }
 
     public String getFormattedNumber(double num) {
-        return NumberFormat.getNumberInstance(Locale.US).format(num).replaceAll(",", " ");
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replace(",", " ");
+    }
+
+    public String getFormattedNumber(Integer num) {
+        return NumberFormat.getNumberInstance(Locale.US).format(num).replace(",", " ");
     }
 
     public String getFormattedSixTotal() {
@@ -288,7 +292,7 @@ public class CompletedPurchaseController implements Serializable {
 
         List<CompletionRecord> recordsToSave = tempRecords.stream().map(record -> record.toEntity(true, true)).toList();
         entity.setRecords(recordsToSave);
-        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : dtoTotalV);
+        entity.setTotalPrice(tempRecords.isEmpty() ? 0.0  : grossTotalV);
 
         CompletedPurchase purchaseFromDb = cService.saveCompletedPurchase(entity);
 
@@ -437,7 +441,7 @@ public class CompletedPurchaseController implements Serializable {
 
         recordDTO.setCompletedPurchase(this.dto);
 
-        recordDTO.setPrice(grossTotal);
+        recordDTO.setPrice(sixTotal);
 
         tempRecords = new ArrayList<>(tempRecords.stream().filter(tempRecord -> !Objects.equals(recordDTO.getPurchaseId(), tempRecord.getPurchaseId())).toList());
         tempRecords.add(recordDTO);
