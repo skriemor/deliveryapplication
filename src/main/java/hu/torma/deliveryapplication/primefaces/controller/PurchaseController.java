@@ -92,7 +92,7 @@ public class PurchaseController implements Serializable {
     public Double calculateSetAndGetTotalPriceOf(PurchasedProductDTO dto_) {
         if (dto_.getQuantity() == null || dto_.getUnitPrice() == null || dto_.getCorrPercent() == null) return 0.0;
         dto_.setQuantity2((int) (dto_.getQuantity() * ((100 - dto_.getCorrPercent()) / 100.0)));
-        Double sum = (dto_.getUnitPrice() * dto_.getQuantity2() * (1 + (0.01 * dto_.getCorrPercent())));
+        Double sum = (dto_.getUnitPrice() * dto_.getQuantity2() * 1.00);
         dto_.setTotalPrice(sum);
         return sum;
     }
@@ -101,7 +101,7 @@ public class PurchaseController implements Serializable {
         return Arrays.stream(dtos).mapToDouble(d -> {
             if (d.getQuantity() != null && d.getCorrPercent() != null && d.getUnitPrice() != null) {
                 d.setQuantity2(getNetOf(d));
-                d.setTotalPrice((d.getUnitPrice() * d.getQuantity2() * (1 + (0.01 * d.getCorrPercent()))));
+                d.setTotalPrice((d.getUnitPrice() * d.getQuantity2() * 1.00));
                 return d.getTotalPrice();
             }
             return 0;
