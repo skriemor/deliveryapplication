@@ -99,7 +99,7 @@ public class PurchaseController implements Serializable {
 
     private Double setAndSumPurchasedProductDtoPrices(PurchasedProductDTO... dtos) {
         return Arrays.stream(dtos).mapToDouble(d -> {
-            if (d.getQuantity() != null && d.getProduct().getCompPercent() != null && d.getUnitPrice() != null) {
+            if (d.getQuantity() != null && d.getCorrPercent() != null && d.getUnitPrice() != null) {
                 d.setQuantity2(getNetOf(d));
                 d.setTotalPrice((d.getUnitPrice() * d.getQuantity2() * (1 + (0.01 * one.getProduct().getCompPercent()))));
                 return d.getTotalPrice();
