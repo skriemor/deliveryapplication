@@ -58,6 +58,7 @@ public interface CompletedPurchaseRepository extends JpaRepository<CompletedPurc
         select DISTINCT cp
         from  CompletedPurchase cp
         LEFT JOIN FETCH cp.vendor v
+        LEFT JOIN FETCH cp.records r
         where (v.mediator.id = ?3 OR ?3 is null)
         and (
             (?1 is not null and ?2 is not null and cp.receiptDate between ?1  and ?2)
