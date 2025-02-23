@@ -8,6 +8,8 @@
       xmlns:p="http://primefaces.org/ui">
 
 <h:outputScript library="js" name="updateSums.js" />
+<h:outputScript library="js" name="listingsScripts.js" />
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" type="application/javascript"></script>
 
 <h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
     <f:event type="preRenderView" listener="#{displayController.init()}" />
@@ -78,7 +80,7 @@
 
 
             </p:panel>
-
+            <p:commandButton value="Nyomtatás Excelként" onclick="exportToExcel()" style="margin-top: 10px;" />
             <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList" tableStyle="width: auto"
                          style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
@@ -98,8 +100,6 @@
                         <p:column headerText="GYÖKÉR"/>
                         <p:column headerText="IPARI"/>
                         <p:column headerText="VÉTELÁR" colspan="2"/>
-
-
                     </p:row>
                     <p:row>
                         <p:column colspan="6" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.cpSumObj)} kg" style="text-align: end"/>

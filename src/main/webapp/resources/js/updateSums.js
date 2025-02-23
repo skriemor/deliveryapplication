@@ -9,7 +9,6 @@ function updateColumnSums() {
         document.querySelectorAll("[id$='CPList'] tbody tr").forEach(function (row, rowIndex) {
             let cells = row.querySelectorAll("td");
 
-            // Skip rows that have only 1 cell (which means "Nincs találat" is showing)
             if (cells.length < 12) {
                 console.warn(`Skipping row ${rowIndex} because it has ${cells.length} columns`);
                 return;
@@ -37,7 +36,6 @@ function updateColumnSums() {
     }
 }
 
-// ✅ Run on page load
 document.addEventListener("DOMContentLoaded", function () {
     updateColumnSums();
 });
