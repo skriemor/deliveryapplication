@@ -183,7 +183,7 @@ public class CompletedPurchaseController implements Serializable {
     public Integer getPriceOf(int i) {
         if (quantities.get(i).getNum() == 0 || purchaseDTO == null || purchaseDTO.getProductList() == null) return 0;
         var g = purchaseDTO.getProductList().get(i);
-        return (int) (g.getUnitPrice() * quantities.get(i).getNum() * (1 + (0.01 * g.getProduct().getCompPercent())));
+        return (int) (g.getUnitPrice() * quantities.get(i).getNum() * 1.00);
     }
 
     public String getFormattedPriceOf(int g) {

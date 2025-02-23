@@ -64,7 +64,7 @@ public class CompletedPurchaseServiceImpl implements CompletedPurchaseService {
 
     @Override
     public List<CompletedPurchaseDTO> getCompletedPurchasesByMediatorIdAndDates(Date startDate, Date endDate, String mediatorId) {
-        return new ArrayList<CompletedPurchaseDTO>(
+        return new ArrayList<>(
                 repo.getCompletedPurchasesByMediatorAndDate(startDate, endDate, mediatorId).stream().map(
                         cp -> cp.toDTO(true)
                 ).toList()

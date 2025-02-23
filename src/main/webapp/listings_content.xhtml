@@ -7,6 +7,10 @@
       xmlns:f="http://java.sun.com/jsf/core"
       xmlns:p="http://primefaces.org/ui">
 
+<h:outputScript library="js" name="updateSums.js" />
+<h:outputScript library="js" name="listingsScripts.js" />
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" type="application/javascript"></script>
+
 <h:form id="quantityForm" style="overflow-y: scroll; margin: 80px auto;">
     <f:event type="preRenderView" listener="#{displayController.init()}" />
     <h:outputStylesheet name="deliveries.css" library="css"/>
@@ -70,9 +74,13 @@
                     </tr>
                 </table>
                 <p:commandButton id="doFilterButton4" value="SZŰRÉS"
-                                 actionListener="#{displayController.refreshCPDTOS()}" update="CPList"/>
-            </p:panel>
+                                 actionListener="#{displayController.refreshCPDTOS()}"
+                                 update="CPList"
+                                 oncomplete="updateColumnSums()"/>
 
+
+            </p:panel>
+            <p:commandButton value="Nyomtatás Excelként" onclick="exportToExcel()" style="margin-top: 10px;" />
             <p:dataTable var="cPurchase" value="#{displayController.CPDTOS}" id="CPList" tableStyle="width: auto"
                          style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
@@ -84,6 +92,7 @@
                         <p:column headerText="Felv. dátum" sortOrder="asc" sortBy="#{cPurchase.receiptDate}"/>
                         <p:column headerText="Fiz. dátum"/>
                         <p:column headerText="Fiz.Mód"/>
+                        <p:column headerText="Összsúly"/>
                         <p:column headerText="I.OSZT"/>
                         <p:column headerText="II.OSZT"/>
                         <p:column headerText="III.OSZT"/>
@@ -91,11 +100,9 @@
                         <p:column headerText="GYÖKÉR"/>
                         <p:column headerText="IPARI"/>
                         <p:column headerText="VÉTELÁR" colspan="2"/>
-
-
                     </p:row>
                     <p:row>
-                        <p:column colspan="5" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.cpSumObj)} kg" style="text-align: end"/>
+                        <p:column colspan="6" headerText="Összesen: #{displayController.getSumOfSumObj(displayController.cpSumObj)} kg" style="text-align: end"/>
                         <p:column headerText="#{displayController.cpSumObj.one}"/>
                         <p:column headerText="#{displayController.cpSumObj.two}"/>
                         <p:column headerText="#{displayController.cpSumObj.three}"/>
@@ -129,6 +136,9 @@
                     <h:outputText value="#{cPurchase.paymentMethod}"/>
                 </p:column>
                 <p:column>
+                    <h:outputText class="sixSum">0</h:outputText>
+                </p:column>
+                <p:column>
                     <h:outputText value="#{cPurchase.one}"/>
                 </p:column>
                 <p:column headerText="II.OSZT">
@@ -150,7 +160,11 @@
                     <h:outputText value="#{cPurchase.formattedTotalPrice} HUF"/>
                 </p:column>
 
+                <p:ajax event="sort" oncomplete="updateColumnSums()" />
+                <p:ajax event="filter" oncomplete="updateColumnSums()" />
             </p:dataTable>
+
+            <p:remoteCommand name="calculateColumnSums" oncomplete="updateColumnSums()" />
         </p:tab>
         <p:tab title="Eladások">
             <p:panel id="filterPanelSale" menuTitle="Szűrők">
@@ -236,11 +250,12 @@
                                  actionListener="#{displayController.refreshSaleDTOS()}" update="saleList"/>
             </p:panel>
             <p:dataTable var="sale" value="#{displayController.saleDTOS}" id="saleList" tableStyle="width: auto"
-                         lazy="false"
+                         lazy="false" rowIndexVar="rowIndex"
                          style="overflow-x: scroll; margin-bottom: 5em" allowUnsorting="true" sortMode="single"
                          emptyMessage="Nincs találat" resizableColumns="true">
                 <p:columnGroup type="header">
                     <p:row>
+                        <p:column headerText="Sorszám"/>
                         <p:column headerText="Számla Sorszáma"/>
                         <p:column headerText="Vásárló neve"/>
                         <p:column headerText="Számla kelt." sortBy="#{sale.receiptDate}" sortOrder="asc"/>
@@ -260,7 +275,7 @@
 
                     </p:row>
                     <p:row>
-                        <p:column colspan="3" headerText="Összesen: #{displayController.getSumOfSaleSum(displayController.saleSumPojo)} kg" style="text-align: end"/>
+                        <p:column colspan="4" headerText="Összesen: #{displayController.getSumOfSaleSum(displayController.saleSumPojo)} kg" style="text-align: end"/>
                         <p:column colspan="2" rowspan="2" headerText="#{displayController.saleSumPojo.priceTotal}"/>
                         <p:column headerText="#{displayController.saleSumPojo.one}"/>
                         <p:column headerText="#{displayController.saleSumPojo.two}"/>
@@ -274,6 +289,10 @@
                     </p:row>
 
                 </p:columnGroup>
+
+                <p:column headerText="Sorszám" width="3em">
+                    <h:outputText value="#{rowIndex + 1}" />
+                </p:column>
                 <p:column headerText="Számla Sorszáma" width="5em">
                     <h:outputText value="#{sale.receiptId}" id="saleId"/>
                 </p:column>

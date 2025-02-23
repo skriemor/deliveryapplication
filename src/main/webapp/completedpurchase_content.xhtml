@@ -268,6 +268,8 @@
                                          required="false" tabindex="8">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg price1"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(0)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
 
 
@@ -290,6 +292,8 @@
                                          required="false" tabindex="9">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price2"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(1)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
                         <td align="center">
                             <p:outputLabel id="price2" value="#{completedPurchaseController.getFormattedPriceOf(1)}Ft"/>
@@ -310,6 +314,8 @@
                                          required="false" tabindex="10">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price3"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(2)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
                         <td align="center">
                             <p:outputLabel id="price3" value="#{completedPurchaseController.getFormattedPriceOf(2)}Ft"/>
@@ -330,6 +336,8 @@
                                          required="false" tabindex="11">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price4"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(3)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
                         <td align="center">
                             <p:outputLabel id="price4" value="#{completedPurchaseController.getFormattedPriceOf(3)}Ft"/>
@@ -351,6 +359,8 @@
                                          required="false" tabindex="12">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price5"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(4)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
                         <td align="center">
                             <p:outputLabel id="price5" value="#{completedPurchaseController.getFormattedPriceOf(4)}Ft"/>
@@ -371,6 +381,8 @@
                                          required="false" tabindex="13">
                             <p:ajax event="keyup" listener="#{completedPurchaseController.reInitCalculatedNumbers()}"
                                     update="totalPricePerProduct1 totalNet netAvgPrice diff grossAvgPrice grossTotal netAvg  price6"/>
+                            <f:attribute name="maxQuantity" value="#{completedPurchaseController.getMaxQuantOf(5)}"/>
+                            <f:validator validatorId="quantityValidator"/>
                         </p:inputText><br/></td>
                         <td align="center">
                             <p:outputLabel id="price6" value="#{completedPurchaseController.getFormattedPriceOf(5)}Ft"/>
@@ -380,7 +392,7 @@
                         <td><p:outputLabel value="Összesen:"/></td>
                         <td colspan="2"></td>
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalNet"
-                                                          value="#{completedPurchaseController.getFormattedNumber(completedPurchaseController.netSum)} kg"/></td>
+                                                          value="#{completedPurchaseController.netSum.intValue()} kg"/></td>
                         <td align="center"><p:outputLabel style="font-size: 1.5em" id="totalPricePerProduct1"
                                                           value="#{completedPurchaseController.getFormattedSixTotal()} HUF"/>
                         </td>
@@ -425,6 +437,7 @@
                                  style=" color: black; background-color: lightgray; width: 10em;height: 2.6em; border-color: black">
 
                     <f:ajax execute="purchaseForm:cPTabs:fixProdcutPanel"
+                            process="purchaseForm:cPTabs:fixProductPanel"
                             render="purchaseList purchaseForm:cPTabs:fixProductPanel purchaseForm:cPTabs:cPPanel purchaseForm:cPTabs:recordList purchaseForm:cPTabs:recordList2  pur"/>
                 </h:commandButton>
                 <h:commandButton value="következő"
@@ -631,7 +644,7 @@
                     <tr>
                         <td colspan="3"><p:outputLabel value="Összesen:"/></td>
 
-                        <td align="center"><p:outputLabel style="font-size: 1.5em" id="stotalNet" value="#{completedPurchaseController.getFormattedNumber(completedPurchaseController.getDtoWeight())} kg"/>
+                        <td align="center"><p:outputLabel style="font-size: 1.5em" id="stotalNet" value="#{completedPurchaseController.getDtoWeight().intValue()} kg"/>
                         </td>
 
                     </tr>
