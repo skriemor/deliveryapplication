@@ -12,94 +12,8 @@
 </f:metadata>
 
 <h:form id="saleForm" style="overflow-y: scroll; margin: 80px auto;">
-
-    <script type="application/javascript">
-        $('#saleForm').on('keydown', 'input', function (event) {
-            if (event.which == 13) {
-                event.preventDefault();
-                var $this = $(event.target);
-                var index = parseFloat($this.attr('tabindex'));
-                if (index == 13) {
-                    $('[tabindex=14]').click();
-                    $('[tabindex=15]').click().focus().select();
-
-                }
-
-                $('[tabindex="' + (index + 1).toString() + '"]').focus().select();
-
-            }
-        });
-
-        function funcForWindowPopup()
-        {
-            var popup = null;
-            popup = window.open("buyers_no_menu.xhtml", "popup", "toolbar=no,menubar=no,scrollbars=yes,location=no,left=350,top=50,width=1200, height=768");
-            popup.openerFormId = "vendorForm";
-            popup.focus();
-        }
-
-    </script>
-    <style type="text/css">
-        body .ui-inputfield {
-            color: #495057;
-            background: #fff;
-            padding: .2rem .2rem;
-            border: 1px solid #ced4da;
-            outline: 0 none;
-            font-size: 1rem;
-            border-radius: 4px;
-            transition: background-color .2s,color .2s,border-color .2s,box-shadow .2s,opacity .2s;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        .ui-fluid .ui-inputmask {
-            width: 100%;
-            padding: 0.2em 0.1em;
-        }
-        body .ui-fluid .ui-selectonemenu-label {
-            width: calc(100% - 2.357rem);
-            padding: .2rem 0.2rem;
-        }
-        body .ui-button.ui-button-text-only .ui-button-text {
-            padding: .1rem 0.2rem;
-        }
-        .ui-fluid .ui-inputtext {
-            width: 100%;
-            padding: 0.2em;
-        }
-        .ui-grid .ui-grid-row {
-
-            margin: 0;
-            padding: 0;
-        }
-        body .ui-panelgrid .ui-panelgrid-cell {
-            border: 1px solid #dee2e6;
-            background: #fff;
-            color: #495057;
-            padding: 0rem;
-        }
-        body .ui-panel .ui-panel-content {
-            border: 1px solid #dee2e6;
-            border-top-color: rgb(222, 226, 230);
-            border-top-style: solid;
-            border-top-width: 1px;
-            background: #fff;
-            color: #495057;
-            padding: 0;
-            margin: 0;
-        }
-        body .ui-datatable .ui-datatable-data > tr > td {
-            padding: 0.3rem 0.3rem;
-            border: 1px solid rgba(0,0,0,.08);
-            border-top-width: 1px;
-            border-right-width: 1px;
-            border-bottom-width: 1px;
-            border-left-width: 1px;
-            border-width: 0 0 1px 0;
-            padding-left: 1.2rem;
-        }
-
-    </style>
+    <h:outputScript library="js" name="salesScripts.js" target="head" />
+    <h:outputStylesheet library="css" name="salesStyles.css" />
     <p:panel header="Vásárlások" id="salePanel" toggleable="true"   >
         <div class="card">
 
@@ -255,6 +169,9 @@
                 update="saleForm:salePanel saleForm:fixProductPanel saleForm:nquantity1 saleForm:nquantity2 saleForm:nquantity3 saleForm:nquantity4 saleForm:nquantity5 saleForm:nquantity6"
                 onsuccess="javascript:window.location='#saleForm'"
         />
+        <p:ajax event="filter" oncomplete="highlightOverduePayments()" />
+        <p:ajax event="sort" oncomplete="highlightOverduePayments()" />
+
         <p:column headerText="Sorszám" sortBy="#{sale.id}" filterBy="#{sale.id}" filterMatchMode="exact"  >
             <h:outputText value="#{sale.id}" id="id"/>
         </p:column>
@@ -267,12 +184,12 @@
         </p:column>
 
 
-        <p:column headerText="Fizetési határ" sortBy="#{sale.deadLine}" filterBy="#{saleController.toDottedDate(sale.deadLine)}" filterMatchMode="contains"  >
+        <p:column headerText="Fizetési határ" styleClass="deadlineColumn" sortBy="#{sale.deadLine}" filterBy="#{saleController.toDottedDate(sale.deadLine)}" filterMatchMode="contains"  >
             <h:outputText value="#{sale.deadLine}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>
         </p:column>
-        <p:column headerText="Fizetés. dát." sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
+        <p:column headerText="Fizetés. dát." styleClass="completionDateColumn" sortBy="#{sale.completionDate}" filterBy="#{saleController.toDottedDate(sale.completionDate)}" filterMatchMode="contains">
             <h:outputText value="#{sale.completionDate}">
                 <f:convertDateTime pattern="yyyy.MM.dd" timeZone="GMT+1"/>
             </h:outputText>

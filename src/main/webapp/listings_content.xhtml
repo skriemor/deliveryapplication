@@ -159,6 +159,9 @@
                 <p:column headerText="Vételár">
                     <h:outputText value="#{cPurchase.formattedTotalPrice} HUF"/>
                 </p:column>
+
+                <p:ajax event="sort" oncomplete="updateColumnSums()" />
+                <p:ajax event="filter" oncomplete="updateColumnSums()" />
             </p:dataTable>
 
             <p:remoteCommand name="calculateColumnSums" oncomplete="updateColumnSums()" />
